@@ -8,6 +8,7 @@ import { ToDurationPipe } from 'src/app/pipes/to-duration.pipe';
 import { DatePipe } from '@angular/common';
 import { ToastController, AlertController } from '@ionic/angular';
 import { ApiService } from 'src/app/services/api/api.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-time',
@@ -50,12 +51,12 @@ export class TimePage {
 
   constructor(
     private apiService: ApiService,
-    // private authService: AuthService,
     private toastCtrl: ToastController,
     private router: Router,
     private route: ActivatedRoute,
     private alertController: AlertController,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private translateService: TranslateService
   ) {
     this.init()
   }
@@ -69,9 +70,10 @@ export class TimePage {
     this.clientServices = await this.apiService.getClientService()
     this.timesheetStatus = await this.apiService.getTimesheetStatus()
     this.route.params.subscribe(async params => {
-      console.log('received', params)
       if (params['project_id']) {
         this.newTimesheet.pr_project_id = parseInt(params['project_id'])
+        this.availablePackages = await this.apiService.getPackagesForProject(this.newTimesheet.pr_project_id)
+
       }
       if (params['package_id']) {
         this.newTimesheet.pr_package_id = parseInt(params['package_id'])
@@ -81,8 +83,6 @@ export class TimePage {
         this.isUpdate = true
         try {
           const timesheet = await this.apiService.getTimesheet(parseInt(params['time_id']))
-          console.log('loaded')
-
           this.newTimesheet.id = timesheet.id
           this.newTimesheet.user_id = timesheet.user_id
           this.newTimesheet.status_id = timesheet.status_id
@@ -92,11 +92,15 @@ export class TimePage {
           this.newTimesheet.contact_id = timesheet.contact_id
           this.newTimesheet.pr_project_id = timesheet.pr_project_id
           this.newTimesheet.pr_package_id = timesheet.pr_package_id
-          this.newTimesheet.tracking = timesheet.tracking
-          console.log('timesheet', timesheet)
+          this.newTimesheet.tracking = {
+            type: "duration",
+            date: timesheet.date,
+            duration: timesheet.duration
+          }
           this.selectedDate = timesheet.date
           const duration = timesheet.duration.split(':')
           this.selectedDuration = parseInt(duration[0]) + (parseInt(duration[1]) / 60)
+          this.availablePackages = await this.apiService.getPackagesForProject(this.newTimesheet.pr_project_id)
         } catch (e) {
           console.error('error', e)
         }
@@ -111,7 +115,9 @@ export class TimePage {
     if (filteredProjects.length > 0) {
       this.selectedProjectText = filteredProjects[0].name
       this.newTimesheet.contact_id = filteredProjects[0].contact_id
-      this.selectedPackageText = (await this.apiService.getPackageForProjectWithId(this.newTimesheet.pr_project_id, this.newTimesheet.pr_package_id)).name
+      if(this.newTimesheet.pr_package_id){
+        this.selectedPackageText = (await this.apiService.getPackageForProjectWithId(this.newTimesheet.pr_project_id, this.newTimesheet.pr_package_id)).name
+      }
     }
   }
 
@@ -142,7 +148,7 @@ export class TimePage {
       !this.newTimesheet.text ||
       this.newTimesheet.text.length < 1) {
       let toast = await this.toastCtrl.create({
-        message: 'Missing information',
+        message: await this.translateService.get('Missing information').toPromise(),
         duration: 3000,
         position: 'top'
       });
@@ -161,12 +167,12 @@ export class TimePage {
     delete this.newTimesheet.tracking.type
     this.apiService.putTimesheet(this.newTimesheet).then(async response => {
       let toast = await this.toastCtrl.create({
-        message: 'Updated',
+        message: await this.translateService.get('Updated').toPromise(),
         duration: 3000,
         position: 'top'
       });
       toast.present()
-      this.router.navigateByUrl('/', { skipLocationChange: true });
+      this.router.navigateByUrl('tabs', { skipLocationChange: true });
     }).catch(async reason => {
       let toast = await this.toastCtrl.create({
         message: 'Failed: ' + reason.message,
@@ -189,7 +195,7 @@ export class TimePage {
         position: 'top'
       });
       toast.present()
-      this.router.navigateByUrl('/', { skipLocationChange: true });
+      this.router.navigateByUrl('tabs', { skipLocationChange: true });
     }).catch(async reason => {
       let toast = await this.toastCtrl.create({
         message: 'Failed: ' + reason.message,

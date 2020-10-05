@@ -23,6 +23,7 @@ export class TimesPage {
     private alertController: AlertController,
     private toastController: ToastController) {
     this.doRefresh();
+    this.apiService.timeUpdated.subscribe(() => this.doRefresh())
   }
 
   public async doRefresh(event?: any) {

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable, Output } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthActions, AuthService } from 'ionic-appauth';
 import { ClientService } from 'src/app/models/client_service';
@@ -13,6 +13,12 @@ import { NavController } from '@ionic/angular';
   providedIn: 'root'
 })
 export class ApiService {
+
+  @Output()
+  timeUpdated = new EventEmitter();
+
+  @Output()
+  projectsUpdated = new EventEmitter();
 
   private limit = 300
 
@@ -58,10 +64,11 @@ export class ApiService {
             this.getProjects(true)
           ]);
 
+          this.getPackages()
+
           for (var i = 0; i < this.users.length; i++) {
             if (this.users[i].email === action.user.email) {
               this.currentUser = this.users[i]
-              console.log('current user', this.currentUser)
               this.authService.removeActionObserver(observer)
               resolve()
             }
@@ -69,7 +76,6 @@ export class ApiService {
         }
       })
       this.authService.loadUserInfo()
-
     })
   }
 
@@ -81,19 +87,29 @@ export class ApiService {
         const projects = await this.http.post<Project[]>(this.baseUrl + '2.0/pr_project/search?order_by=name&limit=' + this.limit, [{ "field": "pr_state_id", "value": "2", "criteria": "=" }]).toPromise();
         this.projects = projects
         for (var i = 0; i < this.projects.length; i++) {
+          this.projects[i].packages = this.cachedPackagesProjectId[this.projects[i].id]
           this.projectMap[this.projects[i].id] = this.projects[i]
         }
+        this.projectsUpdated.next()
       }
       resolve(this.projects)
     });
   }
 
   public async putTimesheet(timesheet: any): Promise<Timesheet> {
-    return this.http.post<Timesheet>(this.baseUrl + '2.0/timesheet/' + timesheet.id, timesheet).toPromise()
+    return new Promise(async (resolve, reject) => {
+      let newTimesheet = await this.http.post<Timesheet>(this.baseUrl + '2.0/timesheet/' + timesheet.id, timesheet).toPromise()
+      this.timeUpdated.next()
+      resolve(newTimesheet)
+    })
   }
 
   public async postTimesheet(timesheet: any): Promise<Timesheet> {
-    return this.http.post<Timesheet>(this.baseUrl + '2.0/timesheet', timesheet).toPromise()
+    return new Promise(async (resolve, reject) => {
+      let newTimesheet = await this.http.post<Timesheet>(this.baseUrl + '2.0/timesheet', timesheet).toPromise()
+      this.timeUpdated.next()
+      resolve(newTimesheet)
+    })
   }
 
   public async deleteTimesheet(timesheet: any): Promise<Timesheet> {
@@ -181,21 +197,30 @@ export class ApiService {
     })
   }
 
-  // public async getPackages(projects){
-  //   for(var i = 0; i < projects.length; i++){
-  //     this.packages.push(...(await this.getPackagesForProject(projects[i].id)))
-  //   }
-  //   for (var i = 0; i < -.length; i++) {
-  //     projects[i].packages = this.cachedPackagesProjectId[projects[i].id]
-  //   }
-  // }
+  public async getPackages(force = false) {
+    let promises = []
+    for (var i = 0; i < this.projects.length; i++) {
+      const projectid = this.projects[i].id
+      let promise = this.getPackagesForProject(projectid).then(packagesForProject => {
+        this.cachedPackagesProjectId[projectid] = packagesForProject
+        for (var j = 0; j < packagesForProject.length; j++) {
+          this.cachedPackagesPackageId[packagesForProject[j].id] = packagesForProject
+        }
+        this.packages.push(...packagesForProject)
+      })
+      promises.push(promise)
+    }
+    await Promise.all(promises);
+    await this.getProjects(true)
+    this.projectsUpdated.next()
+  }
 
   public getPackageForProjectWithId(project_id: number, package_id: number): Promise<Package> {
     return this.http.get<Package>(this.baseUrl + '3.0/projects/' + project_id + '/packages/' + package_id).toPromise();
   }
 
   public getPackagesForProject(project_id: number): Promise<Package[]> {
-    return this.http.get<Package[]>(this.baseUrl + '3.0/projects/' + project_id + '/packages/').toPromise();
+    return this.http.get<Package[]>(this.baseUrl + '3.0/projects/' + project_id + '/packages').toPromise();
   }
 
   public async getUser(): Promise<User> {

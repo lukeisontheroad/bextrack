@@ -25,6 +25,7 @@ export class ProjectsPage {
     }
 
     this.doRefresh();
+    this.apiService.projectsUpdated.subscribe(() => this.doRefresh())
   }
 
   public async doRefresh(event?: any) {
