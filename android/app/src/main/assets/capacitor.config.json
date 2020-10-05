@@ -1,6 +1,6 @@
 {
-  "appId": "com.appauth.demo",
-  "appName": "com.appauth.demo",
+  "appId": "ch.papers.bexio",
+  "appName": "Timetracker",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "www",

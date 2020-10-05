@@ -1,0 +1,66 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>
+      {{ 'Settings' | translate }}
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <ion-grid>
+    <ion-row class="ion-align-items-center">
+      <ion-col size="12" class="ion-text-center">
+        <ion-icon name="person-circle-outline" style="font-size: 180px;"></ion-icon>
+      </ion-col>
+    </ion-row>
+    <ion-row class="ion-align-items-center">
+      <ion-col size="12" class="ion-text-center">
+        {{ user?.firstname }} {{ user?.lastname }}
+      </ion-col>
+    </ion-row>
+    <ion-row class="ion-align-items-center">
+      <ion-col size="12" class="ion-text-center">
+        <ion-button shape="round" (click)="logout()">{{ 'Logout' | translate }}</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+
+
+  <ion-list>
+    <ion-list-header>{{ 'Time tracking reminder' | translate }}</ion-list-header>
+    <ion-item>
+      <ion-label>{{ 'Reminder time' | translate }}</ion-label>
+      <ion-datetime displayFormat="HH:mm" [(ngModel)]="time" (ionChange)="notificationsChanged()"></ion-datetime>
+    </ion-item>
+    <ion-item>
+      <ion-label>{{ 'Monday' | translate }}</ion-label>
+      <ion-checkbox slot="end" [(ngModel)]="weekdays.d1" (ionChange)="notificationsChanged()"></ion-checkbox>
+    </ion-item>
+    <ion-item>
+      <ion-label>{{ 'Tuesday' | translate }}</ion-label>
+      <ion-checkbox slot="end" [(ngModel)]="weekdays.d2" (ionChange)="notificationsChanged()"></ion-checkbox>
+    </ion-item>
+    <ion-item>
+      <ion-label>{{ 'Wednesday' | translate }}</ion-label>
+      <ion-checkbox slot="end" [(ngModel)]="weekdays.d3" (ionChange)="notificationsChanged()"></ion-checkbox>
+    </ion-item>
+    <ion-item>
+      <ion-label>{{ 'Thursday' | translate }}</ion-label>
+      <ion-checkbox slot="end" [(ngModel)]="weekdays.d4" (ionChange)="notificationsChanged()"></ion-checkbox>
+    </ion-item>
+    <ion-item>
+      <ion-label>{{ 'Friday' | translate }}</ion-label>
+      <ion-checkbox slot="end" [(ngModel)]="weekdays.d5" (ionChange)="notificationsChanged()"></ion-checkbox>
+    </ion-item>
+    <ion-item>
+      <ion-label>{{ 'Saturday' | translate }}</ion-label>
+      <ion-checkbox slot="end" [(ngModel)]="weekdays.d6" (ionChange)="notificationsChanged()"></ion-checkbox>
+    </ion-item>
+    <ion-item>
+      <ion-label>{{ 'Sunday' | translate }}</ion-label>
+      <ion-checkbox slot="end" [(ngModel)]="weekdays.d0" (ionChange)="notificationsChanged()"></ion-checkbox>
+    </ion-item>
+  </ion-list>
+</ion-content>

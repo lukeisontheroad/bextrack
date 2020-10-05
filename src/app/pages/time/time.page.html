@@ -1,0 +1,79 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/projects"></ion-back-button>
+    </ion-buttons>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="delete()">
+        <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+      </ion-button>
+      <ion-button (click)="save()">
+        <ion-icon slot="icon-only" name="save"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ 'Create effort' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+
+    <ion-item>
+      <ion-label position="stacked">{{ 'Description' | translate }}</ion-label>
+      <ion-textarea autoGrow="true" placeholder="Text" [(ngModel)]="newTimesheet.text"></ion-textarea>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">{{ 'Date' | translate }}</ion-label>
+      <ion-datetime [(ngModel)]="selectedDate" displayFormat="DDDD DD.MM.YYYY"></ion-datetime>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">{{ 'Duration' | translate }}</ion-label>
+      <ion-range min="0.25" max="9" step="0.25" snaps="true" ticks="false" [(ngModel)]="selectedDuration"></ion-range>
+      <span style="width: 100%; text-align: center;">{{ selectedDuration | toDuration }} hour(s)</span>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>{{ 'Chargeable' | translate }}</ion-label>
+      <ion-toggle [(ngModel)]="newTimesheet.allowable_bill"></ion-toggle>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">{{ 'Service' | translate }}</ion-label>
+      <ion-select placeholder="Select" [(ngModel)]="newTimesheet.client_service_id">
+        <ion-select-option *ngFor="let clientService of clientServices" [value]="clientService.id">
+          {{ clientService.name }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">{{ 'Project' | translate }}</ion-label>
+      <ion-select placeholder="Project" (ionChange)="onProjectSelected()" [(ngModel)]="newTimesheet.pr_project_id"
+        [selectedText]="selectedProjectText">
+        <ion-select-option *ngFor="let project of projects" value="{{ project.id }}">{{ project.name }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">{{ 'Package' | translate }}</ion-label>
+      <ion-select placeholder="Package" [(ngModel)]="newTimesheet.pr_package_id" [selectedText]="selectedPackageText">
+        <ion-select-option *ngFor="let package of availablePackages" value="{{ package.id }}">{{ package.name }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">{{ 'Status' | translate }}</ion-label>
+      <ion-select placeholder="Select" [(ngModel)]="newTimesheet.status_id">
+        <ion-select-option *ngFor="let status of timesheetStatus" [value]="status.id">{{status.name}}</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+
+  </ion-list>
+
+</ion-content>

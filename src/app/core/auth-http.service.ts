@@ -10,6 +10,7 @@ export class AuthHttpService {
   constructor(private requestor: Requestor, private auth: AuthService) { }
 
   public async request<T> (method: 'GET' | 'POST' | 'PUT' | 'DELETE', url: string, body?: any){
+    console.log('AuthHttpService')
     const token: TokenResponse = await this.auth.getValidToken();
     return this.requestor.xhr<T>({
       url: url,

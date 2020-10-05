@@ -1,0 +1,55 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="end">
+      <ion-button *ngIf="showOnlyFavorites" (click)="toggleFavorites()">
+        <ion-icon slot="icon-only" name="star"></ion-icon>
+      </ion-button>
+      <ion-button *ngIf="!showOnlyFavorites" (click)="toggleFavorites()">
+        <ion-icon slot="icon-only" name="star-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      {{ 'Projects' | translate }}
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content>
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Default Searchbar -->
+  <ion-searchbar></ion-searchbar>
+
+
+  <ion-list>
+    <div *ngFor="let project of projects">
+
+      <ion-item-sliding>
+      <ion-item routerLink="/create-time/{{ project.id }}">
+        <ion-label>{{ project.name }}</ion-label>
+      </ion-item>
+      <ion-item-options side="end">
+        <ion-item-option color="warning" (click)="favorite(project.id)" *ngIf="favorites.indexOf(project.id) == -1">{{ 'Favorite' | translate }}</ion-item-option>
+        <ion-item-option color="warning" (click)="favorite(project.id)" *ngIf="favorites.indexOf(project.id) >  -1">{{ 'Unfavorite' | translate }}</ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+
+      <ion-item *ngFor="let package of project.packages" routerLink="/create-time/{{ project.id }}/{{ package.id }}">
+        <ion-avatar slot="start">
+          <img src="/assets/package.png">
+        </ion-avatar>
+        <ion-label>
+          <h2>{{ package.name }}</h2>
+        </ion-label>
+      </ion-item>
+
+    </div>
+
+  </ion-list>
+
+
+</ion-content>
