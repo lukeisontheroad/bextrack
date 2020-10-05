@@ -68,18 +68,21 @@ export class TimePage {
     this.projects = await this.apiService.getProjects()
     this.clientServices = await this.apiService.getClientService()
     this.timesheetStatus = await this.apiService.getTimesheetStatus()
-    this.route.paramMap.subscribe(async params => {
-      if (params.get('project_id')) {
-        this.newTimesheet.pr_project_id = parseInt(params.get('project_id'))
+    this.route.params.subscribe(async params => {
+      console.log('received', params)
+      if (params['project_id']) {
+        this.newTimesheet.pr_project_id = parseInt(params['project_id'])
       }
-      if (params.get('package_id')) {
-        this.newTimesheet.pr_package_id = parseInt(params.get('package_id'))
+      if (params['package_id']) {
+        this.newTimesheet.pr_package_id = parseInt(params['package_id'])
       }
 
-      if (params.get('time_id')) {
+      if (params['time_id']) {
         this.isUpdate = true
         try {
-          const timesheet = await this.apiService.getTimesheet(parseInt(params.get('time_id')))
+          const timesheet = await this.apiService.getTimesheet(parseInt(params['time_id']))
+          console.log('loaded')
+
           this.newTimesheet.id = timesheet.id
           this.newTimesheet.user_id = timesheet.user_id
           this.newTimesheet.status_id = timesheet.status_id
@@ -90,8 +93,9 @@ export class TimePage {
           this.newTimesheet.pr_project_id = timesheet.pr_project_id
           this.newTimesheet.pr_package_id = timesheet.pr_package_id
           this.newTimesheet.tracking = timesheet.tracking
-          this.selectedDate = timesheet.tracking.date
-          const duration = timesheet.tracking.duration.split(':')
+          console.log('timesheet', timesheet)
+          this.selectedDate = timesheet.date
+          const duration = timesheet.duration.split(':')
           this.selectedDuration = parseInt(duration[0]) + (parseInt(duration[1]) / 60)
         } catch (e) {
           console.error('error', e)

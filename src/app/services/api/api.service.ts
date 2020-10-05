@@ -1,25 +1,28 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { AuthService } from 'ionic-appauth';
+import { AuthActions, AuthService } from 'ionic-appauth';
 import { ClientService } from 'src/app/models/client_service';
 import { Project } from 'src/app/models/project';
 import { Timesheet } from 'src/app/models/timesheet';
 import { TimesheetStatus } from 'src/app/models/timsheet_status';
 import { User } from 'src/app/models/user';
 import { Package } from 'src/app/models/package';
+import { NavController } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
 
+  private limit = 300
+
   // private proxy = 'https://cors-proxy.azure.prod.gke.papers.tech/'
   private proxy = 'https://cors-proxy.bexio.prod.gke.papers.tech/'
-  // private corsProxy = this.proxy + 'proxy?url='
+  //private corsProxy = this.proxy + 'proxy?url='
   private corsProxy = 'https://cors-anywhere.herokuapp.com/'
 
-  // private baseUrl = this.corsProxy + 'https://api.bexio.com/'
-  private baseUrl = 'https://api.bexio.com/'
+  private baseUrl = this.corsProxy + 'https://api.bexio.com/'
+  //private baseUrl = 'https://api.bexio.com/'
 
   private currentUser: User;
   private users: User[] = []
@@ -27,27 +30,38 @@ export class ApiService {
   private projects: Project[] = []
   private projectMap: any = {};
   private timesheets: Timesheet[] = []
+  private timesheetStatus: TimesheetStatus[] = []
+  private clientServicees: ClientService[] = []
+
+  private packages: Package[] = []
   private cachedPackagesProjectId: any = {};
   private cachedPackagesPackageId: any = {};
 
-  private isInitialized = false
-
   constructor(
     private http: HttpClient,
-    private authService: AuthService
-  ) {
-  }
+    private authService: AuthService,
+    private navCtrl: NavController
+  ) { }
 
   public async init() {
     return new Promise(resolve => {
       let observer = this.authService.addActionListener(async (action) => {
-        await this.getUsers(true)
-        await this.getProjects(true)
+        if (action.action === AuthActions.LoadUserInfoSuccess) {
+          this.users = await this.http.get<any>(this.baseUrl + '3.0/users').toPromise()
+          for (var i = 0; i < this.users.length; i++) {
+            this.usersMap[this.users[i].id] = this.users[i]
+          }
 
-        if (action.user) {
+          await Promise.all([
+            this.getTimesheetStatus(true),
+            this.getClientService(true),
+            this.getProjects(true)
+          ]);
+
           for (var i = 0; i < this.users.length; i++) {
             if (this.users[i].email === action.user.email) {
               this.currentUser = this.users[i]
+              console.log('current user', this.currentUser)
               this.authService.removeActionObserver(observer)
               resolve()
             }
@@ -64,15 +78,10 @@ export class ApiService {
   public async getProjects(force = false): Promise<Project[]> {
     return new Promise(async (resolve, reject) => {
       if (force || this.projects.length === 0) {
-        if (this.projects.length < 1) {
-          const projects = await this.http.post<Project[]>(this.baseUrl + '2.0/pr_project/search?order_by=name&limit=1000', [{ "field": "pr_state_id", "value": "2", "criteria": "=" }]).toPromise();
-          for (var i = 0; i < projects.length; i++) {
-            projects[i].packages = this.cachedPackagesProjectId[projects[i].id]
-          }
-          this.projects = projects
-          for (var i = 0; i < this.projects.length; i++) {
-            this.projectMap[this.projects[i].id] = this.projects[i]
-          }
+        const projects = await this.http.post<Project[]>(this.baseUrl + '2.0/pr_project/search?order_by=name&limit=' + this.limit, [{ "field": "pr_state_id", "value": "2", "criteria": "=" }]).toPromise();
+        this.projects = projects
+        for (var i = 0; i < this.projects.length; i++) {
+          this.projectMap[this.projects[i].id] = this.projects[i]
         }
       }
       resolve(this.projects)
@@ -91,20 +100,29 @@ export class ApiService {
     return this.http.delete<Timesheet>(this.baseUrl + '2.0/timesheet/' + timesheet.id).toPromise()
   }
 
-  public async getTimesheetStatus(): Promise<TimesheetStatus[]> {
-    return this.http.get<TimesheetStatus[]>(this.baseUrl + '2.0/timesheet_status').toPromise();
-  }
-
-  public async getClientService(): Promise<ClientService[]> {
-    return this.http.get<ClientService[]>(this.baseUrl + '2.0/client_service').toPromise();
-  }
-
-  public async getTimesheet(time_id: number, force=false): Promise<Timesheet> {
+  public async getTimesheetStatus(force = false): Promise<TimesheetStatus[]> {
     return new Promise(async (resolve, reject) => {
-      if(!force){
+      if (force || this.timesheetStatus.length === 0) {
+        this.timesheetStatus = await this.http.get<TimesheetStatus[]>(this.baseUrl + '2.0/timesheet_status').toPromise();
+      }
+      resolve(this.timesheetStatus)
+    })
+  }
+
+  public async getClientService(force = false): Promise<ClientService[]> {
+    return new Promise(async (resolve, reject) => {
+      if (force || this.clientServicees.length === 0) {
+        this.clientServicees = await this.http.get<ClientService[]>(this.baseUrl + '2.0/client_service').toPromise();
+      }
+      resolve(this.clientServicees)
+    })
+  }
+
+  public async getTimesheet(time_id: number, force = false): Promise<Timesheet> {
+    return new Promise(async (resolve, reject) => {
+      if (!force) {
         let filteredTimesheets = this.timesheets.filter(timesheet => timesheet.id === time_id)
-        if(filteredTimesheets.length === 1){
-          console.log('return cached timesheet')
+        if (filteredTimesheets.length === 1) {
           resolve(filteredTimesheets[0])
           return
         }
@@ -157,19 +175,20 @@ export class ApiService {
     })
   }
 
-  public getUsers(force = false): Promise<any> {
-    console.log('getUsers', force)
+  public getUsers(): Promise<any> {
     return new Promise(async (resolve, reject) => {
-      if (force || this.users.length === 0) {
-        console.log('load users', force, this.users.length === 0)
-        this.users = await this.http.get<any>(this.baseUrl + '3.0/users').toPromise()
-        for (var i = 0; i < this.users.length; i++) {
-          this.usersMap[this.users[i].id] = this.users[i]
-        }
-      }
       resolve(this.users)
     })
   }
+
+  // public async getPackages(projects){
+  //   for(var i = 0; i < projects.length; i++){
+  //     this.packages.push(...(await this.getPackagesForProject(projects[i].id)))
+  //   }
+  //   for (var i = 0; i < -.length; i++) {
+  //     projects[i].packages = this.cachedPackagesProjectId[projects[i].id]
+  //   }
+  // }
 
   public getPackageForProjectWithId(project_id: number, package_id: number): Promise<Package> {
     return this.http.get<Package>(this.baseUrl + '3.0/projects/' + project_id + '/packages/' + package_id).toPromise();

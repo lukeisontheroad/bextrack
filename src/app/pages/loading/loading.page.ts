@@ -1,34 +1,46 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
-import { AuthService } from 'ionic-appauth';
+import { AuthObserver, AuthService, IAuthAction } from 'ionic-appauth';
+import { ApiService } from 'src/app/services/api/api.service';
 
 @Component({
   selector: 'app-loading',
   templateUrl: './loading.page.html',
   styleUrls: ['./loading.page.scss'],
 })
-export class LoadingPage implements OnInit {
+export class LoadingPage implements OnInit, OnDestroy {
+
+  observer: AuthObserver;
 
   constructor(
     private auth: AuthService,
+    private apiService: ApiService,
     private navCtrl: NavController
   ) { }
 
   ngOnInit() {
-    this.auth.loadTokenFromStorage().then(value => {
-      if(this.auth.session.isAuthenticated){
+    this.observer = this.auth.addActionListener((action) => this.actionHandler(action));
+    this.auth.loadTokenFromStorage().then(async value => {
+      if (this.auth.session.isAuthenticated) {
+        await this.apiService.init()
         console.log('go to tabs')
         this.navCtrl.navigateRoot('tabs')
-      }else{
-        this.auth.refreshToken().then(value => {
+      } else {
+        this.auth.refreshToken().then(async value => {
+          await this.apiService.init()
           this.navCtrl.navigateRoot('tabs')
-        }).catch(_ => {
-          this.navCtrl.navigateRoot('login')
         })
       }
-    }).catch(_ => {
-      this.navCtrl.navigateRoot('login')
-    });
+    })
   }
 
+  actionHandler(action: IAuthAction) {
+    if (action.error) {
+      this.navCtrl.navigateRoot('login');
+    }
+  }
+
+  ngOnDestroy() {
+    this.auth.removeActionObserver(this.observer);
+  }
 }

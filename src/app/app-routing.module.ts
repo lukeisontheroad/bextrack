@@ -4,12 +4,11 @@ import { environment } from 'src/environments/environment';
 import { AuthGuardService } from './core/auth-guard.service';
 
 const routes: Routes = [
-  {
-    path: '',
-    pathMatch: 'full',
-    canActivate: [AuthGuardService],
-    redirectTo: 'loading',
-  },
+  // {
+  //   path: 'tabs/:tab',
+  //   pathMatch: 'full',
+  //   redirectTo: 'loading',
+  // },
   {
     path: 'tabs',
     canActivate: [AuthGuardService],
@@ -47,6 +46,12 @@ const routes: Routes = [
   {
     path: 'loading',
     loadChildren: () => import('./pages/loading/loading.module').then(m => m.LoadingPageModule)
+  },
+  {
+    path: '**',
+    pathMatch: 'full',
+    // canActivate: [AuthGuardService],
+    redirectTo: 'loading',
   },
 ];
 

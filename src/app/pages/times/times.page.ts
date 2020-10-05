@@ -11,7 +11,6 @@ import { ApiService } from 'src/app/services/api/api.service';
 })
 export class TimesPage {
 
-  public users = []
   public times: Timesheet[] = []
   public groupedTimes = []
   public skeletons = new Array(10);
@@ -30,10 +29,8 @@ export class TimesPage {
     this.loading = true
     var groupedTimes = []
 
-    // await this.apiService.init()
     let user = await this.apiService.getUser()
-    this.users = await this.apiService.getUsers()
-    this.times = (await this.apiService.getTimesheets()).filter(i => i.user_id === user.id)
+    this.times = (await this.apiService.getTimesheets(user.id)) //.filter(i => i.user_id === user.id)
 
     var groupedTimesMap = {}
     for (let time of this.times) {

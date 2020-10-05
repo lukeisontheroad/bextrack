@@ -8,7 +8,7 @@ import { XhrSettings } from 'ionic-appauth/lib/cordova';
 })
 export class NgHttpService implements Requestor {
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {  }
 
   public async xhr<T>(settings: XhrSettings): Promise<T> {
     if (!settings.method) {

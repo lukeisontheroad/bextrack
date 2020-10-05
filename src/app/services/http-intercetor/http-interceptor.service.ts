@@ -21,8 +21,8 @@ export class AuthInterceptor implements HttpInterceptor {
   async handle(req: HttpRequest<any>, next: HttpHandler) {
     if(!this.auth.session.isAuthenticated){
       this.navCtrl.navigateRoot('login')
+      return
     }
-    console.log('AuthInterceptor')
     const token = await this.auth.getValidToken()
     const authReq = req.clone({
       setHeaders: {

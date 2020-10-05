@@ -20,7 +20,8 @@ export class EndSessionPage implements OnInit {
   async ngOnInit() {
     this.auth.handleCallback(window.location.origin + this.router.url);
     await this.storageBackend.clear()
-    this.navCtrl.navigateRoot('login');
+    this.navCtrl.navigateRoot('login')
+    ;
   }
 
 }

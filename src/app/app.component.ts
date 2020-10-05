@@ -21,7 +21,7 @@ export class AppComponent {
 
   initializeApp() {
     this.platform.ready().then(async() => {
-      await this.apiService.init()
+      // await this.apiService.init()
       let language = await Device.getLanguageCode()
       this.translateService.use(language.value);
       SplashScreen.hide();

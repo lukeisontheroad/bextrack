@@ -25,15 +25,15 @@ export class LoginPage implements OnInit, OnDestroy {
     this.auth.removeActionObserver(this.observer);
   }
 
-  private onSignInSuccess(action: IAuthAction) {
+  onSignInSuccess(action: IAuthAction) {
     this.action = action;
     if (action.action === AuthActions.SignInSuccess ||
       action.action === AuthActions.LoadTokenFromStorageSuccess) {
-      this.navCtrl.navigateRoot('tabs');
+      this.navCtrl.navigateRoot('loading');
     }
   }
 
-  public signIn() {
+  signIn() {
     this.auth.signIn();
   }
 }
