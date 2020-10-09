@@ -4,11 +4,6 @@ import { environment } from 'src/environments/environment';
 import { AuthGuardService } from './core/auth-guard.service';
 
 const routes: Routes = [
-  // {
-  //   path: 'tabs/:tab',
-  //   pathMatch: 'full',
-  //   redirectTo: 'loading',
-  // },
   {
     path: 'tabs',
     canActivate: [AuthGuardService],
@@ -16,6 +11,10 @@ const routes: Routes = [
   },
   {
     path: 'create-time',
+    loadChildren: () => import('./pages/time/time.module').then(m => m.CreateTimePageModule)
+  },
+  {
+    path: 'create-time-stopwatch/:seconds',
     loadChildren: () => import('./pages/time/time.module').then(m => m.CreateTimePageModule)
   },
   {

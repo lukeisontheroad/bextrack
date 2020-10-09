@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
-import { AlertController, ToastController } from '@ionic/angular';
+import { ToastController } from '@ionic/angular';
 import * as _ from 'lodash';
-import { Router } from '@angular/router';
 import { ApiService } from 'src/app/services/api/api.service';
 import { Plugins } from '@capacitor/core';
 import { User } from 'src/app/models/user';

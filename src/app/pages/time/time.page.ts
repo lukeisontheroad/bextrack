@@ -25,6 +25,8 @@ export class TimePage {
 
   public availablePackages: Package[] = []
 
+  private today = new Date()
+
   public newTimesheet = {
     id: null,
     user_id: null,
@@ -40,7 +42,7 @@ export class TimePage {
     //pr_milestone_id: null,
     tracking: {
       "type": "duration",
-      "date": "2020-01-01",
+      "date": this.today.getFullYear() + '-' + this.pad((this.today.getMonth() + 1), 2) + '-' + this.pad(this.today.getDate(), 2),
       "duration": "01:00"
     }
   }
@@ -58,55 +60,72 @@ export class TimePage {
     private toastController: ToastController,
     private translateService: TranslateService
   ) {
+    console.log(this.newTimesheet)
     this.init()
   }
 
+  pad(num, size) {
+    let s = num + "";
+    while (s.length < size) s = "0" + s;
+    return s;
+  }
 
   private async init() {
     let user = await this.apiService.getUser()
     this.newTimesheet.user_id = user.id
-    
+
     this.projects = await this.apiService.getProjects()
     this.clientServices = await this.apiService.getClientService()
     this.timesheetStatus = await this.apiService.getTimesheetStatus()
+
     this.route.params.subscribe(async params => {
-      if (params['project_id']) {
-        this.newTimesheet.pr_project_id = parseInt(params['project_id'])
-        this.availablePackages = await this.apiService.getPackagesForProject(this.newTimesheet.pr_project_id)
-
-      }
-      if (params['package_id']) {
-        this.newTimesheet.pr_package_id = parseInt(params['package_id'])
-      }
-
-      if (params['time_id']) {
-        this.isUpdate = true
-        try {
-          const timesheet = await this.apiService.getTimesheet(parseInt(params['time_id']))
-          this.newTimesheet.id = timesheet.id
-          this.newTimesheet.user_id = timesheet.user_id
-          this.newTimesheet.status_id = timesheet.status_id
-          this.newTimesheet.client_service_id = timesheet.client_service_id
-          this.newTimesheet.text = timesheet.text
-          this.newTimesheet.allowable_bill = timesheet.allowable_bill
-          this.newTimesheet.contact_id = timesheet.contact_id
-          this.newTimesheet.pr_project_id = timesheet.pr_project_id
-          this.newTimesheet.pr_package_id = timesheet.pr_package_id
-          this.newTimesheet.tracking = {
-            type: "duration",
-            date: timesheet.date,
-            duration: timesheet.duration
-          }
-          this.selectedDate = timesheet.date
-          const duration = timesheet.duration.split(':')
-          this.selectedDuration = parseInt(duration[0]) + (parseInt(duration[1]) / 60)
-          this.availablePackages = await this.apiService.getPackagesForProject(this.newTimesheet.pr_project_id)
-        } catch (e) {
-          console.error('error', e)
+      if (this.router.url.startsWith('/create-time-stopwatch')) {
+        if (params['seconds']) {
+          let seconds = parseInt(params['seconds'])
+          var hours = Math.floor(seconds / 60 / 60);
+          var minutes = Math.floor(seconds / 60) - (hours * 60);
+          this.selectedDuration = hours + (minutes / 60)
+          this.newTimesheet.tracking.duration = new ToDurationPipe().transform(this.selectedDuration)
         }
+      } else {
+        if (params['project_id']) {
+          this.newTimesheet.pr_project_id = parseInt(params['project_id'])
+          this.availablePackages = await this.apiService.getPackagesForProject(this.newTimesheet.pr_project_id)
+        }
+        if (params['package_id']) {
+          this.newTimesheet.pr_package_id = parseInt(params['package_id'])
+        }
+
+        if (params['time_id']) {
+          this.isUpdate = true
+          try {
+            const timesheet = await this.apiService.getTimesheet(parseInt(params['time_id']))
+            this.newTimesheet.id = timesheet.id
+            this.newTimesheet.user_id = timesheet.user_id
+            this.newTimesheet.status_id = timesheet.status_id
+            this.newTimesheet.client_service_id = timesheet.client_service_id
+            this.newTimesheet.text = timesheet.text
+            this.newTimesheet.allowable_bill = timesheet.allowable_bill
+            this.newTimesheet.contact_id = timesheet.contact_id
+            this.newTimesheet.pr_project_id = timesheet.pr_project_id
+            this.newTimesheet.pr_package_id = timesheet.pr_package_id
+            this.newTimesheet.tracking = {
+              type: "duration",
+              date: timesheet.date,
+              duration: timesheet.duration
+            }
+            this.selectedDate = timesheet.date
+            const duration = timesheet.duration.split(':')
+            this.selectedDuration = parseInt(duration[0]) + (parseInt(duration[1]) / 60)
+            this.availablePackages = await this.apiService.getPackagesForProject(this.newTimesheet.pr_project_id)
+          } catch (e) {
+            console.error('error', e)
+          }
+        }
+        this.updateSelectTexts()
       }
-      this.updateSelectTexts()
     })
+
   }
 
   private async updateSelectTexts() {
@@ -115,7 +134,7 @@ export class TimePage {
     if (filteredProjects.length > 0) {
       this.selectedProjectText = filteredProjects[0].name
       this.newTimesheet.contact_id = filteredProjects[0].contact_id
-      if(this.newTimesheet.pr_package_id){
+      if (this.newTimesheet.pr_package_id) {
         this.selectedPackageText = (await this.apiService.getPackageForProjectWithId(this.newTimesheet.pr_project_id, this.newTimesheet.pr_package_id)).name
       }
     }

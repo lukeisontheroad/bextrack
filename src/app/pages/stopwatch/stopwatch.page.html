@@ -1,0 +1,22 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>
+      {{ 'Stopwatch' | translate }}
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div>
+    <ion-grid>
+      <ion-row>
+        <h1>{{time}}</h1>
+      </ion-row>
+      <ion-row>
+        <ion-button *ngIf="!running && time == blankTime" (click)="start()">{{ 'Start' | translate }}</ion-button>
+        <ion-button *ngIf="running" (click)="stop()">{{ 'Stop' | translate }}</ion-button>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+</ion-content>

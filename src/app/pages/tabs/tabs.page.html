@@ -1,6 +1,17 @@
 <ion-tabs>
 
   <ion-tab-bar slot="bottom">
+
+    <ion-tab-button tab="dashboard">
+      <ion-icon name="stats-chart-outline"></ion-icon>
+      <ion-label>{{ 'Dashboard' | translate }}</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="stopwatch">
+      <ion-icon name="stopwatch-outline"></ion-icon>
+      <ion-label>{{ 'Stopwatch' | translate }}</ion-label>
+    </ion-tab-button>
+
     <ion-tab-button tab="times">
       <ion-icon name="timer-outline"></ion-icon>
       <ion-label>{{ 'Times' | translate }}</ion-label>

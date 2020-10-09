@@ -18,6 +18,24 @@ const routes: Routes = [
         ]
       },
       {
+        path: 'stopwatch',
+        children: [
+          {
+            path: '',
+            loadChildren: () =>
+              import('../stopwatch/stopwatch.module').then(m => m.StopwatchPageModule)
+          }]
+      },
+      {
+        path: 'dashboard',
+        children: [
+          {
+            path: '',
+            loadChildren: () =>
+              import('../dashboard/dashboard.module').then(m => m.DashboardPageModule)
+          }]
+      },
+      {
         path: 'projects',
         children: [
           {
@@ -55,4 +73,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class TabsPageRoutingModule {}
+export class TabsPageRoutingModule { }
