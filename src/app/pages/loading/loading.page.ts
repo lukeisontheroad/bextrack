@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
-import { AuthObserver, AuthService, IAuthAction } from 'ionic-appauth';
+import { AuthActions, AuthObserver, AuthService, IAuthAction } from 'ionic-appauth';
 import { ApiService } from 'src/app/services/api/api.service';
 
 @Component({
@@ -21,21 +21,20 @@ export class LoadingPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.observer = this.auth.addActionListener((action) => this.actionHandler(action));
     this.auth.loadTokenFromStorage().then(async value => {
-      if (this.auth.session.isAuthenticated) {
+      this.auth.getValidToken().then( async() => {
         await this.apiService.init()
-        console.log('go to tabs')
         this.navCtrl.navigateRoot('tabs')
-      } else {
+      }).catch(() => {
         this.auth.refreshToken().then(async value => {
           await this.apiService.init()
           this.navCtrl.navigateRoot('tabs')
         })
-      }
+      })
     })
   }
 
   actionHandler(action: IAuthAction) {
-    if (action.error) {
+    if (action.error && action.action != AuthActions.LoadUserInfoFailed) {
       this.navCtrl.navigateRoot('login');
     }
   }

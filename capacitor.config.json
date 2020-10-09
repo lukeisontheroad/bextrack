@@ -1,6 +1,6 @@
 {
-  "appId": "ch.papers.bexio",
-  "appName": "Timetracker",
+  "appId": "xyz.lukeisontheroad.bexio",
+  "appName": "Bexio Time",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "www",

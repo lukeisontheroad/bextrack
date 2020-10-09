@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Timetracker</string>
+	<string>Bexio Time</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -26,10 +26,10 @@
 			<key>CFBundleURLIconFile</key>
 			<string></string>
 			<key>CFBundleURLName</key>
-			<string>ch.papers.bexio</string>
+			<string>xyz.lukeisontheroad.bexio</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>ch.papers.bexio</string>
+				<string>xyz.lukeisontheroad.bexio</string>
 			</array>
 		</dict>
 	</array>

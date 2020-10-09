@@ -1,5 +1,5 @@
 {
-  "name": "timetracker",
+  "name": "bexio-timetracker",
   "integrations": {
     "capacitor": {}
   },

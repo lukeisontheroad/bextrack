@@ -1,8 +1,8 @@
 {
-  "name": "ionic-appauth-capacitor-demo",
-  "version": "0.0.1",
-  "author": "Ionic Framework",
-  "homepage": "https://ionicframework.com/",
+  "name": "bexio-timetracker",
+  "version": "1.0.0",
+  "author": "Lukas Schönbächler",
+  "homepage": "https://papers.ch/",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -30,6 +30,9 @@
     "@ngx-translate/http-loader": "^6.0.0",
     "@openid/appauth": "^1.2.8",
     "capacitor-secure-storage-plugin": "^0.4.0",
+    "cordova-plugin-badge": "^0.8.8",
+    "cordova-plugin-device": "^2.0.3",
+    "cordova-plugin-local-notification": "git+https://github.com/katzer/cordova-plugin-local-notifications.git",
     "ionic-appauth": "^0.6.8",
     "promise-all-properties": "^2.1.13",
     "raven-js": "^3.27.2",
@@ -61,5 +64,5 @@
     "tslint": "~6.1.0",
     "typescript": "~3.9.5"
   },
-  "description": "An Ionic project"
+  "description": "Finally Bexio on the Mobile"
 }

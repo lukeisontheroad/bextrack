@@ -1,4 +1,4 @@
-package ch.papers.bexio;
+package xyz.lukeisontheroad.bexio;
 
 import android.os.Bundle;
 

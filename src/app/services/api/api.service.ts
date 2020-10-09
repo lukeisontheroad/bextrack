@@ -21,14 +21,8 @@ export class ApiService {
   projectsUpdated = new EventEmitter();
 
   private limit = 300
-
-  // private proxy = 'https://cors-proxy.azure.prod.gke.papers.tech/'
-  private proxy = 'https://cors-proxy.bexio.prod.gke.papers.tech/'
-  //private corsProxy = this.proxy + 'proxy?url='
-  private corsProxy = 'https://cors-anywhere.herokuapp.com/'
-
+  private corsProxy = 'https://cors.lukeisontheroad.xyz/'
   private baseUrl = this.corsProxy + 'https://api.bexio.com/'
-  //private baseUrl = 'https://api.bexio.com/'
 
   private currentUser: User;
   private users: User[] = []

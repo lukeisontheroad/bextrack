@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-// import { CookieService } from 'ngx-cookie-service';
 import { AlertController, ToastController } from '@ionic/angular';
 import * as _ from 'lodash';
 import { Router } from '@angular/router';
@@ -7,8 +6,9 @@ import { ApiService } from 'src/app/services/api/api.service';
 import { Plugins } from '@capacitor/core';
 import { User } from 'src/app/models/user';
 import { AuthService } from 'ionic-appauth';
+import { TranslateService } from '@ngx-translate/core';
 const { LocalNotifications } = Plugins;
-
+declare var cordova: any;
 @Component({
   selector: 'app-settings',
   templateUrl: 'settings.page.html',
@@ -32,11 +32,10 @@ export class SettingsPage {
 
   constructor(
     private apiService: ApiService,
-    // private cookieService: CookieService,
-    private alertController: AlertController,
     private authService: AuthService,
+    private translateService: TranslateService,
     private toastController: ToastController,
-    private router: Router) {
+    ) {
 
     const weekdays = localStorage.getItem('weekdays')
     if (weekdays) {
@@ -59,11 +58,10 @@ export class SettingsPage {
   }
 
   notificationsChanged = _.debounce(async () => {
-
     localStorage.setItem('weekdays', JSON.stringify(this.weekdays))
     localStorage.setItem('time', this.time)
     let toast = await this.toastController.create({
-      message: 'Saved',
+      message: await this.translateService.get('Updated').toPromise(),
       duration: 1000,
       position: 'top'
     });
@@ -73,35 +71,40 @@ export class SettingsPage {
       return
     }
 
-    let date = new Date('01-01-1970 ' + this.time)
-    let hour = date.getHours()
-    let minute = date.getMinutes()
-    await LocalNotifications.removeAllListeners()
+    let hour = parseInt(this.time.split(':')[0])
+    let minute = parseInt(this.time.split(':')[1])
+
+    let pending = await LocalNotifications.getPending()
+    LocalNotifications.cancel(pending)
 
     let notifications = []
-    console.log('cancelAll')
-
+    var counter = 1;
+    const title = await this.translateService.get('Bexio Time').toPromise()
+    const text = await this.translateService.get('Did you track your time for today?').toPromise()
     for (let key of Object.keys(this.weekdays)) {
       if (this.weekdays[key]) {
         let weekday = parseInt(key.substring(1))
-        notifications.push({
-          title: 'Bexio Timetracker',
-          text: 'Did you track your time for today?',
-          foreground: false,
-          badge: 1,
-          number: 1,
-          wakeup: false,
-          trigger: { every: { weekday: weekday, hour: hour, minute: minute } },
-          actions: [
-            { id: 'yes', title: 'Track now', launch: true },
-          ]
-        });
+        notifications.push(
+          {
+            id: counter,
+            title: title,
+            text: text,
+            foreground: true,
+            trigger: {
+              every: {
+                weekday: weekday,
+                hour: hour,
+                minute: minute
+              }
+            }
+          }
+        );
+        counter++;
       }
     }
 
     if (notifications.length > 0) {
-      LocalNotifications.schedule({notifications: notifications});
+      cordova.plugins.notification.local.schedule(notifications);
     }
-
   }, 2000);
 }
