@@ -145,45 +145,54 @@ export class ApiService {
     })
   }
 
-  public async getTimesheets(user_id: number = -1): Promise<Timesheet[]> {
+  public getMyTimesheets(force=false): Promise<Timesheet[]>{
     return new Promise(async (resolve, reject) => {
-      const timesheets: Timesheet[] = []
-      if (user_id > -1) {
-        const filter = [
-          {
-            "field": "user_id",
-            "value": user_id,
-            "criteria": "="
-          }
-        ]
-        timesheets.push(...await await this.http.post<Timesheet[]>(this.baseUrl + '2.0/timesheet/search?order_by=date_desc&limit=50', filter).toPromise())
-      } else {
-        timesheets.push(...await this.http.get<Timesheet[]>(this.baseUrl + '2.0/timesheet?order_by=date_desc').toPromise())
-      }
-
-      for (var i = 0; i < timesheets.length; i++) {
-        timesheets[i].user = this.usersMap[timesheets[i].user_id]
-        timesheets[i].project = this.projectMap[timesheets[i].pr_project_id]
-        timesheets[i].package = this.cachedPackagesPackageId[timesheets[i].pr_package_id]
-      }
-      this.timesheets = timesheets
-      resolve(timesheets)
+      let user = await this.getUser()
+      resolve(await this.getTimesheets(user.id, force))
     })
   }
 
-  public async getTimesheetsWithPackages(): Promise<Timesheet[]> {
+  public async getTimesheets(user_id: number = -1, force = false): Promise<Timesheet[]> {
     return new Promise(async (resolve, reject) => {
-      const timesheets = await this.http.get<Timesheet[]>(this.baseUrl + '2.0/timesheet?order_by=date_desc').toPromise()
+      if (force || this.timesheets.length === 0) {
+        const timesheets: Timesheet[] = []
+        if (user_id > -1) {
+          const filter = [
+            {
+              "field": "user_id",
+              "value": user_id,
+              "criteria": "="
+            }
+          ]
+          timesheets.push(...await await this.http.post<Timesheet[]>(this.baseUrl + '2.0/timesheet/search?order_by=date_desc&limit=50', filter).toPromise())
+        } else {
+          timesheets.push(...await this.http.get<Timesheet[]>(this.baseUrl + '2.0/timesheet?order_by=date_desc').toPromise())
+        }
 
-      for (var i = 0; i < timesheets.length; i++) {
-        timesheets[i].user = this.usersMap[timesheets[i].user_id]
-        timesheets[i].project = this.projectMap[timesheets[i].pr_project_id]
-        timesheets[i].package = this.cachedPackagesPackageId[timesheets[i].pr_package_id]
-      }
-
-      resolve(timesheets)
+        for (var i = 0; i < timesheets.length; i++) {
+          timesheets[i].user = this.usersMap[timesheets[i].user_id]
+          timesheets[i].project = this.projectMap[timesheets[i].pr_project_id]
+          timesheets[i].package = this.cachedPackagesPackageId[timesheets[i].pr_package_id]
+        }
+        this.timesheets = timesheets
+      } 
+      resolve(this.timesheets)
     })
   }
+
+  // public async getTimesheetsWithPackages(): Promise<Timesheet[]> {
+  //   return new Promise(async (resolve, reject) => {
+  //     const timesheets = await this.http.get<Timesheet[]>(this.baseUrl + '2.0/timesheet?order_by=date_desc').toPromise()
+
+  //     for (var i = 0; i < timesheets.length; i++) {
+  //       timesheets[i].user = this.usersMap[timesheets[i].user_id]
+  //       timesheets[i].project = this.projectMap[timesheets[i].pr_project_id]
+  //       timesheets[i].package = this.cachedPackagesPackageId[timesheets[i].pr_package_id]
+  //     }
+
+  //     resolve(timesheets)
+  //   })
+  // }
 
   public getUsers(): Promise<any> {
     return new Promise(async (resolve, reject) => {

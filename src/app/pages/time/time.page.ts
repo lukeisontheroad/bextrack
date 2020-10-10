@@ -60,7 +60,6 @@ export class TimePage {
     private toastController: ToastController,
     private translateService: TranslateService
   ) {
-    console.log(this.newTimesheet)
     this.init()
   }
 

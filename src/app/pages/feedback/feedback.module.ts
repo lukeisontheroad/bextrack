@@ -1,11 +1,13 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
 import { IonicModule } from '@ionic/angular';
-import { DashboardPageRoutingModule } from './dashboard-routing.module';
-import { DashboardPage } from './dashboard.page';
+
+import { FeedbackPageRoutingModule } from './feedback-routing.module';
+
+import { FeedbackPage } from './feedback.page';
 import { TranslateModule } from '@ngx-translate/core';
-import { NgxChartsModule } from '@swimlane/ngx-charts';
 
 @NgModule({
   imports: [
@@ -13,9 +15,8 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
     FormsModule,
     IonicModule,
     TranslateModule,
-    NgxChartsModule,
-    DashboardPageRoutingModule
+    FeedbackPageRoutingModule
   ],
-  declarations: [DashboardPage]
+  declarations: [FeedbackPage]
 })
-export class DashboardPageModule {}
+export class FeedbackPageModule {}

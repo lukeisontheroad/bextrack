@@ -32,15 +32,14 @@ export class StopwatchPage {
     this.init()
   }
 
-  async init(){
+  async init() {
     this.timeBegan = localStorage.getItem('stopwatch_start') ? new Date(localStorage.getItem('stopwatch_start')) : null
     this.timeStopped = localStorage.getItem('stopwatch_stop') ? new Date(localStorage.getItem('stopwatch_stop')) : null
     this.running = localStorage.getItem('stopwatch_running') == 'true'
     if (this.running) {
       this.started = setInterval(this.clockRunning.bind(this), this.refreshRate);
-    } else {
-      this.clockRunning()
-    }
+    }       
+    this.clockRunning()
 
     if (!(await LocalNotifications.requestPermission())) {
       return
@@ -64,18 +63,25 @@ export class StopwatchPage {
     localStorage.setItem('stopwatch_start', this.timeBegan)
     localStorage.removeItem('stopwatch')
 
-    cordova.plugins.notification.local.schedule(
-      {
-        id: this.notificationId,
-        title: await this.translateService.get('Bexio Time').toPromise(),
-        text: await this.translateService.get('Timewatch is running...').toPromise(),
-        sticky: true
-      }
-    );
-
+    try {
+      cordova.plugins.notification.local.schedule(
+        {
+          id: this.notificationId,
+          title: await this.translateService.get('Bexio Time').toPromise(),
+          text: await this.translateService.get('Timewatch is running...').toPromise(),
+          sticky: true,
+          ongoing: true,
+          autoClear: false
+        }
+      );
+    } catch (ReferenceError) {
+    }
   }
   async stop() {
-    cordova.plugins.notification.local.cancel(this.notificationId)
+    try {
+      cordova.plugins.notification.local.cancel(this.notificationId)
+    } catch (ReferenceError) {
+    }
 
     this.running = false;
     this.timeStopped = new Date();
@@ -83,9 +89,9 @@ export class StopwatchPage {
     localStorage.setItem('stopwatch_stop', new Date() + '')
     clearInterval(this.started);
     let duration = new Date(this.timeStopped - this.timeBegan).getSeconds()
-    if(duration >= 900){
+    if (duration >= 900) {
       this.router.navigate(['create-time-stopwatch', duration])
-    }else{
+    } else {
       let toast = await this.toastController.create({
         message: await this.translateService.get('Duration below minimum tracking time of 15min').toPromise(),
         duration: 3000,

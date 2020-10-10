@@ -47,11 +47,16 @@ const routes: Routes = [
     loadChildren: () => import('./pages/loading/loading.module').then(m => m.LoadingPageModule)
   },
   {
+    path: 'feedback',
+    loadChildren: () => import('./pages/feedback/feedback.module').then( m => m.FeedbackPageModule)
+  },
+  {
     path: '**',
     pathMatch: 'full',
     // canActivate: [AuthGuardService],
     redirectTo: 'loading',
   },
+
 ];
 
 @NgModule({

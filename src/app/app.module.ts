@@ -11,6 +11,8 @@ import { CoreModule } from './core/core.module';
 import { AuthInterceptor } from './services/http-intercetor/http-interceptor.service';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, "./assets/i18n/", ".json");
@@ -24,6 +26,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     IonicModule.forRoot(),
     HttpClientModule,
     AppRoutingModule,
+    NgxChartsModule,
+    BrowserAnimationsModule,
     CoreModule,
     TranslateModule.forRoot({
       loader: {

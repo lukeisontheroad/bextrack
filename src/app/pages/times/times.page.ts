@@ -30,9 +30,8 @@ export class TimesPage {
     this.loading = true
     var groupedTimes = []
 
-    let user = await this.apiService.getUser()
-    this.times = (await this.apiService.getTimesheets(user.id)) //.filter(i => i.user_id === user.id)
-
+    this.times = await this.apiService.getMyTimesheets(true)
+    
     var groupedTimesMap = {}
     for (let time of this.times) {
       if (!groupedTimesMap[time.date]) {
