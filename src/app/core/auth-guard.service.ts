@@ -15,7 +15,6 @@ export class AuthGuardService implements CanActivate {
 
   public async canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
     if (!this.auth.session.isAuthenticated) {
-      console.log('blaa', this.auth.session)
       this.navCtrl.navigateRoot('loading');
     }
     return this.auth.session.isAuthenticated;

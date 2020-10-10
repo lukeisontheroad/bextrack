@@ -51,6 +51,14 @@ const routes: Routes = [
     loadChildren: () => import('./pages/feedback/feedback.module').then( m => m.FeedbackPageModule)
   },
   {
+    path: 'about',
+    loadChildren: () => import('./pages/about/about.module').then( m => m.AboutPageModule)
+  },
+  {
+    path: 'notification-settings',
+    loadChildren: () => import('./pages/notification-settings/notification-settings.module').then( m => m.NotificationSettingsPageModule)
+  },
+  {
     path: '**',
     pathMatch: 'full',
     // canActivate: [AuthGuardService],
