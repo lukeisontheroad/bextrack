@@ -88,7 +88,8 @@ export class StopwatchPage {
     localStorage.setItem('stopwatch_running', this.running + '')
     localStorage.setItem('stopwatch_stop', new Date() + '')
     clearInterval(this.started);
-    let duration = new Date(this.timeStopped - this.timeBegan).getSeconds()
+    let durationSpan = new Date(this.timeStopped - this.timeBegan)
+    let duration = durationSpan.getHours() * 60 * 60 + durationSpan.getMinutes() * 60 + durationSpan.getSeconds()
     if (duration >= 900) {
       this.router.navigate(['create-time-stopwatch', duration])
     } else {

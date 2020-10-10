@@ -13,8 +13,8 @@
       <ion-col size="6">
         <ion-card>
           <ion-card-header>
-            <ion-card-subtitle>7 days</ion-card-subtitle>
-            <ion-card-title>Hours</ion-card-title>
+            <ion-card-subtitle>{{ '7 days' | translate }}</ion-card-subtitle>
+            <ion-card-title>{{ 'Hours' | translate }}</ion-card-title>
           </ion-card-header>
           <ion-card-content>
             <h1>{{ totalHoursLastWeek }}</h1>
@@ -24,8 +24,8 @@
       <ion-col size="6">
         <ion-card>
           <ion-card-header>
-            <ion-card-subtitle>7 days</ion-card-subtitle>
-            <ion-card-title>Chargeability</ion-card-title>
+            <ion-card-subtitle>{{ '7 days' | translate }}</ion-card-subtitle>
+            <ion-card-title>{{ 'Billable' | translate }}</ion-card-title>
           </ion-card-header>
           <ion-card-content>
             <h1>{{ chargeabilityLastWeek | number:'1.0-0' }}%</h1>
@@ -36,8 +36,8 @@
       <ion-col size="6">
         <ion-card>
           <ion-card-header>
-            <ion-card-subtitle>30 days</ion-card-subtitle>
-            <ion-card-title>Hours</ion-card-title>
+            <ion-card-subtitle>{{ '30 days' | translate }}</ion-card-subtitle>
+            <ion-card-title>{{ 'Hours' | translate }}</ion-card-title>
           </ion-card-header>
           <ion-card-content>
             <h1>{{ totalHoursLastMonth }}</h1>
@@ -47,8 +47,8 @@
       <ion-col size="6">
         <ion-card>
           <ion-card-header>
-            <ion-card-subtitle>30 days</ion-card-subtitle>
-            <ion-card-title>Chargeability</ion-card-title>
+            <ion-card-subtitle>{{ '30 days' | translate }}</ion-card-subtitle>
+            <ion-card-title>{{ 'Billable' | translate }}</ion-card-title>
           </ion-card-header>
           <ion-card-content>
             <h1>{{ chargeabilityLastMonth | number:'1.0-0' }}%</h1>
@@ -60,7 +60,7 @@
       <ion-col size="12">
         <ion-card>
           <ion-card-header>
-            <ion-card-title>Time by project</ion-card-title>
+            <ion-card-title>{{ 'Hours by Project' | translate }}</ion-card-title>
           </ion-card-header>
           <ion-card-content>
             <div id="pie-chart-parent">
