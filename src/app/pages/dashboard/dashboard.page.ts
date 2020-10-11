@@ -29,13 +29,13 @@ export class DashboardPage implements OnInit {
 
   // options
   gradient: boolean = false;
-  showLegend: boolean = false;
-  showLabels: boolean = true;
-  isDoughnut: boolean = true;
-  legendPosition: string = 'below';
+  showLegend: boolean = true;
+  showLabels: boolean = false;
+  isDoughnut: boolean = false;
+  legendPosition: string = 'left';
 
   colorScheme = {
-    domain: ['#5AA454', '#E44D25', '#CFC0BB', '#7aa3e5', '#a8385d', '#aae3f5']
+    domain: ['#093948', '#A2C003', '#0085BA', '#DCC521', '#DB7C00', '#C81919']
   };
 
   private projects:any  = {}
