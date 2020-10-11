@@ -28,6 +28,30 @@
 
   <ion-list>
     <ion-list-header>{{ 'Settings' | translate }}</ion-list-header>
+    <ion-item>
+      <ion-label position="stacked">{{ 'Default status' | translate }}</ion-label>
+      <ion-select [(ngModel)]="lastUsedStatus" (ionChange)="notificationsChanged()">
+        <ion-select-option value="-2">{{ 'None' | translate }}</ion-select-option>
+        <ion-select-option value="-1">{{ 'Last used' | translate }}</ion-select-option>
+        <ion-select-option *ngFor="let stati of status" value="{{ stati.id }}">{{ stati.name }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">{{ 'Default service' | translate }}</ion-label>
+      <ion-select [(ngModel)]="lastUsedService" (ionChange)="notificationsChanged()">
+        <ion-select-option value="-2">{{ 'None' | translate }}</ion-select-option>
+        <ion-select-option value="-1">{{ 'Last used' | translate }}</ion-select-option>
+        <ion-select-option *ngFor="let service of services" value="{{ service.id }}">{{ service.name }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">{{ 'Default project' | translate }}</ion-label>
+      <ion-select [(ngModel)]="lastUsedProject" (ionChange)="notificationsChanged()">
+        <ion-select-option value="-2">{{ 'None' | translate }}</ion-select-option>
+        <ion-select-option value="-1">{{ 'Last used' | translate }}</ion-select-option>
+        <ion-select-option *ngFor="let project of projects" value="{{ project.id }}">{{ project.name }}</ion-select-option>
+      </ion-select>
+    </ion-item>
     <ion-item routerLink="/notification-settings">
       <ion-label>{{ 'Notifications' | translate }}</ion-label>
     </ion-item>

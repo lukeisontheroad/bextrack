@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { TimesheetStatus } from '../../models/timsheet_status';
 import { Project } from 'src/app/models/project';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -9,6 +9,7 @@ import { DatePipe } from '@angular/common';
 import { ToastController, AlertController } from '@ionic/angular';
 import { ApiService } from 'src/app/services/api/api.service';
 import { TranslateService } from '@ngx-translate/core';
+import { Timesheet } from 'src/app/models/timesheet';
 
 @Component({
   selector: 'app-time',
@@ -63,6 +64,7 @@ export class TimePage {
     this.init()
   }
 
+
   pad(num, size) {
     let s = num + "";
     while (s.length < size) s = "0" + s;
@@ -76,6 +78,22 @@ export class TimePage {
     this.projects = await this.apiService.getProjects()
     this.clientServices = await this.apiService.getClientService()
     this.timesheetStatus = await this.apiService.getTimesheetStatus()
+
+    let lastUsedService = parseInt(localStorage.getItem('lastUsedService'))
+    if(!isNaN(lastUsedService) && lastUsedService != -2){
+      this.newTimesheet.client_service_id = parseInt(localStorage.getItem('lastUsedServiceId'))
+    }
+
+    let lastUsedStatus = parseInt(localStorage.getItem('lastUsedStatus'))
+    if(!isNaN(lastUsedStatus) && lastUsedStatus != -2){
+      this.newTimesheet.status_id = parseInt(localStorage.getItem('lastUsedStatusId'))
+    }
+
+    let lastUsedProject = parseInt(localStorage.getItem('lastUsedProject'))
+    if(!isNaN(lastUsedProject) && lastUsedProject != -2){
+      this.newTimesheet.pr_project_id = parseInt(localStorage.getItem('lastUsedProjectId'))
+      this.availablePackages = await this.apiService.getPackagesForProject(this.newTimesheet.pr_project_id)
+    }
 
     this.route.params.subscribe(async params => {
       if (this.router.url.startsWith('/create-time-stopwatch')) {
@@ -143,14 +161,6 @@ export class TimePage {
     this.availablePackages = await this.apiService.getPackagesForProject(this.newTimesheet.pr_project_id)
   }
 
-  onClientServiceSelected() {
-    localStorage.setItem('client_service_id', JSON.stringify(this.newTimesheet.client_service_id))
-  }
-
-  onStatusSelected() {
-    localStorage.setItem('status_id', JSON.stringify(this.newTimesheet.status_id))
-  }
-
   save() {
     if (this.isUpdate) {
       this.update()
@@ -178,12 +188,23 @@ export class TimePage {
     return true
   }
 
+  storeLastUsed(timesheet: Timesheet){
+    if(localStorage.getItem('lastUsedService') == null){
+      // data was not initialized
+      localStorage.setItem('lastUsedService', '-1')
+      localStorage.setItem('lastUsedStatus', '-1')
+      localStorage.setItem('lastUsedProject', '-2')
+    }
+    if(localStorage.getItem('lastUsedService') === '-1') localStorage.setItem('lastUsedServiceId', timesheet.client_service_id + '')
+    if(localStorage.getItem('lastUsedStatus') === '-1') localStorage.setItem('lastUsedStatusId', timesheet.status_id + '')
+    if(localStorage.getItem('lastUsedProject') === '-1') localStorage.setItem('lastUsedProjectId', timesheet.pr_project_id + '')
+  }
+
   async update() {
     if (!this.validateTime()) return
-
-    console.log(this.newTimesheet)
     delete this.newTimesheet.tracking.type
     this.apiService.putTimesheet(this.newTimesheet).then(async response => {
+      this.storeLastUsed(response)
       let toast = await this.toastCtrl.create({
         message: await this.translateService.get('Updated').toPromise(),
         duration: 3000,
@@ -204,9 +225,9 @@ export class TimePage {
 
   async create() {
     if (!this.validateTime()) return
-
     delete this.newTimesheet.id
     this.apiService.postTimesheet(this.newTimesheet).then(async response => {
+      this.storeLastUsed(response)
       let toast = await this.toastCtrl.create({
         message: 'Created',
         duration: 3000,
