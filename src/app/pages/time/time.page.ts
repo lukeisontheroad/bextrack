@@ -188,6 +188,9 @@ export class TimePage {
       localStorage.setItem('lastUsedService', DEFAULTS.SERVICE_ID)
       localStorage.setItem('lastUsedStatus', DEFAULTS.STATUS_ID)
       localStorage.setItem('lastUsedProject', DEFAULTS.PROJECT_ID)
+      localStorage.setItem('duration', '1')
+      localStorage.setItem('steps', '0.25')
+      localStorage.setItem('hoursPerDay', '8')
     }
     if (localStorage.getItem('lastUsedService') === TYPES.LAST_USED) localStorage.setItem('lastUsedServiceId', timesheet.client_service_id + '')
     if (localStorage.getItem('lastUsedStatus') === TYPES.LAST_USED) localStorage.setItem('lastUsedStatusId', timesheet.status_id + '')

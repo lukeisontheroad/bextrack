@@ -90,7 +90,8 @@ export class StopwatchPage {
     clearInterval(this.started);
     let durationSpan = new Date(this.timeStopped - this.timeBegan)
     let duration = durationSpan.getHours() * 60 * 60 + durationSpan.getMinutes() * 60 + durationSpan.getSeconds()
-    if (duration >= 900) {
+    let minTime = parseFloat(localStorage.getItem('steps'))*60*60
+    if (duration >= minTime) {
       this.router.navigate(['create-time-stopwatch', duration])
     } else {
       this.utils.showToast('Duration below minimum tracking time of 15min')
