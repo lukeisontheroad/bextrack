@@ -32,7 +32,7 @@ export class DashboardPage implements OnInit {
   showLegend: boolean = true;
   showLabels: boolean = false;
   isDoughnut: boolean = false;
-  legendPosition: string = 'left';
+  legendPosition: string = 'bottom';
 
   colorScheme = {
     domain: ['#093948', '#A2C003', '#0085BA', '#DCC521', '#DB7C00', '#C81919']

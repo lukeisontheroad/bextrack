@@ -6,10 +6,10 @@ import { ClientService } from 'src/app/models/client_service';
 import { Package } from 'src/app/models/package';
 import { ToDurationPipe } from 'src/app/pipes/to-duration.pipe';
 import { DatePipe } from '@angular/common';
-import { ToastController, AlertController } from '@ionic/angular';
 import { ApiService } from 'src/app/services/api/api.service';
-import { TranslateService } from '@ngx-translate/core';
 import { Timesheet } from 'src/app/models/timesheet';
+import { DEFAULTS, TYPES } from 'src/app/models/constants';
+import { UtilsService } from 'src/app/services/utils/utils.service';
 
 @Component({
   selector: 'app-time',
@@ -43,7 +43,7 @@ export class TimePage {
     //pr_milestone_id: null,
     tracking: {
       "type": "duration",
-      "date": this.today.getFullYear() + '-' + this.pad((this.today.getMonth() + 1), 2) + '-' + this.pad(this.today.getDate(), 2),
+      "date": this.today.getFullYear() + '-' + this.utils.pad((this.today.getMonth() + 1)) + '-' + this.utils.pad(this.today.getDate()),
       "duration": "01:00"
     }
   }
@@ -52,23 +52,15 @@ export class TimePage {
   public clientServices: ClientService[] = []
   public timesheetStatus: TimesheetStatus[] = []
 
+  public steps = 1
+
   constructor(
     private apiService: ApiService,
-    private toastCtrl: ToastController,
     private router: Router,
     private route: ActivatedRoute,
-    private alertController: AlertController,
-    private toastController: ToastController,
-    private translateService: TranslateService
+    private utils: UtilsService
   ) {
     this.init()
-  }
-
-
-  pad(num, size) {
-    let s = num + "";
-    while (s.length < size) s = "0" + s;
-    return s;
   }
 
   private async init() {
@@ -79,18 +71,25 @@ export class TimePage {
     this.clientServices = await this.apiService.getClientService()
     this.timesheetStatus = await this.apiService.getTimesheetStatus()
 
+    // Load default duration
+    this.newTimesheet.tracking.duration = new ToDurationPipe(this.utils).transform(localStorage.getItem('duration'))
+    this.selectedDuration = parseFloat(localStorage.getItem('duration'))
+
+    // Load steps
+    this.steps = parseInt(localStorage.getItem('steps')) / 60
+
     let lastUsedService = parseInt(localStorage.getItem('lastUsedService'))
-    if(!isNaN(lastUsedService) && lastUsedService != -2){
+    if (!isNaN(lastUsedService) && lastUsedService != -2) {
       this.newTimesheet.client_service_id = parseInt(localStorage.getItem('lastUsedServiceId'))
     }
 
     let lastUsedStatus = parseInt(localStorage.getItem('lastUsedStatus'))
-    if(!isNaN(lastUsedStatus) && lastUsedStatus != -2){
+    if (!isNaN(lastUsedStatus) && lastUsedStatus != -2) {
       this.newTimesheet.status_id = parseInt(localStorage.getItem('lastUsedStatusId'))
     }
 
     let lastUsedProject = parseInt(localStorage.getItem('lastUsedProject'))
-    if(!isNaN(lastUsedProject) && lastUsedProject != -2){
+    if (!isNaN(lastUsedProject) && lastUsedProject != -2) {
       this.newTimesheet.pr_project_id = parseInt(localStorage.getItem('lastUsedProjectId'))
       this.availablePackages = await this.apiService.getPackagesForProject(this.newTimesheet.pr_project_id)
     }
@@ -102,7 +101,7 @@ export class TimePage {
           var hours = Math.floor(seconds / 60 / 60);
           var minutes = Math.floor(seconds / 60) - (hours * 60);
           this.selectedDuration = hours + (minutes / 60)
-          this.newTimesheet.tracking.duration = new ToDurationPipe().transform(this.selectedDuration)
+          this.newTimesheet.tracking.duration = new ToDurationPipe(this.utils).transform(this.selectedDuration)
         }
       } else {
         if (params['project_id']) {
@@ -175,29 +174,24 @@ export class TimePage {
       !this.newTimesheet.status_id ||
       !this.newTimesheet.text ||
       this.newTimesheet.text.length < 1) {
-      let toast = await this.toastCtrl.create({
-        message: await this.translateService.get('Missing information').toPromise(),
-        duration: 3000,
-        position: 'top'
-      });
-      toast.present()
+      this.utils.showToast('Missing information')
       return false;
     }
-    this.newTimesheet.tracking.duration = new ToDurationPipe().transform(this.selectedDuration)
+    this.newTimesheet.tracking.duration = new ToDurationPipe(this.utils).transform(this.selectedDuration)
     this.newTimesheet.tracking.date = new DatePipe('en-US').transform(this.selectedDate, 'yyyy-MM-dd');
     return true
   }
 
-  storeLastUsed(timesheet: Timesheet){
-    if(localStorage.getItem('lastUsedService') == null){
+  storeLastUsed(timesheet: Timesheet) {
+    if (localStorage.getItem('lastUsedService') == null) {
       // data was not initialized
-      localStorage.setItem('lastUsedService', '-1')
-      localStorage.setItem('lastUsedStatus', '-1')
-      localStorage.setItem('lastUsedProject', '-2')
+      localStorage.setItem('lastUsedService', DEFAULTS.SERVICE_ID)
+      localStorage.setItem('lastUsedStatus', DEFAULTS.STATUS_ID)
+      localStorage.setItem('lastUsedProject', DEFAULTS.PROJECT_ID)
     }
-    if(localStorage.getItem('lastUsedService') === '-1') localStorage.setItem('lastUsedServiceId', timesheet.client_service_id + '')
-    if(localStorage.getItem('lastUsedStatus') === '-1') localStorage.setItem('lastUsedStatusId', timesheet.status_id + '')
-    if(localStorage.getItem('lastUsedProject') === '-1') localStorage.setItem('lastUsedProjectId', timesheet.pr_project_id + '')
+    if (localStorage.getItem('lastUsedService') === TYPES.LAST_USED) localStorage.setItem('lastUsedServiceId', timesheet.client_service_id + '')
+    if (localStorage.getItem('lastUsedStatus') === TYPES.LAST_USED) localStorage.setItem('lastUsedStatusId', timesheet.status_id + '')
+    if (localStorage.getItem('lastUsedProject') === TYPES.LAST_USED) localStorage.setItem('lastUsedProjectId', timesheet.pr_project_id + '')
   }
 
   async update() {
@@ -205,20 +199,10 @@ export class TimePage {
     delete this.newTimesheet.tracking.type
     this.apiService.putTimesheet(this.newTimesheet).then(async response => {
       this.storeLastUsed(response)
-      let toast = await this.toastCtrl.create({
-        message: await this.translateService.get('Updated').toPromise(),
-        duration: 3000,
-        position: 'top'
-      });
-      toast.present()
+      this.utils.showToast('Updated')
       this.router.navigateByUrl('tabs', { skipLocationChange: true });
     }).catch(async reason => {
-      let toast = await this.toastCtrl.create({
-        message: 'Failed: ' + reason.message,
-        duration: 3000,
-        position: 'top'
-      });
-      toast.present()
+      this.utils.showToast('Failed: ' + reason.message)
     })
   }
 
@@ -228,50 +212,18 @@ export class TimePage {
     delete this.newTimesheet.id
     this.apiService.postTimesheet(this.newTimesheet).then(async response => {
       this.storeLastUsed(response)
-      let toast = await this.toastCtrl.create({
-        message: 'Created',
-        duration: 3000,
-        position: 'top'
-      });
-      toast.present()
+      this.utils.showToast('Created')
       this.router.navigateByUrl('tabs', { skipLocationChange: true });
     }).catch(async reason => {
-      let toast = await this.toastCtrl.create({
-        message: 'Failed: ' + reason.message,
-        duration: 3000,
-        position: 'top'
-      });
-      toast.present()
+      this.utils.showToast('Failed: ' + reason.message)
     })
   }
 
   async delete() {
-    const alert = await this.alertController.create({
-      header: 'Delete time entry',
-      message: 'Are you sure?',
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          cssClass: 'secondary',
-          handler: () => {
-          }
-        }, {
-          text: 'Delete',
-          cssClass: 'danger',
-          handler: async () => {
-            await this.apiService.deleteTimesheet(this.newTimesheet)
-            let toast = await this.toastController.create({
-              message: 'Deleted',
-              duration: 3000,
-              position: 'top'
-            });
-            toast.present()
-            this.router.navigateByUrl('/tabs/times')
-          }
-        }
-      ]
-    });
-    await alert.present();
+    if (await this.utils.confirm('Delete time entry', 'Are you sure?')) {
+      await this.apiService.deleteTimesheet(this.newTimesheet)
+      this.utils.showToast('Deleted')
+      this.router.navigateByUrl('/tabs/times')
+    }
   }
 }

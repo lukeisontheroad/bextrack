@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { Plugins } from '@capacitor/core';
-import { ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
+import { UtilsService } from 'src/app/services/utils/utils.service';
 const { LocalNotifications } = Plugins;
 declare var cordova: any;
 
@@ -26,8 +26,8 @@ export class NotificationSettingsPage {
   }
 
   constructor(
+    private utils: UtilsService,
     private translateService: TranslateService,
-    private toastController: ToastController,
   ) {
     const weekdays = localStorage.getItem('weekdays')
     if (weekdays) {
@@ -43,12 +43,7 @@ export class NotificationSettingsPage {
   notificationsChanged = _.debounce(async () => {
     localStorage.setItem('weekdays', JSON.stringify(this.weekdays))
     localStorage.setItem('time', this.time)
-    let toast = await this.toastController.create({
-      message: await this.translateService.get('Updated').toPromise(),
-      duration: 1000,
-      position: 'top'
-    });
-    toast.present()
+    this.utils.showToast('Updated')
 
     if (!(await LocalNotifications.requestPermission())) {
       return

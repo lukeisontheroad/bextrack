@@ -1,21 +1,19 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Plugins } from '@capacitor/core';
+import { UtilsService } from '../services/utils/utils.service';
 
 @Pipe({
   name: 'toDuration'
 })
 export class ToDurationPipe implements PipeTransform {
 
+  constructor(
+    private utils: UtilsService
+  ) { }
+
   transform(value: any, ...args: any[]): any {
     const hours = Math.trunc(value)
     const minutes = Math.trunc((value - hours) * 60)
-    return this.pad(hours, 2) + ':' + this.pad(minutes, 2);
-  }
-
-  pad(num, size) {
-    let s = num + "";
-    while (s.length < size) s = "0" + s;
-    return s;
+    return this.utils.pad(hours) + ':' + this.utils.pad(minutes);
   }
 
 }

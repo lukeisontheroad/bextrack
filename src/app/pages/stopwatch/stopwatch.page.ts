@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Plugins } from '@capacitor/core';
+import { UtilsService } from 'src/app/services/utils/utils.service';
 const { LocalNotifications } = Plugins;
 declare var cordova: any;
 
@@ -26,8 +26,8 @@ export class StopwatchPage {
 
   constructor(
     private router: Router,
-    private toastController: ToastController,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private utils: UtilsService
   ) {
     this.init()
   }
@@ -93,12 +93,8 @@ export class StopwatchPage {
     if (duration >= 900) {
       this.router.navigate(['create-time-stopwatch', duration])
     } else {
-      let toast = await this.toastController.create({
-        message: await this.translateService.get('Duration below minimum tracking time of 15min').toPromise(),
-        duration: 3000,
-        position: 'top'
-      });
-      toast.present()
+      this.utils.showToast('Duration below minimum tracking time of 15min')
+
     }
     this.reset()
   }
@@ -116,12 +112,6 @@ export class StopwatchPage {
     this.time = this.blankTime;
   }
 
-  pad(num, size) {
-    let s = num + "";
-    while (s.length < size) s = "0" + s;
-    return s;
-  }
-
   clockRunning() {
     let currentTime: any = new Date()
     var timeElapsed: any = new Date(currentTime - this.timeBegan - this.stoppedDuration)
@@ -132,8 +122,8 @@ export class StopwatchPage {
     let min = timeElapsed.getUTCMinutes()
     let sec = timeElapsed.getUTCSeconds()
     this.time =
-      this.pad(hour, 2) + ":" +
-      this.pad(min, 2) + ":" +
-      this.pad(sec, 2)
+      this.utils.pad(hour) + ":" +
+      this.utils.pad(min) + ":" +
+      this.utils.pad(sec)
   };
 }

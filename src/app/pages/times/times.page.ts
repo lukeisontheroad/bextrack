@@ -1,8 +1,8 @@
 import { Component, ViewChild } from '@angular/core';
 import { Timesheet } from 'src/app/models/timesheet';
-import { AlertController, ToastController, IonList } from '@ionic/angular';
+import { IonList } from '@ionic/angular';
 import { ApiService } from 'src/app/services/api/api.service';
-
+import { UtilsService } from 'src/app/services/utils/utils.service';
 
 @Component({
   selector: 'app-times',
@@ -16,12 +16,12 @@ export class TimesPage {
   public skeletons = new Array(10);
   public loading = true;
 
-  @ViewChild(IonList, {static: true}) list: IonList;
+  @ViewChild(IonList, { static: true }) list: IonList;
 
   constructor(
     private apiService: ApiService,
-    private alertController: AlertController,
-    private toastController: ToastController) {
+    private utils: UtilsService
+  ) {
     this.doRefresh();
     this.apiService.timeUpdated.subscribe(() => this.doRefresh())
   }
@@ -31,7 +31,7 @@ export class TimesPage {
     var groupedTimes = []
 
     this.times = await this.apiService.getMyTimesheets(true)
-    
+
     var groupedTimesMap = {}
     for (let time of this.times) {
       if (!groupedTimesMap[time.date]) {
@@ -55,34 +55,13 @@ export class TimesPage {
   }
 
   async delete(timesheet: Timesheet) {
-    const alert = await this.alertController.create({
-      header: 'Are you sure?',
-      message: 'Delete ' + timesheet.date + ' ' + timesheet.duration + ' ' + timesheet.text,
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          cssClass: 'secondary',
-          handler: () => {
-            this.list.closeSlidingItems()
-          }
-        }, {
-          text: 'Delete',
-          cssClass: 'danger',
-          handler: async () => {
-            await this.apiService.deleteTimesheet(timesheet)
-            let toast = await this.toastController.create({
-              message: 'Deleted',
-              duration: 3000,
-              position: 'top'
-            });
-            toast.present()
-            this.doRefresh()
-          }
-        }
-      ]
-    });
-    await alert.present();
+    if (this.utils.confirm('Are you sure?', 'Delete ' + timesheet.date + ' ' + timesheet.duration + ' ' + timesheet.text,)) {
+      await this.apiService.deleteTimesheet(timesheet)
+      this.utils.showToast('Deleted')
+      this.doRefresh()
+    } else {
+      this.list.closeSlidingItems()
+    }
   }
 
 }
