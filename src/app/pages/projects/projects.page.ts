@@ -1,6 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
+import { IonList } from '@ionic/angular';
+import { DEFAULTS, STORAGE } from 'src/app/models/constants';
 import { Project } from 'src/app/models/project';
 import { ApiService } from 'src/app/services/api/api.service';
+import { StorageService } from 'src/app/services/storage/storage.service';
 
 @Component({
   selector: 'app-projects',
@@ -9,21 +12,24 @@ import { ApiService } from 'src/app/services/api/api.service';
 })
 export class ProjectsPage {
 
+  @ViewChild(IonList, { static: true }) list: IonList;
+
   public projects: Project[] = []
   private allProjects: Project[] = []
   
   public showOnlyFavorites = false
   public favorites = []
 
-  constructor(private apiService: ApiService) {
-    if(localStorage.getItem('favorites')){
-      this.favorites = JSON.parse(localStorage.getItem('favorites'))
-    }
+  constructor(
+    private apiService: ApiService,
+    private storage: StorageService
+    ) {
+      this.init()
+  }
 
-    if(localStorage.getItem('showOnlyFavorites')){
-      this.showOnlyFavorites = JSON.parse(localStorage.getItem('showOnlyFavorites'))
-    }
-
+  private async init(){
+    this.showOnlyFavorites = await this.storage.getBoolean(STORAGE.PROJECTS_SHOW_FAVORITES, DEFAULTS.SHOW_FAVORITES)
+    this.favorites = JSON.parse(await this.storage.getString(STORAGE.PROJECTS_FAVORITES, JSON.stringify(DEFAULTS.FAVORITES)))
     this.doRefresh();
     this.apiService.projectsUpdated.subscribe(() => this.doRefresh())
   }
@@ -37,9 +43,9 @@ export class ProjectsPage {
     }
   }
 
-  public toggleFavorites(){
+  public async toggleFavorites(){
     this.showOnlyFavorites = !this.showOnlyFavorites;
-    localStorage.setItem('showOnlyFavorites', JSON.stringify(this.showOnlyFavorites))
+    await this.storage.setItem(STORAGE.PROJECTS_SHOW_FAVORITES, this.showOnlyFavorites)
     this.setActiveList()
   }
 
@@ -57,7 +63,9 @@ export class ProjectsPage {
     }else{
       this.favorites = this.favorites.filter(obj => obj !== id);
     }
-    localStorage.setItem('favorites', JSON.stringify(this.favorites))
+    this.storage.setItem(STORAGE.PROJECTS_FAVORITES, JSON.stringify(this.favorites))
+    this.list.closeSlidingItems()
+    this.doRefresh()
   }
 
 }

@@ -22,15 +22,15 @@ export class TimesPage {
     private apiService: ApiService,
     private utils: UtilsService
   ) {
-    this.doRefresh();
-    this.apiService.timeUpdated.subscribe(() => this.doRefresh())
+    this.doRefresh(null, true);
+    this.apiService.timesUpdated.subscribe(() => this.doRefresh())
   }
 
-  public async doRefresh(event?: any) {
+  public async doRefresh(event?: any, force = false) {
     this.loading = true
     var groupedTimes = []
 
-    this.times = await this.apiService.getMyTimesheets(true)
+    this.times = await this.apiService.getMyTimesheets(force)
 
     var groupedTimesMap = {}
     for (let time of this.times) {
@@ -41,7 +41,7 @@ export class TimesPage {
     }
 
     for (let key of Object.keys(groupedTimesMap)) {
-      const total = groupedTimesMap[key].map(i => parseInt(i.duration) + parseInt(i.duration.split(':')[1]) / 60).reduce((i, j) => i + j)
+      const total = groupedTimesMap[key].map(i => this.utils.parseDuration(i.duration)).reduce((i, j) => i + j)
       groupedTimes.push({ date: groupedTimesMap[key][0].date, times: groupedTimesMap[key], total: total })
     }
     this.groupedTimes = groupedTimes;
@@ -49,13 +49,11 @@ export class TimesPage {
     if (event) {
       event.target.complete();
     }
-    setTimeout(() => {
-      this.loading = false
-    }, 500)
+    this.loading = false
   }
 
   async delete(timesheet: Timesheet) {
-    if (this.utils.confirm('Are you sure?', 'Delete ' + timesheet.date + ' ' + timesheet.duration + ' ' + timesheet.text,)) {
+    if (await this.utils.confirm('Are you sure?', 'Delete ' + timesheet.date + ' ' + timesheet.duration + ' ' + timesheet.text)) {
       await this.apiService.deleteTimesheet(timesheet)
       this.utils.showToast('Deleted')
       this.doRefresh()
@@ -63,5 +61,4 @@ export class TimesPage {
       this.list.closeSlidingItems()
     }
   }
-
 }

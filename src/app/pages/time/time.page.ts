@@ -8,8 +8,9 @@ import { ToDurationPipe } from 'src/app/pipes/to-duration.pipe';
 import { DatePipe } from '@angular/common';
 import { ApiService } from 'src/app/services/api/api.service';
 import { Timesheet } from 'src/app/models/timesheet';
-import { DEFAULTS, TYPES } from 'src/app/models/constants';
+import { DEFAULTS, STORAGE, TYPES } from 'src/app/models/constants';
 import { UtilsService } from 'src/app/services/utils/utils.service';
+import { StorageService } from 'src/app/services/storage/storage.service';
 
 @Component({
   selector: 'app-time',
@@ -18,16 +19,13 @@ import { UtilsService } from 'src/app/services/utils/utils.service';
 })
 export class TimePage {
 
+  private today = new Date()
   private isUpdate = false
   public selectedDate = Date()
   public selectedProjectText = null;
   public selectedPackageText = null;
   public selectedDuration = 1
-
   public availablePackages: Package[] = []
-
-  private today = new Date()
-
   public newTimesheet = {
     id: null,
     user_id: null,
@@ -58,6 +56,7 @@ export class TimePage {
     private apiService: ApiService,
     private router: Router,
     private route: ActivatedRoute,
+    private storage: StorageService,
     private utils: UtilsService
   ) {
     this.init()
@@ -72,25 +71,22 @@ export class TimePage {
     this.timesheetStatus = await this.apiService.getTimesheetStatus()
 
     // Load default duration
-    this.newTimesheet.tracking.duration = new ToDurationPipe(this.utils).transform(localStorage.getItem('duration'))
-    this.selectedDuration = parseFloat(localStorage.getItem('duration'))
+    this.newTimesheet.tracking.duration = new ToDurationPipe(this.utils).transform(this.storage.getNumber(STORAGE.SETTINGS_DURATION, DEFAULTS.DURATION))
+    this.selectedDuration = await this.storage.getNumber(STORAGE.SETTINGS_DURATION, DEFAULTS.DURATION)
 
     // Load steps
-    this.steps = parseInt(localStorage.getItem('steps')) / 60
+    this.steps = await this.storage.getNumber(STORAGE.SETTINGS_STEPS, DEFAULTS.STEPS) / 60
 
-    let lastUsedService = parseInt(localStorage.getItem('lastUsedService'))
-    if (!isNaN(lastUsedService) && lastUsedService != -2) {
-      this.newTimesheet.client_service_id = parseInt(localStorage.getItem('lastUsedServiceId'))
+    if (await this.storage.getString(STORAGE.SETTINGS_LAST_SERVICE, DEFAULTS.SERVICE_ID) != TYPES.NONE) {
+      this.newTimesheet.client_service_id = await this.storage.getNumber(STORAGE.SETTINGS_LAST_SERVICE_ID)
     }
 
-    let lastUsedStatus = parseInt(localStorage.getItem('lastUsedStatus'))
-    if (!isNaN(lastUsedStatus) && lastUsedStatus != -2) {
-      this.newTimesheet.status_id = parseInt(localStorage.getItem('lastUsedStatusId'))
+    if (await this.storage.getString(STORAGE.SETTINGS_LAST_STATUS, DEFAULTS.STATUS_ID) != TYPES.NONE) {
+      this.newTimesheet.status_id = await this.storage.getNumber(STORAGE.SETTINGS_LAST_STATUS_ID)
     }
 
-    let lastUsedProject = parseInt(localStorage.getItem('lastUsedProject'))
-    if (!isNaN(lastUsedProject) && lastUsedProject != -2) {
-      this.newTimesheet.pr_project_id = parseInt(localStorage.getItem('lastUsedProjectId'))
+    if (await this.storage.getString(STORAGE.SETTINGS_LAST_PROJECT, DEFAULTS.PROJECT_ID) != TYPES.NONE) {
+      this.newTimesheet.pr_project_id = await this.storage.getNumber(STORAGE.SETTINGS_LAST_PROJECT_ID)
       this.availablePackages = await this.apiService.getPackagesForProject(this.newTimesheet.pr_project_id)
     }
 
@@ -131,8 +127,7 @@ export class TimePage {
               duration: timesheet.duration
             }
             this.selectedDate = timesheet.date
-            const duration = timesheet.duration.split(':')
-            this.selectedDuration = parseInt(duration[0]) + (parseInt(duration[1]) / 60)
+            this.selectedDuration = this.utils.parseDuration(timesheet.duration)
             this.availablePackages = await this.apiService.getPackagesForProject(this.newTimesheet.pr_project_id)
           } catch (e) {
             console.error('error', e)
@@ -182,19 +177,10 @@ export class TimePage {
     return true
   }
 
-  storeLastUsed(timesheet: Timesheet) {
-    if (localStorage.getItem('lastUsedService') == null) {
-      // data was not initialized
-      localStorage.setItem('lastUsedService', DEFAULTS.SERVICE_ID)
-      localStorage.setItem('lastUsedStatus', DEFAULTS.STATUS_ID)
-      localStorage.setItem('lastUsedProject', DEFAULTS.PROJECT_ID)
-      localStorage.setItem('duration', '1')
-      localStorage.setItem('steps', '0.25')
-      localStorage.setItem('hoursPerDay', '8')
-    }
-    if (localStorage.getItem('lastUsedService') === TYPES.LAST_USED) localStorage.setItem('lastUsedServiceId', timesheet.client_service_id + '')
-    if (localStorage.getItem('lastUsedStatus') === TYPES.LAST_USED) localStorage.setItem('lastUsedStatusId', timesheet.status_id + '')
-    if (localStorage.getItem('lastUsedProject') === TYPES.LAST_USED) localStorage.setItem('lastUsedProjectId', timesheet.pr_project_id + '')
+  async storeLastUsed(timesheet: Timesheet) {
+    if (await this.storage.getString(STORAGE.SETTINGS_LAST_PROJECT, DEFAULTS.PROJECT_ID) === TYPES.LAST_USED) this.storage.setItem(STORAGE.SETTINGS_LAST_PROJECT_ID, timesheet.pr_project_id)
+    if (await this.storage.getString(STORAGE.SETTINGS_LAST_STATUS, DEFAULTS.STATUS_ID) === TYPES.LAST_USED) this.storage.setItem(STORAGE.SETTINGS_LAST_STATUS_ID, timesheet.status_id)
+    if (await this.storage.getString(STORAGE.SETTINGS_LAST_SERVICE, DEFAULTS.SERVICE_ID) === TYPES.LAST_USED) this.storage.setItem(STORAGE.SETTINGS_LAST_SERVICE_ID, timesheet.client_service_id)
   }
 
   async update() {
@@ -223,10 +209,10 @@ export class TimePage {
   }
 
   async delete() {
-    if (await this.utils.confirm('Delete time entry', 'Are you sure?')) {
+    if(await this.utils.confirm('Delete time entry', 'Are you sure?')){
       await this.apiService.deleteTimesheet(this.newTimesheet)
       this.utils.showToast('Deleted')
       this.router.navigateByUrl('/tabs/times')
-    }
+    } 
   }
 }

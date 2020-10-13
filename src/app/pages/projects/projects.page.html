@@ -1,4 +1,4 @@
-<ion-header [translucent]="true">
+<ion-header translucent="true">
   <ion-toolbar color="primary">
     <ion-buttons slot="end">
       <ion-button *ngIf="showOnlyFavorites" (click)="toggleFavorites()">
@@ -14,7 +14,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content fullscreen="true">
 
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
     <ion-refresher-content>

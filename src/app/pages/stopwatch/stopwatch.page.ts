@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Plugins } from '@capacitor/core';
 import { UtilsService } from 'src/app/services/utils/utils.service';
+import { StorageService } from 'src/app/services/storage/storage.service';
+import { STORAGE } from 'src/app/models/constants';
 const { LocalNotifications } = Plugins;
 declare var cordova: any;
 
@@ -27,18 +29,19 @@ export class StopwatchPage {
   constructor(
     private router: Router,
     private translateService: TranslateService,
+    private storage: StorageService,
     private utils: UtilsService
   ) {
     this.init()
   }
 
   async init() {
-    this.timeBegan = localStorage.getItem('stopwatch_start') ? new Date(localStorage.getItem('stopwatch_start')) : null
-    this.timeStopped = localStorage.getItem('stopwatch_stop') ? new Date(localStorage.getItem('stopwatch_stop')) : null
-    this.running = localStorage.getItem('stopwatch_running') == 'true'
+    this.timeBegan = await this.storage.getDate(STORAGE.STOPWATCH_START)
+    this.timeStopped = await this.storage.getDate(STORAGE.STOPWATCH_STOP)
+    this.running = await this.storage.getBoolean(STORAGE.STOPWATCH_RUNNING)
     if (this.running) {
       this.started = setInterval(this.clockRunning.bind(this), this.refreshRate);
-    }       
+    }
     this.clockRunning()
 
     if (!(await LocalNotifications.requestPermission())) {
@@ -59,15 +62,15 @@ export class StopwatchPage {
     this.started = setInterval(this.clockRunning.bind(this), this.refreshRate);
     this.running = true;
 
-    localStorage.setItem('stopwatch_running', this.running + '')
-    localStorage.setItem('stopwatch_start', this.timeBegan)
-    localStorage.removeItem('stopwatch')
+    await this.storage.setItem(STORAGE.STOPWATCH_RUNNING, this.running)
+    await this.storage.setItem(STORAGE.STOPWATCH_START, this.timeBegan)
+    await this.storage.removeItem(STORAGE.STOPWATCH_STOP)
 
     try {
       cordova.plugins.notification.local.schedule(
         {
           id: this.notificationId,
-          title: await this.translateService.get('Bexio Time').toPromise(),
+          title: await this.translateService.get('BexTrack').toPromise(),
           text: await this.translateService.get('Timewatch is running...').toPromise(),
           sticky: true,
           ongoing: true,
@@ -85,12 +88,13 @@ export class StopwatchPage {
 
     this.running = false;
     this.timeStopped = new Date();
-    localStorage.setItem('stopwatch_running', this.running + '')
-    localStorage.setItem('stopwatch_stop', new Date() + '')
+
+    await this.storage.setItem(STORAGE.STOPWATCH_RUNNING, this.running)
+    await this.storage.setItem(STORAGE.STOPWATCH_STOP, new Date())
     clearInterval(this.started);
     let durationSpan = new Date(this.timeStopped - this.timeBegan)
     let duration = durationSpan.getHours() * 60 * 60 + durationSpan.getMinutes() * 60 + durationSpan.getSeconds()
-    let minTime = parseFloat(localStorage.getItem('steps'))*60*60
+    let minTime = await this.storage.getNumber(STORAGE.SETTINGS_STEPS) * 60 * 60
     if (duration >= minTime) {
       this.router.navigate(['create-time-stopwatch', duration])
     } else {
@@ -100,10 +104,11 @@ export class StopwatchPage {
     this.reset()
   }
 
-  reset() {
-    localStorage.removeItem('stopwatch_running')
-    localStorage.removeItem('stopwatch_start')
-    localStorage.removeItem('stopwatch_stop')
+  async reset() {
+
+    await this.storage.removeItem(STORAGE.STOPWATCH_RUNNING)
+    await this.storage.removeItem(STORAGE.STOPWATCH_START)
+    await this.storage.removeItem(STORAGE.STOPWATCH_STOP)
 
     this.running = false;
     clearInterval(this.started);

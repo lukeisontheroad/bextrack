@@ -1,4 +1,4 @@
-<ion-header [translucent]="true">
+<ion-header translucent="true">
   <ion-toolbar color="primary">
     <ion-title>
       {{ 'Dashboard' | translate }}
@@ -6,7 +6,12 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content fullscreen="true">
+
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content>
+    </ion-refresher-content>
+  </ion-refresher>
 
   <ion-grid>
     <ion-row>
@@ -17,7 +22,8 @@
             <ion-card-title>{{ 'Hours' | translate }}</ion-card-title>
           </ion-card-header>
           <ion-card-content>
-            <h1>{{ totalHoursLastWeek }}</h1>
+            <h1 *ngIf="!loading">{{ totalHoursLastWeek }}</h1>
+            <ion-skeleton-text animated *ngIf="loading"></ion-skeleton-text>
           </ion-card-content>
         </ion-card>
       </ion-col>
@@ -28,7 +34,8 @@
             <ion-card-title>{{ 'Billable' | translate }}</ion-card-title>
           </ion-card-header>
           <ion-card-content>
-            <h1>{{ chargeabilityLastWeek | number:'1.0-0' }}%</h1>
+            <h1 *ngIf="!loading">{{ chargeabilityLastWeek | number:'1.0-0' }}%</h1>
+            <ion-skeleton-text animated *ngIf="loading"></ion-skeleton-text>
           </ion-card-content>
         </ion-card>
       </ion-col>
@@ -40,7 +47,8 @@
             <ion-card-title>{{ 'Hours' | translate }}</ion-card-title>
           </ion-card-header>
           <ion-card-content>
-            <h1>{{ totalHoursLastMonth }}</h1>
+            <h1 *ngIf="!loading">{{ totalHoursLastMonth }}</h1>
+            <ion-skeleton-text animated *ngIf="loading"></ion-skeleton-text>
           </ion-card-content>
         </ion-card>
       </ion-col>
@@ -51,7 +59,8 @@
             <ion-card-title>{{ 'Billable' | translate }}</ion-card-title>
           </ion-card-header>
           <ion-card-content>
-            <h1>{{ chargeabilityLastMonth | number:'1.0-0' }}%</h1>
+            <h1 *ngIf="!loading">{{ chargeabilityLastMonth | number:'1.0-0' }}%</h1>
+            <ion-skeleton-text animated *ngIf="loading"></ion-skeleton-text>
           </ion-card-content>
         </ion-card>
       </ion-col>

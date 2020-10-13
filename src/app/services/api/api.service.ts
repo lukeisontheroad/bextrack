@@ -15,7 +15,7 @@ import { NavController } from '@ionic/angular';
 export class ApiService {
 
   @Output()
-  timeUpdated = new EventEmitter();
+  timesUpdated = new EventEmitter();
 
   @Output()
   projectsUpdated = new EventEmitter();
@@ -93,7 +93,7 @@ export class ApiService {
   public async putTimesheet(timesheet: any): Promise<Timesheet> {
     return new Promise(async (resolve, reject) => {
       let newTimesheet = await this.http.post<Timesheet>(this.baseUrl + '2.0/timesheet/' + timesheet.id, timesheet).toPromise()
-      this.timeUpdated.next()
+      this.getMyTimesheets(true)
       resolve(newTimesheet)
     })
   }
@@ -101,13 +101,17 @@ export class ApiService {
   public async postTimesheet(timesheet: any): Promise<Timesheet> {
     return new Promise(async (resolve, reject) => {
       let newTimesheet = await this.http.post<Timesheet>(this.baseUrl + '2.0/timesheet', timesheet).toPromise()
-      this.timeUpdated.next()
+      this.getMyTimesheets(true)
       resolve(newTimesheet)
     })
   }
 
   public async deleteTimesheet(timesheet: any): Promise<Timesheet> {
-    return this.http.delete<Timesheet>(this.baseUrl + '2.0/timesheet/' + timesheet.id).toPromise()
+    return new Promise(async (resolve, reject) => {
+      await this.http.delete<Timesheet>(this.baseUrl + '2.0/timesheet/' + timesheet.id).toPromise()
+      this.getMyTimesheets(true)
+      resolve()
+    })
   }
 
   public async getTimesheetStatus(force = false): Promise<TimesheetStatus[]> {
@@ -148,7 +152,11 @@ export class ApiService {
   public getMyTimesheets(force=false): Promise<Timesheet[]>{
     return new Promise(async (resolve, reject) => {
       let user = await this.getUser()
-      resolve(await this.getTimesheets(user.id, force))
+      let timesheets = await this.getTimesheets(user.id, force)
+      if(force){
+        this.timesUpdated.next()
+      }
+      resolve(timesheets)
     })
   }
 

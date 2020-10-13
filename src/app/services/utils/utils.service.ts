@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { AlertController, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
+import { Plugins } from '@capacitor/core';
+const { LocalNotifications } = Plugins;
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +21,21 @@ export class UtilsService {
     return s;
   }
 
-  public async showToast(message: string, duration = 3000){
+  public requestNotificationPermission() {
+    return new Promise(async (resolve, reject) => {
+      if (!(await LocalNotifications.requestPermission())) {
+        resolve()
+      } else {
+        reject()
+      }
+    })
+  }
+
+  public parseDuration(duration): number {
+    return parseInt(duration) + parseInt(duration.split(':')[1]) / 60
+  }
+
+  public async showToast(message: string, duration = 3000) {
     let toast = await this.toastCtroller.create({
       message: await this.translateService.get(message).toPromise(),
       duration: duration,
@@ -28,7 +44,7 @@ export class UtilsService {
     toast.present()
   }
 
-  public confirm(header, message, confirm='Delete', cancel='Cancel'): Promise<boolean>{
+  public confirm(header, message, confirm = 'Delete', cancel = 'Cancel'): Promise<boolean> {
     return new Promise(async (resolve, reject) => {
       const alert = await this.alertController.create({
         header: await this.translateService.get(header).toPromise(),
@@ -50,7 +66,7 @@ export class UtilsService {
           }
         ]
       });
-      await alert.present();
+      alert.present();
     })
   }
 }
