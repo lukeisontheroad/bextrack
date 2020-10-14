@@ -1,4 +1,4 @@
-<ion-header translucent="true">
+<ion-header>
   <ion-toolbar color="primary">
     <ion-title>
       {{ 'Dashboard' | translate }}
@@ -6,7 +6,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content fullscreen="true">
+<ion-content>
 
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
     <ion-refresher-content>
@@ -69,11 +69,11 @@
       <ion-col size="12">
         <ion-card>
           <ion-card-header>
-            <ion-card-title>{{ 'Hours by Project' | translate }}</ion-card-title>
+            <ion-card-title #width>{{ 'Hours by Project' | translate }}</ion-card-title>
           </ion-card-header>
           <ion-card-content>
-            <div id="pie-chart-parent">
-              <ngx-charts-pie-chart *ngIf="data.length > 0" [scheme]="colorScheme" [results]="data" [gradient]="gradient"
+            <div id="pie-chart-parent" *ngIf="view">
+              <ngx-charts-pie-chart *ngIf="data.length > 0" [view]="view" [scheme]="colorScheme" [results]="data" [gradient]="gradient"
                 [legend]="showLegend" [legendPosition]="legendPosition" [labels]="showLabels" [doughnut]="isDoughnut">
               </ngx-charts-pie-chart>
             </div>

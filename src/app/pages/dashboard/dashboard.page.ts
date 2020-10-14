@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { Timesheet } from 'src/app/models/timesheet';
 import { ApiService } from 'src/app/services/api/api.service';
 import { UtilsService } from 'src/app/services/utils/utils.service';
@@ -9,6 +9,11 @@ import { UtilsService } from 'src/app/services/utils/utils.service';
   styleUrls: ['./dashboard.page.scss'],
 })
 export class DashboardPage {
+
+  @ViewChild('width', { static: true }) 
+  widthElement: ElementRef;
+
+  public view: any[] = null;
 
   public timesheets: Timesheet[] = []
   public timesheetsLastWeek: Timesheet[] = []
@@ -48,6 +53,11 @@ export class DashboardPage {
   ) {
     this.doRefresh()
     this.apiService.timesUpdated.subscribe(() => this.doRefresh())
+  }
+
+  ionViewDidEnter(): void {
+    let width = (this.widthElement as any).el.scrollWidth
+    this.view = [width, width]
   }
 
   public async doRefresh(event?: any, force = false) {

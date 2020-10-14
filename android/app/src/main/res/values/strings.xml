@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Bexio Time</string>
-    <string name="title_activity_main">Bexio Time</string>
+    <string name="app_name">BexTrack</string>
+    <string name="title_activity_main">BexTrack</string>
     <string name="package_name">xyz.lukeisontheroad.bexio</string>
     <string name="custom_url_scheme">xyz.lukeisontheroad.bexio</string>
 </resources>

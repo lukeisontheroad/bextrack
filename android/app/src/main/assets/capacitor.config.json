@@ -1,6 +1,6 @@
 {
   "appId": "xyz.lukeisontheroad.bexio",
-  "appName": "Bexio Time",
+  "appName": "BexTrack",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "www",

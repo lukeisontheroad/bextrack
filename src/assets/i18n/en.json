@@ -26,5 +26,8 @@
     "Service": "Service",
     "Project": "Project",
     "Package": "Package",
-    "Status": "Status"
+    "Status": "Status",
+    "Version": "Version",
+    "Developer": "Developer",
+    "About": "About"
 }

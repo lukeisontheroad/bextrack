@@ -26,5 +26,8 @@
     "Service": "Service",
     "Package": "Arbeitspaket",
     "Project": "Projekt",
-    "Status": "Status"
+    "Status": "Status",
+    "Version": "Version",
+    "Developer": "Entwickler",
+    "About": "Über"
 }
