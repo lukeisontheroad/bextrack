@@ -13,6 +13,17 @@
     </ion-refresher-content>
   </ion-refresher>
 
+  <div class="no-items" *ngIf="times.length === 0">
+    <ion-grid>
+      <ion-row>
+        <ion-icon name="timer-outline"></ion-icon>
+      </ion-row>
+      <ion-row>
+        <h1>{{ 'No times found' | translate }}</h1>
+      </ion-row>
+    </ion-grid>
+  </div>
+
   <ion-list *ngIf="loading">
     <div *ngFor="let n of skeletons">
       <ion-list-header>

@@ -72,11 +72,12 @@
             <ion-card-title #width>{{ 'Hours by Project' | translate }}</ion-card-title>
           </ion-card-header>
           <ion-card-content>
-            <div id="pie-chart-parent" *ngIf="view">
-              <ngx-charts-pie-chart *ngIf="data.length > 0" [view]="view" [scheme]="colorScheme" [results]="data" [gradient]="gradient"
+            <div id="pie-chart-parent" *ngIf="view && data.length > 0">
+              <ngx-charts-pie-chart [view]="view" [scheme]="colorScheme" [results]="data" [gradient]="gradient"
                 [legend]="showLegend" [legendPosition]="legendPosition" [labels]="showLabels" [doughnut]="isDoughnut">
               </ngx-charts-pie-chart>
             </div>
+            <h2 *ngIf="data.length === 0">{{ 'No data available' | translate }}</h2>
           </ion-card-content>
         </ion-card>
       </ion-col>

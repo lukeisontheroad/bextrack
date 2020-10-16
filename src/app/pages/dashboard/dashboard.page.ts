@@ -78,14 +78,14 @@ export class DashboardPage {
     this.timesheetsLastWeek = this.timesheets.filter(timesheet => new Date(timesheet.date) >= this.lastWeek)
     this.timesheetsLastMonth = this.timesheets.filter(timesheet => new Date(timesheet.date) >= this.lastMonth)
 
-    this.totalHoursLastWeek = this.timesheetsLastWeek.map(timesheet => this.utils.parseDuration(timesheet.duration)).reduce((a, b) => a + b)
-    this.payedHoursLastWeek = this.timesheetsLastWeek.filter(timesheet => timesheet.allowable_bill).map(timesheet => this.utils.parseDuration(timesheet.duration)).reduce((a, b) => a + b)
-    this.chargeabilityLastWeek = this.payedHoursLastWeek / this.totalHoursLastWeek * 100
+    this.totalHoursLastWeek = this.timesheetsLastWeek.map(timesheet => this.utils.parseDuration(timesheet.duration)).reduce((a, b) => a + b, 0)
+    this.payedHoursLastWeek = this.timesheetsLastWeek.filter(timesheet => timesheet.allowable_bill).map(timesheet => this.utils.parseDuration(timesheet.duration)).reduce((a, b) => a + b, 0)
+    this.chargeabilityLastWeek = this.payedHoursLastWeek > 0 ? this.payedHoursLastWeek / this.totalHoursLastWeek * 100 : 0
 
-    this.totalHoursLastMonth = this.timesheetsLastMonth.map(timesheet => this.utils.parseDuration(timesheet.duration)).reduce((a, b) => a + b)
-    this.payedHoursLastMonth = this.timesheetsLastMonth.filter(timesheet => timesheet.allowable_bill).map(timesheet => this.utils.parseDuration(timesheet.duration)).reduce((a, b) => a + b)
-    this.chargeabilityLastMonth = this.payedHoursLastMonth / this.totalHoursLastMonth * 100
-
+    this.totalHoursLastMonth = this.timesheetsLastMonth.map(timesheet => this.utils.parseDuration(timesheet.duration)).reduce((a, b) => a + b, 0)
+    this.payedHoursLastMonth = this.timesheetsLastMonth.filter(timesheet => timesheet.allowable_bill).map(timesheet => this.utils.parseDuration(timesheet.duration)).reduce((a, b) => a + b, 0)
+    this.chargeabilityLastMonth = this.payedHoursLastMonth > 0 ? this.payedHoursLastMonth / this.totalHoursLastMonth * 100 : 0
+    
     for (var i = 0; i < this.timesheetsLastMonth.length; i++) {
       let timesheet = this.timesheetsLastMonth[i]
       if (timesheet.project) {

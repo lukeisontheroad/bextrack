@@ -26,10 +26,12 @@
   <div class="no-items" *ngIf="projects.length === 0">
     <ion-grid>
       <ion-row>
-        <ion-icon name="star-outline"></ion-icon>
+        <ion-icon *ngIf="!showOnlyFavorites" name="briefcase-outline"></ion-icon>
+        <ion-icon *ngIf="showOnlyFavorites" name="star-outline"></ion-icon>
       </ion-row>
       <ion-row>
-        <h1>{{ 'No favorite project found' | translate }}</h1>
+        <h1 *ngIf="!showOnlyFavorites">{{ 'No projects found' | translate }}</h1>
+        <h1 *ngIf="showOnlyFavorites">{{ 'No favorite project found' | translate }}</h1>
       </ion-row>
     </ion-grid>
   </div>

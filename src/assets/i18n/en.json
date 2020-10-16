@@ -29,5 +29,15 @@
     "Status": "Status",
     "Version": "Version",
     "Developer": "Developer",
-    "About": "About"
+    "About": "About",
+    "Billable": "Billable",
+    "Hours": "Hours",
+    "Dashboard": "Dashboard",
+    "No data available": "No data available",
+    "None": "None",
+    "Notifications": "Notifications",
+    "Support": "Support",
+    "Stopwatch": "Stopwatch",
+    "Start": "Start",
+    "Stop": "Stop"
 }

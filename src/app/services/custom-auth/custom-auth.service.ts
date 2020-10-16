@@ -8,10 +8,10 @@ import { AuthService, Browser } from 'ionic-appauth';
 
 export class CustomBaseTokenRequestHandler implements TokenRequestHandler {
   public readonly utils: QueryStringUtils = new BasicQueryStringUtils()
-  
+
   constructor(
     public readonly requestor: Requestor = new JQueryRequestor(),
-    ) { }
+  ) { }
 
   private isTokenResponse(response: TokenResponseJson |
     TokenErrorJson): response is TokenResponseJson {
@@ -39,7 +39,7 @@ export class CustomBaseTokenRequestHandler implements TokenRequestHandler {
     let tokenResponse = this.requestor.xhr<TokenResponseJson | TokenErrorJson>({
       url: configuration.tokenEndpoint,
       method: 'POST',
-      dataType: 'json',  // adding implicit dataType
+      dataType: 'json',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       data: data
     });
@@ -56,7 +56,7 @@ export class CustomBaseTokenRequestHandler implements TokenRequestHandler {
 }
 
 export class CustomAuthService extends AuthService {
-  constructor(browser?: Browser, storage?: StorageBackend, requestor?: Requestor){
+  constructor(browser?: Browser, storage?: StorageBackend, requestor?: Requestor) {
     super(browser, storage, requestor);
     this.tokenHandler = new CustomBaseTokenRequestHandler(new FetchRequestor())
   }
