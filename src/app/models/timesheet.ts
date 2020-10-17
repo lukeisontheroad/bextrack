@@ -2,7 +2,7 @@ import { Tracking } from './tracking';
 import { User } from './user';
 import { Project } from './project';
 
-export interface Timesheet {
+export class Timesheet {
     id: number;
     user_id: number;
     user?: User;

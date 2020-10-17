@@ -7,7 +7,6 @@ import { Timesheet } from 'src/app/models/timesheet';
 import { TimesheetStatus } from 'src/app/models/timsheet_status';
 import { User } from 'src/app/models/user';
 import { Package } from 'src/app/models/package';
-import { NavController } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root'
@@ -39,8 +38,7 @@ export class ApiService {
 
   constructor(
     private http: HttpClient,
-    private authService: AuthService,
-    private navCtrl: NavController
+    private authService: AuthService
   ) { }
 
   public async init() {
@@ -90,25 +88,40 @@ export class ApiService {
     });
   }
 
-  public async putTimesheet(timesheet: any): Promise<Timesheet> {
+  private prepareTimesheetForApi(timesheet:Timesheet){
+    delete timesheet.travel_time
+    delete timesheet.travel_charge
+    delete timesheet.travel_distance
+    delete timesheet.date
+    delete timesheet.duration
+    delete timesheet.running
+    delete timesheet.user
+    return timesheet
+  }
+
+  public async putTimesheet(timesheet: Timesheet): Promise<Timesheet> {
+    let preparedTimesheet = this.prepareTimesheetForApi(timesheet)
+    delete preparedTimesheet.tracking.type
     return new Promise(async (resolve, reject) => {
-      let newTimesheet = await this.http.post<Timesheet>(this.baseUrl + '2.0/timesheet/' + timesheet.id, timesheet).toPromise()
+      let newTimesheet = await this.http.post<Timesheet>(this.baseUrl + '2.0/timesheet/' + timesheet.id, preparedTimesheet).toPromise()
       this.getMyTimesheets(true)
       resolve(newTimesheet)
     })
   }
 
-  public async postTimesheet(timesheet: any): Promise<Timesheet> {
+  public async postTimesheet(timesheet: Timesheet): Promise<Timesheet> {
+    let preparedTimesheet = this.prepareTimesheetForApi(timesheet)
+    delete preparedTimesheet.id
     return new Promise(async (resolve, reject) => {
-      let newTimesheet = await this.http.post<Timesheet>(this.baseUrl + '2.0/timesheet', timesheet).toPromise()
+      let newTimesheet = await this.http.post<Timesheet>(this.baseUrl + '2.0/timesheet', preparedTimesheet).toPromise()
       this.getMyTimesheets(true)
       resolve(newTimesheet)
     })
   }
 
-  public async deleteTimesheet(timesheet: any): Promise<Timesheet> {
+  public async deleteTimesheet(id: number): Promise<Timesheet> {
     return new Promise(async (resolve, reject) => {
-      await this.http.delete<Timesheet>(this.baseUrl + '2.0/timesheet/' + timesheet.id).toPromise()
+      await this.http.delete<Timesheet>(this.baseUrl + '2.0/timesheet/' + id).toPromise()
       this.getMyTimesheets(true)
       resolve()
     })
@@ -173,6 +186,14 @@ export class ApiService {
             }
           ]
           timesheets.push(...await await this.http.post<Timesheet[]>(this.baseUrl + '2.0/timesheet/search?order_by=date_desc&limit=50', filter).toPromise())
+          timesheets.map(timesheet => {
+            timesheet.tracking = {
+              duration: timesheet.duration,
+              date: timesheet.date,
+              type: 'duration'
+            }
+            return timesheet
+          })
         } else {
           timesheets.push(...await this.http.get<Timesheet[]>(this.baseUrl + '2.0/timesheet?order_by=date_desc').toPromise())
         }

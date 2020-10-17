@@ -21,7 +21,7 @@
 
     <ion-item>
       <ion-label position="stacked">{{ 'Description' | translate }}</ion-label>
-      <ion-textarea autoGrow="true" placeholder="Text" [(ngModel)]="newTimesheet.text"></ion-textarea>
+      <ion-textarea autoGrow="true" placeholder="Text" [(ngModel)]="timesheet.text"></ion-textarea>
     </ion-item>
 
     <ion-item>
@@ -37,12 +37,12 @@
 
     <ion-item>
       <ion-label>{{ 'Chargeable' | translate }}</ion-label>
-      <ion-toggle [(ngModel)]="newTimesheet.allowable_bill"></ion-toggle>
+      <ion-toggle [(ngModel)]="timesheet.allowable_bill"></ion-toggle>
     </ion-item>
 
     <ion-item>
       <ion-label position="stacked">{{ 'Service' | translate }}</ion-label>
-      <ion-select placeholder="Select" [(ngModel)]="newTimesheet.client_service_id">
+      <ion-select placeholder="Select" [(ngModel)]="timesheet.client_service_id">
         <ion-select-option *ngFor="let clientService of clientServices" [value]="clientService.id">
           {{ clientService.name }}
         </ion-select-option>
@@ -51,7 +51,7 @@
 
     <ion-item>
       <ion-label position="floating">{{ 'Project' | translate }}</ion-label>
-      <ion-select placeholder="Project" (ionChange)="onProjectSelected()" [(ngModel)]="newTimesheet.pr_project_id"
+      <ion-select placeholder="Project" (ionChange)="onProjectSelected()" [(ngModel)]="timesheet.pr_project_id"
         [selectedText]="selectedProjectText">
         <ion-select-option *ngFor="let project of projects" value="{{ project.id }}">{{ project.name }}
         </ion-select-option>
@@ -60,7 +60,7 @@
 
     <ion-item>
       <ion-label position="floating">{{ 'Package' | translate }}</ion-label>
-      <ion-select placeholder="Package" [(ngModel)]="newTimesheet.pr_package_id" [selectedText]="selectedPackageText">
+      <ion-select placeholder="Package" [(ngModel)]="timesheet.pr_package_id" [selectedText]="selectedPackageText">
         <ion-select-option *ngFor="let package of availablePackages" value="{{ package.id }}">{{ package.name }}
         </ion-select-option>
       </ion-select>
@@ -68,7 +68,7 @@
 
     <ion-item>
       <ion-label position="stacked">{{ 'Status' | translate }}</ion-label>
-      <ion-select placeholder="Select" [(ngModel)]="newTimesheet.status_id">
+      <ion-select placeholder="Select" [(ngModel)]="timesheet.status_id">
         <ion-select-option *ngFor="let status of timesheetStatus" [value]="status.id">{{status.name}}</ion-select-option>
       </ion-select>
     </ion-item>

@@ -54,11 +54,16 @@ export class TimesPage {
 
   async delete(timesheet: Timesheet) {
     if (await this.utils.confirm('Are you sure?', 'Delete ' + timesheet.date + ' ' + timesheet.duration + ' ' + timesheet.text)) {
-      await this.apiService.deleteTimesheet(timesheet)
+      await this.apiService.deleteTimesheet(timesheet.id)
       this.utils.showToast('Deleted')
       this.doRefresh()
     } else {
       this.list.closeSlidingItems()
     }
+  }
+
+  async copy(timesheet: Timesheet) {
+    timesheet.id = null
+    this.apiService.postTimesheet(timesheet)
   }
 }

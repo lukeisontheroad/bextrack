@@ -26,26 +26,7 @@ export class TimePage {
   public selectedPackageText = null;
   public selectedDuration = 1
   public availablePackages: Package[] = []
-  public newTimesheet = {
-    id: null,
-    user_id: null,
-    status_id: null,
-    client_service_id: null,
-    text: null,
-    allowable_bill: false,
-    // charge: null,
-    contact_id: null,
-    // sub_contact_id: null,
-    pr_project_id: null,
-    pr_package_id: null,
-    //pr_milestone_id: null,
-    tracking: {
-      "type": "duration",
-      "date": this.today.getFullYear() + '-' + this.utils.pad((this.today.getMonth() + 1)) + '-' + this.utils.pad(this.today.getDate()),
-      "duration": "01:00"
-    }
-  }
-
+  public timesheet = new Timesheet()
   public projects: Project[] = []
   public clientServices: ClientService[] = []
   public timesheetStatus: TimesheetStatus[] = []
@@ -64,30 +45,34 @@ export class TimePage {
 
   private async init() {
     let user = await this.apiService.getUser()
-    this.newTimesheet.user_id = user.id
+    this.timesheet.user_id = user.id
+    this.timesheet.allowable_bill = false
+    this.timesheet.tracking = {
+      "type": "duration",
+      "date": this.today.getFullYear() + '-' + this.utils.pad((this.today.getMonth() + 1)) + '-' + this.utils.pad(this.today.getDate()),
+      "duration": new ToDurationPipe(this.utils).transform(this.storage.getNumber(STORAGE.SETTINGS_DURATION, DEFAULTS.DURATION))
+    }
 
     this.projects = await this.apiService.getProjects()
     this.clientServices = await this.apiService.getClientService()
     this.timesheetStatus = await this.apiService.getTimesheetStatus()
-
     // Load default duration
-    this.newTimesheet.tracking.duration = new ToDurationPipe(this.utils).transform(this.storage.getNumber(STORAGE.SETTINGS_DURATION, DEFAULTS.DURATION))
     this.selectedDuration = await this.storage.getNumber(STORAGE.SETTINGS_DURATION, DEFAULTS.DURATION)
 
     // Load steps
     this.steps = await this.storage.getNumber(STORAGE.SETTINGS_STEPS, DEFAULTS.STEPS) / 60
 
     if (await this.storage.getString(STORAGE.SETTINGS_LAST_SERVICE, DEFAULTS.SERVICE_ID) != TYPES.NONE) {
-      this.newTimesheet.client_service_id = await this.storage.getNumber(STORAGE.SETTINGS_LAST_SERVICE_ID)
+      this.timesheet.client_service_id = await this.storage.getNumber(STORAGE.SETTINGS_LAST_SERVICE_ID)
     }
 
     if (await this.storage.getString(STORAGE.SETTINGS_LAST_STATUS, DEFAULTS.STATUS_ID) != TYPES.NONE) {
-      this.newTimesheet.status_id = await this.storage.getNumber(STORAGE.SETTINGS_LAST_STATUS_ID)
+      this.timesheet.status_id = await this.storage.getNumber(STORAGE.SETTINGS_LAST_STATUS_ID)
     }
 
     if (await this.storage.getString(STORAGE.SETTINGS_LAST_PROJECT, DEFAULTS.PROJECT_ID) != TYPES.NONE) {
-      this.newTimesheet.pr_project_id = await this.storage.getNumber(STORAGE.SETTINGS_LAST_PROJECT_ID)
-      this.availablePackages = await this.apiService.getPackagesForProject(this.newTimesheet.pr_project_id)
+      this.timesheet.pr_project_id = await this.storage.getNumber(STORAGE.SETTINGS_LAST_PROJECT_ID)
+      this.availablePackages = await this.apiService.getPackagesForProject(this.timesheet.pr_project_id)
     }
 
     this.route.params.subscribe(async params => {
@@ -97,38 +82,24 @@ export class TimePage {
           var hours = Math.floor(seconds / 60 / 60);
           var minutes = Math.floor(seconds / 60) - (hours * 60);
           this.selectedDuration = hours + (minutes / 60)
-          this.newTimesheet.tracking.duration = new ToDurationPipe(this.utils).transform(this.selectedDuration)
+          this.timesheet.tracking.duration = new ToDurationPipe(this.utils).transform(this.selectedDuration)
         }
       } else {
         if (params['project_id']) {
-          this.newTimesheet.pr_project_id = parseInt(params['project_id'])
-          this.availablePackages = await this.apiService.getPackagesForProject(this.newTimesheet.pr_project_id)
+          this.timesheet.pr_project_id = parseInt(params['project_id'])
+          this.availablePackages = await this.apiService.getPackagesForProject(this.timesheet.pr_project_id)
         }
         if (params['package_id']) {
-          this.newTimesheet.pr_package_id = parseInt(params['package_id'])
+          this.timesheet.pr_package_id = parseInt(params['package_id'])
         }
 
         if (params['time_id']) {
           this.isUpdate = true
           try {
-            const timesheet = await this.apiService.getTimesheet(parseInt(params['time_id']))
-            this.newTimesheet.id = timesheet.id
-            this.newTimesheet.user_id = timesheet.user_id
-            this.newTimesheet.status_id = timesheet.status_id
-            this.newTimesheet.client_service_id = timesheet.client_service_id
-            this.newTimesheet.text = timesheet.text
-            this.newTimesheet.allowable_bill = timesheet.allowable_bill
-            this.newTimesheet.contact_id = timesheet.contact_id
-            this.newTimesheet.pr_project_id = timesheet.pr_project_id
-            this.newTimesheet.pr_package_id = timesheet.pr_package_id
-            this.newTimesheet.tracking = {
-              type: "duration",
-              date: timesheet.date,
-              duration: timesheet.duration
-            }
-            this.selectedDate = timesheet.date
-            this.selectedDuration = this.utils.parseDuration(timesheet.duration)
-            this.availablePackages = await this.apiService.getPackagesForProject(this.newTimesheet.pr_project_id)
+            this.timesheet = await this.apiService.getTimesheet(parseInt(params['time_id']))
+            this.selectedDate = this.timesheet.date
+            this.selectedDuration = this.utils.parseDuration(this.timesheet.duration)
+            this.availablePackages = await this.apiService.getPackagesForProject(this.timesheet.pr_project_id)
           } catch (e) {
             console.error('error', e)
           }
@@ -141,18 +112,18 @@ export class TimePage {
 
   private async updateSelectTexts() {
     // set project
-    const filteredProjects = this.projects.filter(i => i.id == this.newTimesheet.pr_project_id)
+    const filteredProjects = this.projects.filter(i => i.id == this.timesheet.pr_project_id)
     if (filteredProjects.length > 0) {
       this.selectedProjectText = filteredProjects[0].name
-      this.newTimesheet.contact_id = filteredProjects[0].contact_id
-      if (this.newTimesheet.pr_package_id) {
-        this.selectedPackageText = (await this.apiService.getPackageForProjectWithId(this.newTimesheet.pr_project_id, this.newTimesheet.pr_package_id)).name
+      this.timesheet.contact_id = filteredProjects[0].contact_id
+      if (this.timesheet.pr_package_id) {
+        this.selectedPackageText = (await this.apiService.getPackageForProjectWithId(this.timesheet.pr_project_id, this.timesheet.pr_package_id)).name
       }
     }
   }
 
   async onProjectSelected() {
-    this.availablePackages = await this.apiService.getPackagesForProject(this.newTimesheet.pr_project_id)
+    this.availablePackages = await this.apiService.getPackagesForProject(this.timesheet.pr_project_id)
   }
 
   save() {
@@ -165,15 +136,15 @@ export class TimePage {
 
   async validateTime() {
     if (
-      !this.newTimesheet.client_service_id ||
-      !this.newTimesheet.status_id ||
-      !this.newTimesheet.text ||
-      this.newTimesheet.text.length < 1) {
+      !this.timesheet.client_service_id ||
+      !this.timesheet.status_id ||
+      !this.timesheet.text ||
+      this.timesheet.text.length < 1) {
       this.utils.showToast('Missing information')
       return false;
     }
-    this.newTimesheet.tracking.duration = new ToDurationPipe(this.utils).transform(this.selectedDuration)
-    this.newTimesheet.tracking.date = new DatePipe('en-US').transform(this.selectedDate, 'yyyy-MM-dd');
+    this.timesheet.tracking.duration = new ToDurationPipe(this.utils).transform(this.selectedDuration)
+    this.timesheet.tracking.date = new DatePipe('en-US').transform(this.selectedDate, 'yyyy-MM-dd');
     return true
   }
 
@@ -185,8 +156,7 @@ export class TimePage {
 
   async update() {
     if (!this.validateTime()) return
-    delete this.newTimesheet.tracking.type
-    this.apiService.putTimesheet(this.newTimesheet).then(async response => {
+    this.apiService.putTimesheet(this.timesheet).then(async response => {
       this.storeLastUsed(response)
       this.utils.showToast('Updated')
       this.router.navigateByUrl('tabs', { skipLocationChange: true });
@@ -198,8 +168,7 @@ export class TimePage {
 
   async create() {
     if (!this.validateTime()) return
-    delete this.newTimesheet.id
-    this.apiService.postTimesheet(this.newTimesheet).then(async response => {
+    this.apiService.postTimesheet(this.timesheet).then(async response => {
       this.storeLastUsed(response)
       this.utils.showToast('Created')
       this.router.navigateByUrl('tabs', { skipLocationChange: true });
@@ -209,10 +178,10 @@ export class TimePage {
   }
 
   async delete() {
-    if(await this.utils.confirm('Delete time entry', 'Are you sure?')){
-      await this.apiService.deleteTimesheet(this.newTimesheet)
+    if (await this.utils.confirm('Delete time entry', 'Are you sure?')) {
+      await this.apiService.deleteTimesheet(this.timesheet.id)
       this.utils.showToast('Deleted')
       this.router.navigateByUrl('/tabs/times')
-    } 
+    }
   }
 }
