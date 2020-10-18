@@ -96,6 +96,8 @@ export class ApiService {
     delete timesheet.duration
     delete timesheet.running
     delete timesheet.user
+    delete timesheet.project
+    delete timesheet.package
     return timesheet
   }
 
