@@ -40,5 +40,7 @@
     "Stopwatch": "Stopwatch",
     "Start": "Start",
     "Stop": "Stop",
-    "Copy": "Copy"
+    "Copy": "Copy",
+    "Multiday": "Multiday",
+    "Create multiple efforts, one for each day": "Create multiple efforts, one for each day"
 }

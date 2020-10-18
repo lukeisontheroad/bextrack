@@ -29,6 +29,11 @@
       <ion-datetime [(ngModel)]="selectedDate" displayFormat="DDDD DD.MM.YYYY"></ion-datetime>
     </ion-item>
 
+    <ion-item *ngIf="!isUpdate">
+      <ion-label position="stacked">{{ 'Multiday' | translate }}</ion-label>
+      <ion-datetime [(ngModel)]="multiDay" placeholder="{{ 'Create multiple efforts, one for each day' | translate }}" displayFormat="DDDD DD.MM.YYYY"></ion-datetime>
+    </ion-item>
+
     <ion-item>
       <ion-label position="stacked">{{ 'Duration' | translate }}</ion-label>
       <ion-range [min]="steps" max="12" [step]="steps" snaps="true" ticks="false" [(ngModel)]="selectedDuration"></ion-range>

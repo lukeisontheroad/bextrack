@@ -40,5 +40,7 @@
     "Stopwatch": "Stopuhr",
     "Start": "Start",
     "Stop": "Stop",
-    "Copy": "Kopieren"
+    "Copy": "Kopieren",
+    "Multiday": "Mehrtägig",
+    "Create multiple efforts, one for each day": "Erstelle mehrere Einträge, einer pro Tag"
 }

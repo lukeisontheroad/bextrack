@@ -22,6 +22,7 @@ export class TimePage {
   private today = new Date()
   private isUpdate = false
   public selectedDate = Date()
+  public multiDay: Date = null
   public selectedProjectText = null;
   public selectedPackageText = null;
   public selectedDuration = 1
@@ -168,8 +169,25 @@ export class TimePage {
 
   async create() {
     if (!this.validateTime()) return
-    this.apiService.postTimesheet(this.timesheet).then(async response => {
-      this.storeLastUsed(response)
+
+    let timesheets = []
+    let promises = []
+    if (this.multiDay != null) {
+      const MS_PER_DAY: number = 1000 * 60 * 60 * 24;
+      const daysBetweenDates: number = Math.ceil((new Date(this.multiDay).getTime() - new Date(this.selectedDate).getTime()) / MS_PER_DAY) - 1;
+      const days: Date[] = Array.from(new Array(daysBetweenDates + 1), (v, i) => new Date(new Date(this.selectedDate).getTime() + (i * MS_PER_DAY)));
+
+      for (var i = 0; i < days.length; i++) {
+        let timesheet = JSON.parse(JSON.stringify(this.timesheet)) as Timesheet
+        timesheet.tracking.date = new DatePipe('en-US').transform(days[i], 'yyyy-MM-dd');
+        timesheets.push(timesheet)
+      }
+    } else {
+      timesheets.push(this.timesheet)
+    }
+    promises.push(...timesheets.map(timesheet => this.apiService.postTimesheet(timesheet)))
+    Promise.all(promises).then(async (values) => {
+      this.storeLastUsed(this.timesheet)
       this.utils.showToast('Created')
       this.router.navigateByUrl('tabs', { skipLocationChange: true });
     }).catch(async reason => {
