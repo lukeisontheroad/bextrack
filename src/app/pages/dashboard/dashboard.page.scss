@@ -10,6 +10,12 @@ h1{
     min-height: 400px;
 }
 
+@media (min-width: 820px) {
+    ion-grid { 
+        flex-direction: row-reverse;
+    }
+}
+
 ion-skeleton-text{
     width: 50px;
     height: 25px;

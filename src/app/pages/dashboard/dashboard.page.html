@@ -15,7 +15,7 @@
 
   <ion-grid>
     <ion-row>
-      <ion-col size="6">
+      <ion-col size="6" size-md="3">
         <ion-card>
           <ion-card-header>
             <ion-card-subtitle>{{ '7 days' | translate }}</ion-card-subtitle>
@@ -27,7 +27,7 @@
           </ion-card-content>
         </ion-card>
       </ion-col>
-      <ion-col size="6">
+      <ion-col size="6" size-md="3">
         <ion-card>
           <ion-card-header>
             <ion-card-subtitle>{{ '7 days' | translate }}</ion-card-subtitle>
@@ -40,7 +40,7 @@
         </ion-card>
       </ion-col>
 
-      <ion-col size="6">
+      <ion-col size="6" size-md="3">
         <ion-card>
           <ion-card-header>
             <ion-card-subtitle>{{ '30 days' | translate }}</ion-card-subtitle>
@@ -52,7 +52,7 @@
           </ion-card-content>
         </ion-card>
       </ion-col>
-      <ion-col size="6">
+      <ion-col size="6" size-md="3">
         <ion-card>
           <ion-card-header>
             <ion-card-subtitle>{{ '30 days' | translate }}</ion-card-subtitle>
@@ -66,7 +66,7 @@
       </ion-col>
 
 
-      <ion-col size="12">
+      <ion-col size="12" size-md="6">
         <ion-card>
           <ion-card-header>
             <ion-card-title #width>{{ 'Hours by Project' | translate }}</ion-card-title>
@@ -78,6 +78,17 @@
               </ngx-charts-pie-chart>
             </div>
             <h2 *ngIf="data.length === 0">{{ 'No data available' | translate }}</h2>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <ion-col size="12" size-md="6">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title #width>{{ 'Missing a report?' | translate }}</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-button expand="full" routerLink="/feedback">{{ 'Provide Feedback' | translate }}</ion-button>
           </ion-card-content>
         </ion-card>
       </ion-col>

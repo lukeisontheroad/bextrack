@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header class="ion-no-border">
   <ion-toolbar color="primary">
     <ion-title>
       {{ 'Times' | translate }}
@@ -6,86 +6,97 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-grid class="tablet">
+  <ion-row class="ion-justify-content-start">
+    <ion-col class="col-calendar" size="12" size-md="4">
+      <ion-calendar [(ngModel)]="date" [options]="optionsMulti" sticky [type]="type" [format]="'YYYY-MM-DD'"
+        (select)="passedDate($event)">
+      </ion-calendar>
+    </ion-col>
+    <ion-col class="col-content" size="12" size-md="8">
+      <ion-content>
+        <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+          <ion-refresher-content>
+          </ion-refresher-content>
+        </ion-refresher>
 
-  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
-    <ion-refresher-content>
-    </ion-refresher-content>
-  </ion-refresher>
+        <div class="no-items" *ngIf="times.length === 0 && !loading">
+          <ion-grid>
+            <ion-row>
+              <ion-icon name="timer-outline"></ion-icon>
+            </ion-row>
+            <ion-row>
+              <h1>{{ 'No times found' | translate }}</h1>
+            </ion-row>
+          </ion-grid>
+        </div>
 
-  <div class="no-items" *ngIf="times.length === 0">
-    <ion-grid>
-      <ion-row>
-        <ion-icon name="timer-outline"></ion-icon>
-      </ion-row>
-      <ion-row>
-        <h1>{{ 'No times found' | translate }}</h1>
-      </ion-row>
-    </ion-grid>
-  </div>
+        <ion-list *ngIf="loading">
+          <div *ngFor="let n of skeletons">
+            <ion-list-header>
+              <ion-label>
+                <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
+              </ion-label>
+              <p style="width: 50px;">
+                <ion-skeleton-text animated></ion-skeleton-text>
+              </p>
+            </ion-list-header>
+            <ion-item>
+              <ion-thumbnail slot="start">
+                <ion-skeleton-text animated></ion-skeleton-text>
+              </ion-thumbnail>
+              <ion-label>
+                <h2>
+                  <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
+                </h2>
+                <p>
+                  <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
+                </p>
+              </ion-label>
+              <p slot="end" style="width: 35px;">
+                <ion-skeleton-text animated></ion-skeleton-text>
+              </p>
+            </ion-item>
+          </div>
+        </ion-list>
 
-  <ion-list *ngIf="loading">
-    <div *ngFor="let n of skeletons">
-      <ion-list-header>
-        <ion-label>
-          <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
-        </ion-label>
-        <p style="width: 50px;"><ion-skeleton-text animated></ion-skeleton-text></p>
-      </ion-list-header>
-      <ion-item>
-        <ion-thumbnail slot="start">
-          <ion-skeleton-text animated></ion-skeleton-text>
-        </ion-thumbnail>
-        <ion-label>
-          <h2>
-            <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
-          </h2>
-          <p>
-            <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
-          </p>
-        </ion-label>
-        <p slot="end" style="width: 35px;">
-          <ion-skeleton-text animated></ion-skeleton-text>
-        </p>
-      </ion-item>
-    </div>
-  </ion-list>
+        <ion-list>
+          <div *ngFor="let group of groupedTimes">
+            <ion-list-header style="font-weight: 500;" [id]="group.date">
+              <ion-label>{{ group.date | date :'EEEE dd.MM.yyyy' }}</ion-label>
+              <p>{{ group.total | toDuration }}</p>
+            </ion-list-header>
 
-  <ion-list>
-    <div *ngFor="let group of groupedTimes">
-      <ion-list-header style="font-weight: 500;">
-        <ion-label>{{ group.date | date :'EEEE dd.MM.yyyy' }}</ion-label>
-        <p>{{ group.total | toDuration }}</p>
-      </ion-list-header>
+            <ion-item-sliding *ngFor="let time of group.times">
+              <ion-item routerLink="/display-time/{{ time.id }}">
+                <ion-avatar *ngIf="time.allowable_bill" slot="start">
+                  <img src="/assets/paid.png">
+                </ion-avatar>
+                <ion-avatar *ngIf="!time.allowable_bill" slot="start">
+                  <img src="/assets/free.png">
+                </ion-avatar>
+                <ion-label>
+                  <h2>{{ time?.project?.name }} </h2>
+                  <p>{{ time?.package?.name }}</p>
+                  <p>{{ time?.text }}</p>
+                </ion-label>
+                <p slot="end">{{ time?.duration }}</p>
+              </ion-item>
+              <ion-item-options side="end">
+                <ion-item-option color="primary" (click)="copy(time)">{{ 'Copy' | translate }}</ion-item-option>
+                <ion-item-option color="danger" (click)="delete(time)">{{ 'Delete' | translate }}</ion-item-option>
+              </ion-item-options>
+            </ion-item-sliding>
+          </div>
+        </ion-list>
 
-      <ion-item-sliding *ngFor="let time of group.times">
-        <ion-item routerLink="/display-time/{{ time.id }}">
-          <ion-avatar *ngIf="time.allowable_bill" slot="start">
-            <img src="/assets/paid.png">
-          </ion-avatar>
-          <ion-avatar *ngIf="!time.allowable_bill" slot="start">
-            <img src="/assets/free.png">
-          </ion-avatar>
-          <ion-label>
-            <h2>{{ time?.project?.name }} </h2>
-            <p>{{ time?.package?.name }}</p>
-            <p>{{ time?.text }}</p>
-          </ion-label>
-          <p slot="end">{{ time?.duration }}</p>
-        </ion-item>
-        <ion-item-options side="end">
-          <ion-item-option color="primary" (click)="copy(time)">{{ 'Copy' | translate }}</ion-item-option>
-          <ion-item-option color="danger" (click)="delete(time)">{{ 'Delete' | translate }}</ion-item-option>
-        </ion-item-options>
-      </ion-item-sliding>
-    </div>
-  </ion-list>
 
-  
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button routerLink="/create-time/" color="secondary">
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
-
-</ion-content>
+        <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+          <ion-fab-button routerLink="/create-time/" color="secondary">
+            <ion-icon name="add"></ion-icon>
+          </ion-fab-button>
+        </ion-fab>
+      </ion-content>
+    </ion-col>
+  </ion-row>
+</ion-grid>

@@ -44,3 +44,25 @@
       width: 40vmin;
     }
   }
+
+.back, .forward, .switch-btn, .week-title{
+  color: white!important;
+}
+
+$colors: (
+  primary:    #32db64,
+  secondary:  #32db64,
+  danger:     #f53d3d,
+  light:      #f4f4f4,
+  dark:       #222,
+  cal-color:  #ff8732
+);
+
+
+.md, .ios{
+  --max-width: 90%;
+}
+
+.alert-wrapper {
+  --width: 100%;
+}

@@ -20,7 +20,7 @@ import { StorageService } from 'src/app/services/storage/storage.service';
 export class TimePage {
 
   private today = new Date()
-  private isUpdate = false
+  public isUpdate = false
   public selectedDate = Date()
   public multiDay: Date = null
   public selectedProjectText = null;
@@ -125,6 +125,7 @@ export class TimePage {
 
   async onProjectSelected() {
     this.availablePackages = await this.apiService.getPackagesForProject(this.timesheet.pr_project_id)
+    this.updateSelectTexts()
   }
 
   save() {

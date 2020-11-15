@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { TimesPage } from './times.page';
 import { PipesModule } from 'src/app/pipes/pipes.module';
 import { TranslateModule } from '@ngx-translate/core';
+import { CalendarModule } from 'ion2-calendar';
 
 @NgModule({
   imports: [
@@ -14,6 +15,7 @@ import { TranslateModule } from '@ngx-translate/core';
     FormsModule,
     PipesModule,
     TranslateModule,
+    CalendarModule,
     RouterModule.forChild([{ path: '', component: TimesPage }])
   ],
   declarations: [
