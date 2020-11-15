@@ -21,6 +21,8 @@
     "Create effort": "Create effort",
     "Description": "Description",
     "Date": "Date",
+    "Date(s)": "Date(s)",
+    "Select date(s)": "Select date(s)",
     "Duration": "Duration",
     "Chargeable": "Chargeable",
     "Service": "Service",
@@ -40,7 +42,5 @@
     "Stopwatch": "Stopwatch",
     "Start": "Start",
     "Stop": "Stop",
-    "Copy": "Copy",
-    "Multiday": "Multiday",
-    "Create multiple efforts, one for each day": "Create multiple efforts, one for each day"
+    "Copy": "Copy"
 }

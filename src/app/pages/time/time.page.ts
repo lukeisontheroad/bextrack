@@ -11,6 +11,9 @@ import { Timesheet } from 'src/app/models/timesheet';
 import { DEFAULTS, STORAGE, TYPES } from 'src/app/models/constants';
 import { UtilsService } from 'src/app/services/utils/utils.service';
 import { StorageService } from 'src/app/services/storage/storage.service';
+import { CalendarModal } from 'ion2-calendar';
+import { ModalController } from '@ionic/angular';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-time',
@@ -21,8 +24,8 @@ export class TimePage {
 
   private today = new Date()
   public isUpdate = false
-  public selectedDate = Date()
-  public multiDay: Date = null
+
+  public selectedDates = [new Date()]
   public selectedProjectText = null;
   public selectedPackageText = null;
   public selectedDuration = 1
@@ -34,12 +37,15 @@ export class TimePage {
 
   public steps = 1
 
+
   constructor(
     private apiService: ApiService,
     private router: Router,
     private route: ActivatedRoute,
     private storage: StorageService,
-    private utils: UtilsService
+    private utils: UtilsService,
+    private translateService: TranslateService,
+    private modalContoller: ModalController
   ) {
     this.init()
   }
@@ -98,7 +104,7 @@ export class TimePage {
           this.isUpdate = true
           try {
             this.timesheet = await this.apiService.getTimesheet(parseInt(params['time_id']))
-            this.selectedDate = this.timesheet.date
+            this.selectedDates = [new Date(this.timesheet.date)]
             this.selectedDuration = this.utils.parseDuration(this.timesheet.duration)
             this.availablePackages = await this.apiService.getPackagesForProject(this.timesheet.pr_project_id)
           } catch (e) {
@@ -146,7 +152,7 @@ export class TimePage {
       return false;
     }
     this.timesheet.tracking.duration = new ToDurationPipe(this.utils).transform(this.selectedDuration)
-    this.timesheet.tracking.date = new DatePipe('en-US').transform(this.selectedDate, 'yyyy-MM-dd');
+    this.timesheet.tracking.date = this.selectedDuration[0] // new DatePipe('en-US').transform(this.selectedDate, 'yyyy-MM-dd');
     return true
   }
 
@@ -167,25 +173,40 @@ export class TimePage {
     })
   }
 
+  async openCalendar() {
+    const options = {
+      from: new Date('2018-01-01'),
+      defaultScrollTo: new Date(),
+      pickMode: 'multi',
+      title: await this.translateService.get('Select date(s)').toPromise(),
+      color: 'primary',
+      weekStart: 1,
+      defaultDates: this.selectedDates
+    };
+    const calendar = await this.modalContoller.create({
+      component: CalendarModal,
+      componentProps: { options }
+    });
+    calendar.present();
+    const event: any = await calendar.onDidDismiss();
+    let dates = []
+    for (var i = 0; i < event.data.length; i++) {
+      dates.push(event.data[i].dateObj)
+    }
+    this.selectedDates = dates
+  }
+
 
   async create() {
     if (!this.validateTime()) return
-
     let timesheets = []
     let promises = []
-    if (this.multiDay != null) {
-      const MS_PER_DAY: number = 1000 * 60 * 60 * 24;
-      const daysBetweenDates: number = Math.ceil((new Date(this.multiDay).getTime() - new Date(this.selectedDate).getTime()) / MS_PER_DAY) - 1;
-      const days: Date[] = Array.from(new Array(daysBetweenDates + 1), (v, i) => new Date(new Date(this.selectedDate).getTime() + (i * MS_PER_DAY)));
-
-      for (var i = 0; i < days.length; i++) {
-        let timesheet = JSON.parse(JSON.stringify(this.timesheet)) as Timesheet
-        timesheet.tracking.date = new DatePipe('en-US').transform(days[i], 'yyyy-MM-dd');
-        timesheets.push(timesheet)
-      }
-    } else {
-      timesheets.push(this.timesheet)
+    for (var i = 0; i < this.selectedDates.length; i++) {
+      let timesheet = JSON.parse(JSON.stringify(this.timesheet)) as Timesheet
+      timesheet.tracking.date = new DatePipe('en-US').transform(this.selectedDates[i], 'yyyy-MM-dd');
+      timesheets.push(timesheet)
     }
+
     promises.push(...timesheets.map(timesheet => this.apiService.postTimesheet(timesheet)))
     Promise.all(promises).then(async (values) => {
       this.storeLastUsed(this.timesheet)

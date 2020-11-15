@@ -19,19 +19,9 @@
 <ion-content>
   <ion-list>
 
-    <ion-item>
-      <ion-label position="stacked">{{ 'Description' | translate }}</ion-label>
-      <ion-textarea autoGrow="true" placeholder="Text" [(ngModel)]="timesheet.text"></ion-textarea>
-    </ion-item>
-
-    <ion-item>
-      <ion-label position="stacked">{{ 'Date' | translate }}</ion-label>
-      <ion-datetime [(ngModel)]="selectedDate" displayFormat="DDDD DD.MM.YYYY"></ion-datetime>
-    </ion-item>
-
-    <ion-item *ngIf="!isUpdate">
-      <ion-label position="stacked">{{ 'Multiday' | translate }}</ion-label>
-      <ion-datetime [(ngModel)]="multiDay" placeholder="{{ 'Create multiple efforts, one for each day' | translate }}" displayFormat="DDDD DD.MM.YYYY"></ion-datetime>
+    <ion-item (click)="openCalendar()">
+      <ion-label position="stacked">{{ 'Date(s)' | translate }}</ion-label>
+      <p *ngFor="let selectedDate of selectedDates">{{ selectedDate | date :'EEEE dd.MM.yyyy' }}</p>    
     </ion-item>
 
     <ion-item>
@@ -78,6 +68,10 @@
       </ion-select>
     </ion-item>
 
+    <ion-item>
+      <ion-label position="stacked">{{ 'Description' | translate }}</ion-label>
+      <ion-textarea autoGrow="true" placeholder="Text" [(ngModel)]="timesheet.text"></ion-textarea>
+    </ion-item>
 
   </ion-list>
 

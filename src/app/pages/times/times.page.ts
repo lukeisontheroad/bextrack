@@ -59,15 +59,14 @@ export class TimesPage {
     }
     this.groupedTimes = groupedTimes;
     this.optionsMulti = {
-      from: new Date(2020, 1, 1),
-      to: new Date(2020, 1, 1),
+      from: new Date(this.times[this.times.length-1].date),
+      to: new Date(this.times[0].date),
       pickMode: 'single',
       daysConfig: daysConfig,
       color: 'secondary',
       weekStart: 1
     }
-
-
+    
     if (event) {
       event.target.complete();
     }

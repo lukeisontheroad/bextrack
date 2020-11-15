@@ -21,6 +21,8 @@
     "Create effort": "Zeit erfassen",
     "Description": "Beschreibung",
     "Date": "Datum",
+    "Date(s)": "Datum",
+    "Select date(s)": "Daten auswählen",
     "Duration": "Dauer",
     "Chargeable": "Verrechenbar",
     "Service": "Service",
@@ -40,7 +42,5 @@
     "Stopwatch": "Stopuhr",
     "Start": "Start",
     "Stop": "Stop",
-    "Copy": "Kopieren",
-    "Multiday": "Mehrtägig",
-    "Create multiple efforts, one for each day": "Erstelle mehrere Einträge, einer pro Tag"
+    "Copy": "Kopieren"
 }
