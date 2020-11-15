@@ -35,7 +35,7 @@ export class StorageService {
   public getDate(key: string, def: Date = null): Promise<Date> {
     return new Promise(async (resolve, reject) => {
       let loaded = await this.getString(key)
-      if (def != null && loaded == null) {
+      if (loaded == null) {
         resolve(def)
       } else {
         resolve(new Date(loaded))

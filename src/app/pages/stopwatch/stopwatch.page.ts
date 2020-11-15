@@ -18,10 +18,10 @@ export class StopwatchPage {
   private refreshRate = 1000
   private notificationId = 1337
 
-  public timeBegan = null
-  public timeStopped: any = null
-  public stoppedDuration: any = 0
-  public started = null
+  public timeBegan: any = null
+  // public timeStopped: any = null
+  // public stoppedDuration: any = 0
+  public startedInterval = null
   public running = false
   public blankTime = "00:00:00"
   public time = "00:00:00"
@@ -37,35 +37,70 @@ export class StopwatchPage {
 
   async init() {
     this.timeBegan = await this.storage.getDate(STORAGE.STOPWATCH_START)
-    this.timeStopped = await this.storage.getDate(STORAGE.STOPWATCH_STOP)
+    // this.timeStopped = await this.storage.getDate(STORAGE.STOPWATCH_STOP)
+    // console.log('timeStopped', this.timeStopped)
     this.running = await this.storage.getBoolean(STORAGE.STOPWATCH_RUNNING)
     if (this.running) {
-      this.started = setInterval(this.clockRunning.bind(this), this.refreshRate);
+      this.startedInterval = setInterval(this.clockRunning.bind(this), this.refreshRate)
+      this.startNotification()
     }
     this.clockRunning()
-
-    if (!(await LocalNotifications.requestPermission())) {
-      return
-    }
   }
 
   async start() {
     if (this.running) return;
-    if (this.timeBegan === null) {
-      this.reset();
-      this.timeBegan = new Date();
-    }
-    if (this.timeStopped !== null) {
-      let newStoppedDuration: any = (+new Date() - this.timeStopped)
-      this.stoppedDuration = this.stoppedDuration + newStoppedDuration;
-    }
-    this.started = setInterval(this.clockRunning.bind(this), this.refreshRate);
-    this.running = true;
+    this.reset();
+    await this.storage.setItem(STORAGE.STOPWATCH_RUNNING, true)
+    await this.storage.setItem(STORAGE.STOPWATCH_START, new Date())
+    this.init()
+  }
 
-    await this.storage.setItem(STORAGE.STOPWATCH_RUNNING, this.running)
-    await this.storage.setItem(STORAGE.STOPWATCH_START, this.timeBegan)
-    await this.storage.removeItem(STORAGE.STOPWATCH_STOP)
+  async stop() {
+    this.stopNotification()
+    let durationSpan = new Date(new Date().getTime() - this.timeBegan)
+    console.log('hours', durationSpan.getUTCHours())
+    console.log('getMinutes', durationSpan.getMinutes())
+    console.log('getSeconds', durationSpan.getSeconds())
+    let duration = durationSpan.getTime() / 1000
+    let minTime = await this.storage.getNumber(STORAGE.SETTINGS_STEPS) * 60
+    if (duration >= minTime) {
+      this.router.navigate(['create-time-stopwatch', duration])
+    } else {
+      this.utils.showToast('Duration below minimum tracking time of ' + (minTime / 60) + 'min')
+    }
+    this.reset()
+  }
 
+  async reset() {
+    clearInterval(this.startedInterval);
+    await this.storage.removeItem(STORAGE.STOPWATCH_RUNNING)
+    await this.storage.removeItem(STORAGE.STOPWATCH_START)
+    this.running = false;
+    this.startedInterval = null;
+    this.timeBegan = null;
+    this.time = this.blankTime;
+  }
+
+  clockRunning() {
+    let currentTime: any = new Date()
+    var timeElapsed: any = new Date(currentTime - this.timeBegan)
+    if (!this.running) {
+      timeElapsed = new Date(-this.timeBegan)
+    }
+    let hour = timeElapsed.getUTCHours()
+    let min = timeElapsed.getUTCMinutes()
+    let sec = timeElapsed.getUTCSeconds()
+    this.time =
+      this.utils.pad(hour) + ":" +
+      this.utils.pad(min) + ":" +
+      this.utils.pad(sec)
+  };
+
+  async startNotification() {
+    console.log('Start notification')
+    if (!(await LocalNotifications.requestPermission())) {
+      return
+    }
     try {
       cordova.plugins.notification.local.schedule(
         {
@@ -80,56 +115,12 @@ export class StopwatchPage {
     } catch (ReferenceError) {
     }
   }
-  async stop() {
+
+  async stopNotification() {
+    console.log('Stop notification')
     try {
       cordova.plugins.notification.local.cancel(this.notificationId)
     } catch (ReferenceError) {
     }
-
-    this.running = false;
-    this.timeStopped = new Date();
-
-    await this.storage.setItem(STORAGE.STOPWATCH_RUNNING, this.running)
-    await this.storage.setItem(STORAGE.STOPWATCH_STOP, new Date())
-    clearInterval(this.started);
-    let durationSpan = new Date(this.timeStopped - this.timeBegan)
-    let duration = durationSpan.getHours() * 60 * 60 + durationSpan.getMinutes() * 60 + durationSpan.getSeconds()
-    let minTime = await this.storage.getNumber(STORAGE.SETTINGS_STEPS) * 60 * 60
-    if (duration >= minTime) {
-      this.router.navigate(['create-time-stopwatch', duration])
-    } else {
-      this.utils.showToast('Duration below minimum tracking time of 15min')
-
-    }
-    this.reset()
   }
-
-  async reset() {
-
-    await this.storage.removeItem(STORAGE.STOPWATCH_RUNNING)
-    await this.storage.removeItem(STORAGE.STOPWATCH_START)
-    await this.storage.removeItem(STORAGE.STOPWATCH_STOP)
-
-    this.running = false;
-    clearInterval(this.started);
-    this.stoppedDuration = 0;
-    this.timeBegan = null;
-    this.timeStopped = null;
-    this.time = this.blankTime;
-  }
-
-  clockRunning() {
-    let currentTime: any = new Date()
-    var timeElapsed: any = new Date(currentTime - this.timeBegan - this.stoppedDuration)
-    if (!this.running) {
-      timeElapsed = new Date(this.timeStopped - this.timeBegan)
-    }
-    let hour = timeElapsed.getUTCHours()
-    let min = timeElapsed.getUTCMinutes()
-    let sec = timeElapsed.getUTCSeconds()
-    this.time =
-      this.utils.pad(hour) + ":" +
-      this.utils.pad(min) + ":" +
-      this.utils.pad(sec)
-  };
 }

@@ -27,7 +27,6 @@ export const DEFAULTS = {
 
 export const STORAGE = {
     STOPWATCH_START: 'stopwatch_start',
-    STOPWATCH_STOP: 'stopwatch_stop',
     STOPWATCH_RUNNING: 'stopwatch_running',
 
     PROJECTS_SHOW_FAVORITES: 'projects_show_favorites',
