@@ -152,7 +152,7 @@ export class TimePage {
       return false;
     }
     this.timesheet.tracking.duration = new ToDurationPipe(this.utils).transform(this.selectedDuration)
-    this.timesheet.tracking.date = this.selectedDuration[0] // new DatePipe('en-US').transform(this.selectedDate, 'yyyy-MM-dd');
+    this.timesheet.tracking.date = new DatePipe('en-US').transform(this.selectedDates[0], 'yyyy-MM-dd');
     return true
   }
 
@@ -181,19 +181,30 @@ export class TimePage {
       title: await this.translateService.get('Select date(s)').toPromise(),
       color: 'primary',
       weekStart: 1,
-      defaultDates: this.selectedDates
+      defaultDates: this.selectedDates,
+      defaultDate: this.selectedDates[0]
     };
+    if(this.isUpdate){
+      options.pickMode = 'single'
+      options.defaultDate = this.selectedDates[0],
+      options.title = await this.translateService.get('Date').toPromise()
+    }
     const calendar = await this.modalContoller.create({
       component: CalendarModal,
       componentProps: { options }
     });
     calendar.present();
     const event: any = await calendar.onDidDismiss();
-    let dates = []
-    for (var i = 0; i < event.data.length; i++) {
-      dates.push(event.data[i].dateObj)
+    if(this.isUpdate){
+      this.selectedDates = [event.data.dateObj]
+    }else{
+      let dates = []
+      for (var i = 0; i < event.data.length; i++) {
+        dates.push(event.data[i].dateObj)
+      }
+      this.selectedDates = dates
     }
-    this.selectedDates = dates
+
   }
 
 

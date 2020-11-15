@@ -17,7 +17,7 @@ export class TimesPage {
 
   public times: Timesheet[] = []
   public groupedTimes = []
-  public skeletons = new Array(8);
+  public skeletons = new Array(12);
   public loading = true;
 
   date: string;

@@ -12,7 +12,8 @@
         <ion-icon slot="icon-only" name="save"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>{{ 'Create effort' | translate }}</ion-title>
+    <ion-title *ngIf="!isUpdate">{{ 'Create effort' | translate }}</ion-title>
+    <ion-title *ngIf="isUpdate">{{ 'Update effort' | translate }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -20,7 +21,8 @@
   <ion-list>
 
     <ion-item (click)="openCalendar()">
-      <ion-label position="stacked">{{ 'Date(s)' | translate }}</ion-label>
+      <ion-label *ngIf="!isUpdate" position="stacked">{{ 'Date(s)' | translate }}</ion-label>
+      <ion-label *ngIf="isUpdate" position="stacked">{{ 'Date' | translate }}</ion-label>
       <p *ngFor="let selectedDate of selectedDates">{{ selectedDate | date :'EEEE dd.MM.yyyy' }}</p>    
     </ion-item>
 
