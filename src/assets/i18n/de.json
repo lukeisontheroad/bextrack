@@ -43,5 +43,15 @@
     "Stopwatch": "Stopuhr",
     "Start": "Start",
     "Stop": "Stop",
-    "Copy": "Kopieren"
+    "Copy": "Kopieren",
+    "Duration steps": "Kleinste Zeiteinheit",
+    "Hours per day": "Arbeitstag",
+    "Default duration": "Standard Dauer",
+    "Default status": "Standard Status",
+    "Default service": "Standard Service",
+    "Default project": "Standard Projekt",
+    "minute(s)": "Minuten",
+    "hour(s)": "Stunden",
+    "Last used": "Letzte Auswahl"
+
 }

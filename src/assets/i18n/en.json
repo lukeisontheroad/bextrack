@@ -43,5 +43,14 @@
     "Stopwatch": "Stopwatch",
     "Start": "Start",
     "Stop": "Stop",
-    "Copy": "Copy"
+    "Copy": "Copy",
+    "Duration steps": "Duration steps",
+    "Hours per day": "Hours per day",
+    "Default duration": "Default duration",
+    "Default status": "Default status",
+    "Default service": "Default service",
+    "Default project": "Default project",
+    "minute(s)": "minute(s)",
+    "hour(s)": "hour(s)",
+    "Last used": "Last used"
 }
