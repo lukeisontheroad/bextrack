@@ -17,10 +17,10 @@ ion-calendar{
   min-height: 370px;
 }
 
-@media (max-width: 820px) {
-  .col-content {
-    height: calc(100% - 370px);
-  }
+@media (max-width: 767px) {
+    .col-content {
+      height: calc(100% - 370px);
+    }
 }
 
 .tablet{
