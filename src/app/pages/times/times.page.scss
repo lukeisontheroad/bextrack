@@ -23,6 +23,12 @@ ion-calendar{
     }
 }
 
+@media (max-height: 375px) {
+  ion-header{
+    display: none;
+  }
+}
+
 .tablet{
   margin: 0;
   --ion-grid-padding: 0px;
