@@ -22,7 +22,7 @@
             <ion-card-title>{{ 'Hours' | translate }}</ion-card-title>
           </ion-card-header>
           <ion-card-content>
-            <h1 *ngIf="!loading">{{ totalHoursLastWeek }}</h1>
+            <h1 *ngIf="!loading">{{ totalHoursLastWeek | number:'1.0-2' }}</h1>
             <ion-skeleton-text animated *ngIf="loading"></ion-skeleton-text>
           </ion-card-content>
         </ion-card>
@@ -47,7 +47,7 @@
             <ion-card-title>{{ 'Hours' | translate }}</ion-card-title>
           </ion-card-header>
           <ion-card-content>
-            <h1 *ngIf="!loading">{{ totalHoursLastMonth }}</h1>
+            <h1 *ngIf="!loading">{{ totalHoursLastMonth | number:'1.0-2' }}</h1>
             <ion-skeleton-text animated *ngIf="loading"></ion-skeleton-text>
           </ion-card-content>
         </ion-card>
