@@ -29,7 +29,26 @@
     <ion-item>
       <ion-label position="stacked">{{ 'Duration' | translate }}</ion-label>
       <ion-range [min]="steps" max="12" [step]="steps" snaps="true" ticks="false" [(ngModel)]="selectedDuration"></ion-range>
-      <span style="width: 100%; text-align: center;">{{ selectedDuration | toDuration }} hour(s)</span>
+      <span style="width: 100%; text-align: center;">{{ selectedDuration | toDuration }} {{ 'hour(s)' | translate }}</span>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">{{ 'Contact' | translate}}</ion-label>
+      <ionic-selectable
+      [(ngModel)]="contact"
+      itemValueField="id"
+      [searchDebounce]="500"
+      [canSearch]="true"
+      [canClear]="true"
+      (onSearch)="searchContact($event)">
+      <ng-template ionicSelectableIconTemplate></ng-template>
+      <ng-template ionicSelectableItemIconTemplate></ng-template>
+      <ng-template ionicSelectableSearchFailTemplate><div class="ion-margin">{{ 'No contacts found' | translate }}</div></ng-template>
+      <ng-template ionicSelectableItemEndTemplate let-port="item" let-isPortSelected="isItemSelected"></ng-template>
+      <ng-template ionicSelectableItemTemplate let-port="item" let-isPortSelected="isItemSelected">{{port.name_2}} {{port.name_1}}</ng-template>
+      <ng-template ionicSelectablePlaceholderTemplate>{{ 'Select contact' | translate}}</ng-template>  
+      <ng-template ionicSelectableValueTemplate let-port="value">{{port.name_2}} {{port.name_1}}</ng-template>
+    </ionic-selectable>
     </ion-item>
 
     <ion-item>

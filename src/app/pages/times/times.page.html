@@ -20,17 +20,6 @@
           </ion-refresher-content>
         </ion-refresher>
 
-        <div class="no-items" *ngIf="times.length === 0 && !loading">
-          <ion-grid>
-            <ion-row>
-              <ion-icon name="timer-outline"></ion-icon>
-            </ion-row>
-            <ion-row>
-              <h1>{{ 'No times found' | translate }}</h1>
-            </ion-row>
-          </ion-grid>
-        </div>
-
         <ion-list *ngIf="loading">
           <div *ngFor="let n of skeletons">
             <ion-list-header>
@@ -60,8 +49,23 @@
           </div>
         </ion-list>
 
+        <div class="no-items" *ngIf="times.length === 0 && !loading">
+          <ion-grid>
+            <ion-row>
+              <ion-icon name="timer-outline"></ion-icon>
+            </ion-row>
+            <ion-row>
+              <h1>{{ 'No times found' | translate }}</h1>
+            </ion-row>
+          </ion-grid>
+        </div>
+
         <ion-list>
+          <!-- <ion-virtual-scroll [items]="groupedTimes" approxItemHeight="100px"> -->
+
           <div *ngFor="let group of groupedTimes">
+            <!-- <div *virtualItem="let group"> -->
+
             <ion-list-header style="font-weight: 500;" [id]="group.date">
               <ion-label>{{ group.date | date :'EEEE dd.MM.yyyy' }}</ion-label>
               <p>{{ group.total | toDuration }}</p>
@@ -88,6 +92,8 @@
               </ion-item-options>
             </ion-item-sliding>
           </div>
+          <!-- </ion-virtual-scroll> -->
+
         </ion-list>
 
 

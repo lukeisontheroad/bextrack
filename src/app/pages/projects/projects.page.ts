@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
 import { IonList } from '@ionic/angular';
 import { DEFAULTS, STORAGE } from 'src/app/models/constants';
 import { Project } from 'src/app/models/project';
@@ -11,6 +11,9 @@ import { StorageService } from 'src/app/services/storage/storage.service';
   styleUrls: ['projects.page.scss']
 })
 export class ProjectsPage {
+
+  loading = true
+  public skeletons = new Array(20);
 
   @ViewChild(IonList, { static: true }) list: IonList;
 
@@ -31,16 +34,19 @@ export class ProjectsPage {
     this.showOnlyFavorites = await this.storage.getBoolean(STORAGE.PROJECTS_SHOW_FAVORITES, DEFAULTS.SHOW_FAVORITES)
     this.favorites = JSON.parse(await this.storage.getString(STORAGE.PROJECTS_FAVORITES, JSON.stringify(DEFAULTS.FAVORITES)))
     this.doRefresh();
-    this.apiService.projectsUpdated.subscribe(() => this.doRefresh())
+    this.apiService.projectsUpdated.subscribe(async () => {
+      this.allProjects = await this.apiService.getProjects()
+      this.setActiveList()
+    })
   }
 
   public async doRefresh(event?: any) {
-    this.allProjects = await this.apiService.getProjects()
-    this.setActiveList()
-
+    this.loading = true
+    await this.apiService.getPackages(true)
     if (event) {
       event.target.complete();
     }
+    this.loading = false
   }
 
   public async toggleFavorites(){

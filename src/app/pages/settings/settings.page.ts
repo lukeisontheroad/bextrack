@@ -9,6 +9,7 @@ import { DEFAULTS, STORAGE } from 'src/app/models/constants';
 import * as _ from 'lodash';
 import { UtilsService } from 'src/app/services/utils/utils.service';
 import { StorageService } from 'src/app/services/storage/storage.service';
+import { StorageBackend } from '@openid/appauth';
 
 @Component({
   selector: 'app-settings',
@@ -36,7 +37,8 @@ export class SettingsPage {
     private apiService: ApiService,
     private authService: AuthService,
     private storage: StorageService,
-    private utils: UtilsService
+    private utils: UtilsService,
+    private storageBackend: StorageBackend
   ) {
 
     this.init()
@@ -56,8 +58,11 @@ export class SettingsPage {
     this.isInit = true
   }
 
-  logout() {
-    this.authService.signOut()
+  async logout() {
+    await this.authService.signOut()
+    this.navCtrl.navigateRoot('auth/endsession')
+    await this.storageBackend.clear()
+    window.location.href = '/'
   }
 
   notificationsChanged = _.debounce(async () => {

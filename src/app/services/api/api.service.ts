@@ -7,6 +7,7 @@ import { Timesheet } from 'src/app/models/timesheet';
 import { TimesheetStatus } from 'src/app/models/timsheet_status';
 import { User } from 'src/app/models/user';
 import { Package } from 'src/app/models/package';
+import { Contact } from 'src/app/models/contact';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +20,9 @@ export class ApiService {
   @Output()
   projectsUpdated = new EventEmitter();
 
+  @Output()
+  contactsUpdated = new EventEmitter();
+
   private limit = 300
   private corsProxy = 'https://cors.lukeisontheroad.xyz/'
   private baseUrl = this.corsProxy + 'https://api.bexio.com/'
@@ -27,6 +31,7 @@ export class ApiService {
   private users: User[] = []
   private usersMap: any = {};
   private projects: Project[] = []
+  private contacts: Contact[] = []
   private projectMap: any = {};
   private timesheets: Timesheet[] = []
   private timesheetStatus: TimesheetStatus[] = []
@@ -53,10 +58,11 @@ export class ApiService {
           await Promise.all([
             this.getTimesheetStatus(true),
             this.getClientService(true),
-            this.getProjects(true)
+            // this.getProjects(true),
+            // this.getContacts(true)
           ]);
 
-          this.getPackages()
+          // this.getPackages()
 
           for (var i = 0; i < this.users.length; i++) {
             if (this.users[i].email === action.user.email) {
@@ -71,7 +77,16 @@ export class ApiService {
     })
   }
 
-
+  public async getContacts(force = false): Promise<Contact[]> {
+    return new Promise(async (resolve, reject) => {
+      if (force || this.projects.length === 0) {
+        const contacts = await this.http.get<Contact[]>(this.baseUrl + '2.0/contact/?order_by=name_1_asc').toPromise();
+        this.contacts = contacts
+        this.contactsUpdated.next()
+      }
+      resolve(this.contacts)
+    });
+  }
 
   public async getProjects(force = false): Promise<Project[]> {
     return new Promise(async (resolve, reject) => {
@@ -175,6 +190,27 @@ export class ApiService {
     })
   }
 
+  public searchContact(value): Promise<Contact[]> {
+    return new Promise(async (resolve, reject) => {
+      let firstname = this.http.post<Contact[]>(this.baseUrl + '2.0/contact/search?limit=20', [
+        {
+          "field": "name_1",
+          "value": value,
+          "criteria": "like"
+        }
+      ]).toPromise()
+      let lastname = this.http.post<Contact[]>(this.baseUrl + '2.0/contact/search?limit=20', [
+        {
+          "field" : "name_2",
+          "value" : value,
+          "criteria" : "like"
+        }
+      ]).toPromise()      
+
+      resolve([...await firstname, ...await lastname])
+    })
+  }
+
   public async getTimesheets(user_id: number = -1, force = false): Promise<Timesheet[]> {
     return new Promise(async (resolve, reject) => {
       if (force || this.timesheets.length === 0) {
@@ -232,6 +268,7 @@ export class ApiService {
   }
 
   public async getPackages(force = false) {
+    await this.getProjects(force)
     let promises = []
     for (var i = 0; i < this.projects.length; i++) {
       const projectid = this.projects[i].id

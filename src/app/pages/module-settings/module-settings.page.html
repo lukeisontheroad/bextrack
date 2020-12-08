@@ -1,0 +1,28 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/settings"></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      {{ 'Module settings' | translate }}
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-list-header>{{ 'Time tracking reminder' | translate }}</ion-list-header>
+    <ion-item>
+      <ion-label>{{ 'Dashboard' | translate }}</ion-label>
+      <ion-checkbox slot="end" [(ngModel)]="modules.dashboard" (ionChange)="notificationsChanged()"></ion-checkbox>
+    </ion-item>
+    <ion-item>
+      <ion-label>{{ 'Times' | translate }}</ion-label>
+      <ion-checkbox slot="end" [(ngModel)]="modules.times" (ionChange)="notificationsChanged()"></ion-checkbox>
+    </ion-item>
+    <ion-item>
+      <ion-label>{{ 'Projects' | translate }}</ion-label>
+      <ion-checkbox slot="end" [(ngModel)]="modules.projects" (ionChange)="notificationsChanged()"></ion-checkbox>
+    </ion-item>
+  </ion-list>
+</ion-content>

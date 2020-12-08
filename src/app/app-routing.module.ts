@@ -59,10 +59,18 @@ const routes: Routes = [
     loadChildren: () => import('./pages/notification-settings/notification-settings.module').then( m => m.NotificationSettingsPageModule)
   },
   {
+    path: 'module-settings',
+    loadChildren: () => import('./pages/module-settings/module-settings.module').then( m => m.NotificationSettingsPageModule)
+  },
+  {
     path: '**',
     pathMatch: 'full',
     // canActivate: [AuthGuardService],
     redirectTo: 'loading',
+  },
+  {
+    path: 'contacts',
+    loadChildren: () => import('./pages/contacts/contacts.module').then( m => m.ContactsPageModule)
   },
 
 ];

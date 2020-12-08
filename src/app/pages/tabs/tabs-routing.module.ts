@@ -13,7 +13,17 @@ const routes: Routes = [
           {
             path: '',
             loadChildren: () =>
-              import('../times/times.module').then(m => m.TimesModule)
+              import('../times/times.module').then(m => m.TimesPageModule)
+          }
+        ]
+      },
+      {
+        path: 'contacts',
+        children: [
+          {
+            path: '',
+            loadChildren: () =>
+              import('../contacts/contacts.module').then(m => m.ContactsPageModule)
           }
         ]
       },

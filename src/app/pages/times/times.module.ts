@@ -22,4 +22,4 @@ import { CalendarModule } from 'ion2-calendar';
     TimesPage, 
   ]
 })
-export class TimesModule {}
+export class TimesPageModule {}

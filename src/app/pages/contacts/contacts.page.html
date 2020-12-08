@@ -1,0 +1,50 @@
+<ion-header color="primary">
+  <ion-toolbar color="primary">
+    <ion-title>
+      {{ 'Contacts' | translate }}
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-searchbar debounce="500" (ionChange)="onSearch($event)"></ion-searchbar>
+
+  <ion-list *ngIf="loading">
+    <div *ngFor="let n of skeletons">
+      <ion-item>
+        <ion-avatar slot="start">
+          <ion-skeleton-text animated></ion-skeleton-text>
+        </ion-avatar>
+        <ion-label>
+          <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+        </ion-label>
+      </ion-item>
+    </div>
+  </ion-list>
+
+  <ion-list>
+    <ion-virtual-scroll [items]="filteredContacts" approxItemHeight="40px">
+
+    <ion-item-sliding *virtualItem="let contact;">
+      <ion-item>
+
+        <ion-icon slot="start" *ngIf="contact.contact_type_id == 1" name="business-outline"></ion-icon>
+        <ion-icon slot="start" *ngIf="contact.contact_type_id != 1" name="person-outline"></ion-icon>
+        <ion-label>
+          <h2>{{ contact?.name_1 }}<span *ngIf="contact.name_2">,</span> {{ contact?.name_2 }}</h2>
+          <p *ngIf="contact.phone_mobile">{{ contact.phone_mobile }}</p>
+          <p *ngIf="contact.phone_fixed">{{ contact.phone_fixed }}</p>
+          <p *ngIf="contact.mail">{{ contact.mail }}</p>
+          <p *ngIf="contact.address">{{ contact.address }}</p>
+          <p *ngIf="contact.postcode || contact.city">{{ contact.postcode }} {{ contact.city }}</p>
+        </ion-label>
+      </ion-item>
+      <ion-item-options side="end">
+        <ion-item-option (click)="export(contact)">{{ 'Export' | translate }}</ion-item-option>
+        <!-- <ion-item-option color="danger" (click)="delete(time)">{{ 'Delete' | translate }}</ion-item-option> -->
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-virtual-scroll>
+
+  </ion-list>
+</ion-content>

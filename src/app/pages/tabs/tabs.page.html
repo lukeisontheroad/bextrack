@@ -2,9 +2,14 @@
 
   <ion-tab-bar slot="bottom">
 
-    <ion-tab-button tab="dashboard">
+    <ion-tab-button tab="dashboard" *ngIf="modules?.dashboard">
       <ion-icon name="stats-chart-outline"></ion-icon>
       <ion-label>{{ 'Dashboard' | translate }}</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="contacts">
+      <ion-icon name="people-outline"></ion-icon>
+      <ion-label>{{ 'Contacts' | translate }}</ion-label>
     </ion-tab-button>
 
     <ion-tab-button tab="stopwatch">
@@ -12,12 +17,12 @@
       <ion-label>{{ 'Stopwatch' | translate }}</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="times">
+    <ion-tab-button tab="times" *ngIf="modules?.times">
       <ion-icon name="timer-outline"></ion-icon>
       <ion-label>{{ 'Times' | translate }}</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="projects">
+    <ion-tab-button tab="projects" *ngIf="modules?.projects">
       <ion-icon name="briefcase-outline"></ion-icon>
       <ion-label>{{ 'Projects' | translate }}</ion-label>
     </ion-tab-button>

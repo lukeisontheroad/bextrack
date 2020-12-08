@@ -23,6 +23,19 @@
 
   <!-- <ion-searchbar></ion-searchbar> -->
 
+  <ion-list *ngIf="loading">
+    <div *ngFor="let n of skeletons">
+      <ion-item>
+        <ion-avatar slot="start">
+          <ion-skeleton-text animated></ion-skeleton-text>
+        </ion-avatar>
+        <ion-label>
+          <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+        </ion-label>
+      </ion-item>
+    </div>
+  </ion-list>
+
   <div class="no-items" *ngIf="projects.length === 0">
     <ion-grid>
       <ion-row>
@@ -36,7 +49,7 @@
     </ion-grid>
   </div>
 
-  <ion-list *ngIf="projects.length > 0">
+  <ion-list>
     <div *ngFor="let project of projects">
       <ion-item-sliding>
         <ion-item routerLink="/create-time/{{ project.id }}">

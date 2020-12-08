@@ -17,6 +17,11 @@ export const DEFAULTS = {
         d5: true, // Friday
         d6: false, // Saturday
     },
+    MODULES: {
+        dashboard: true,
+        times: true,
+        projects: true
+    },
     STEPS: 15,
     DURATION: 1,
     HOURS_PER_DAY: 8,
@@ -43,5 +48,6 @@ export const STORAGE = {
     SETTINGS_HOURS_PER_DAY: 'settings_hours_per_day',
     SETTINGS_DURATION: 'settings_duration',
     SETTINGS_NOTIFICATIONS_TIME: 'settings_notifications_time',
-    SETTINGS_NOTIFICATIONS_WEEKDAYS: 'settings_notifications_weekdays'
+    SETTINGS_NOTIFICATIONS_WEEKDAYS: 'settings_notifications_weekdays',
+    SETTINGS_MODULES: 'settings_modules'
 }

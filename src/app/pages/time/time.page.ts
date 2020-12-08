@@ -14,6 +14,9 @@ import { StorageService } from 'src/app/services/storage/storage.service';
 import { CalendarModal } from 'ion2-calendar';
 import { ModalController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
+import { IonicSelectableComponent } from 'ionic-selectable';
+import { Observable } from 'rxjs';
+import { Contact } from 'src/app/models/contact';
 
 @Component({
   selector: 'app-time',
@@ -37,6 +40,7 @@ export class TimePage {
 
   public steps = 1
 
+  public contact: Contact = null;
 
   constructor(
     private apiService: ApiService,
@@ -49,6 +53,8 @@ export class TimePage {
   ) {
     this.init()
   }
+
+  private contactSearch: Observable<Contact[]> = null // = this.apiService.searchContact()
 
   private async init() {
     let user = await this.apiService.getUser()
@@ -135,12 +141,33 @@ export class TimePage {
   }
 
   save() {
+    if(this.contact != null){
+      this.timesheet.contact_id = this.contact.id
+    }
     if (this.isUpdate) {
       this.update()
     } else {
       this.create()
     }
   }
+
+  contactChange(event: {
+    component: IonicSelectableComponent,
+    value: any
+  }) {
+    console.log('port:', event.value);
+  }
+
+  async searchContact(event: {
+    component: IonicSelectableComponent,
+    text: string
+  }) {
+    let text = event.text.trim().toLowerCase();
+    event.component.startSearch();
+    event.component.items = await this.apiService.searchContact(text)
+    event.component.endSearch();
+  }
+
 
   async validateTime() {
     if (
@@ -184,10 +211,10 @@ export class TimePage {
       defaultDates: this.selectedDates,
       defaultDate: this.selectedDates[0]
     };
-    if(this.isUpdate){
+    if (this.isUpdate) {
       options.pickMode = 'single'
       options.defaultDate = this.selectedDates[0],
-      options.title = await this.translateService.get('Date').toPromise()
+        options.title = await this.translateService.get('Date').toPromise()
     }
     const calendar = await this.modalContoller.create({
       component: CalendarModal,
@@ -195,9 +222,9 @@ export class TimePage {
     });
     calendar.present();
     const event: any = await calendar.onDidDismiss();
-    if(this.isUpdate){
+    if (this.isUpdate) {
       this.selectedDates = [event.data.dateObj]
-    }else{
+    } else {
       let dates = []
       for (var i = 0; i < event.data.length; i++) {
         dates.push(event.data[i].dateObj)

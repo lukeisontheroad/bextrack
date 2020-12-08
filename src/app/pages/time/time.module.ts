@@ -6,7 +6,7 @@ import { TimePage } from './time.page';
 import { TranslateModule } from '@ngx-translate/core';
 import { PipesModule } from 'src/app/pipes/pipes.module';
 import { RouterModule } from '@angular/router';
-
+import { IonicSelectableModule } from 'ionic-selectable';
 @NgModule({
   imports: [
     CommonModule,
@@ -14,6 +14,7 @@ import { RouterModule } from '@angular/router';
     IonicModule,
     TranslateModule,
     PipesModule,
+    IonicSelectableModule,
     RouterModule.forChild([{ path: '', component: TimePage }])
   ],
   declarations: [

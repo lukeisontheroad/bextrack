@@ -33,12 +33,14 @@ export class TimesPage {
     private apiService: ApiService,
     private utils: UtilsService
   ) {
+    this.apiService.timesUpdated.subscribe(() => {
+      this.updateTimes(false)
+    })
     this.doRefresh(null, true);
-    this.apiService.timesUpdated.subscribe(() => this.doRefresh())
+    this.apiService.getPackages()
   }
 
-  public async doRefresh(event?: any, force = false) {
-    this.loading = true
+  private async updateTimes(force){
     let groupedTimes = []
     let daysConfig: Array<DayConfig> = new Array()
 
@@ -66,11 +68,18 @@ export class TimesPage {
       color: 'secondary',
       weekStart: 1
     }
-    
+  }
+
+  public async doRefresh(event?: any, force = false) {
+    this.loading = true
+    this.updateTimes(true)
+
     if (event) {
       event.target.complete();
     }
-    this.loading = false
+    setTimeout(()=> {
+      this.loading = false
+    }, 1000)
   }
 
   async delete(timesheet: Timesheet) {
