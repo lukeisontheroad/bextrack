@@ -30,6 +30,7 @@ export const DEFAULTS = {
     HOURS_PER_DAY: 8,
 
     SHOW_FAVORITES: false,
+    CURRENT_FILTER: '',
     FAVORITES: []
 }
 
@@ -38,6 +39,7 @@ export const STORAGE = {
     STOPWATCHES_FIELDS: ['startTime', 'savedTime', 'difference', 'paused', 'running', 'timerDisplay'],
 
     PROJECTS_SHOW_FAVORITES: 'projects_show_favorites',
+    PROJECTS_CURRENT_FILTER: 'projects_current_filter',
     PROJECTS_FAVORITES: 'projects_favorites',
 
     SETTINGS_LAST_SERVICE: 'settings_last_service',

@@ -16,4 +16,8 @@ export interface Project {
     pr_budget_type_id: number;
     pr_budget_type_amount: string;
     packages: Package[];
+
+    // Calculated
+    estimated_time_in_hours: number;
+    spent_time_in_hours: number;
 }

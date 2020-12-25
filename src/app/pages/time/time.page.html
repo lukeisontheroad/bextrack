@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar color="primary">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/tabs/projects"></ion-back-button>
+      <ion-back-button [text]="'Back' | translate" defaultHref="/tabs/projects"></ion-back-button>
     </ion-buttons>
 
     <ion-buttons *ngIf="!isSaving" slot="end">

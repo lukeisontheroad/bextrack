@@ -95,6 +95,15 @@ export class ApiService {
         this.projects = projects
         for (var i = 0; i < this.projects.length; i++) {
           this.projects[i].packages = this.cachedPackagesProjectId[this.projects[i].id]
+          if(this.projects[i].packages){
+            this.projects[i].spent_time_in_hours = 0
+            this.projects[i].estimated_time_in_hours = 0
+            
+            for(var j = 0; j < this.projects[i].packages.length; j++){
+              if(this.projects[i].packages[j].estimated_time_in_hours) this.projects[i].estimated_time_in_hours += this.projects[i].packages[j].estimated_time_in_hours
+              if(this.projects[i].packages[j]) this.projects[i].spent_time_in_hours += this.projects[i].packages[j].spent_time_in_hours
+            }
+          }
           this.projectMap[this.projects[i].id] = this.projects[i]
         }
         this.projectsUpdated.next()

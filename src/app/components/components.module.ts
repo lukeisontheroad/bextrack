@@ -4,6 +4,7 @@ import { FormsModule } from "@angular/forms";
 import { IonicModule } from "@ionic/angular";
 import { TranslateModule } from "@ngx-translate/core";
 import { StopwatchTemplateComponent } from "./stopwatch-template/stopwatch-template.component";
+import { TimeDisplayComponent } from "./time-display/time-display.component";
 
 @NgModule({
   imports: [
@@ -14,9 +15,11 @@ import { StopwatchTemplateComponent } from "./stopwatch-template/stopwatch-templ
   ],
   declarations: [
     StopwatchTemplateComponent, 
+    TimeDisplayComponent
   ],
   exports: [
-    StopwatchTemplateComponent
+    StopwatchTemplateComponent,
+    TimeDisplayComponent
   ]
 })
 export class ComponentsModule {}

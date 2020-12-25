@@ -1,0 +1,3 @@
+<p *ngIf="object?.estimated_time_in_hours > 0 && object?.spent_time_in_hours == 0">{{ 'Time estimated' | translate }}: {{ object?.spent_time_in_hours}} / {{ object?.estimated_time_in_hours}} {{ 'hours' | translate}}</p>
+<p *ngIf="object?.estimated_time_in_hours == 0 && object?.spent_time_in_hours > 0">{{ 'Time spend' | translate }}: {{ object?.spent_time_in_hours}} {{ 'hours' | translate}}</p>
+<p *ngIf="object?.estimated_time_in_hours > 0 && object?.spent_time_in_hours > 0">{{ 'Time spend' | translate }}: {{ object?.spent_time_in_hours}} / {{ object?.estimated_time_in_hours}} {{ 'hours' | translate}} ({{ (objectpackage?.spent_time_in_hours / object?.estimated_time_in_hours * 100) | number:'1.0-0' }}%)</p>
