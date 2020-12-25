@@ -1,0 +1,30 @@
+<ion-item-sliding>
+  <ion-item>
+    <ion-avatar *ngIf="stopwatch.allowable_bill" slot="start">
+      <img src="/assets/paid.png">
+    </ion-avatar>
+    <ion-avatar *ngIf="!stopwatch.allowable_bill" slot="start">
+      <img src="/assets/free.png">
+    </ion-avatar>
+    <ion-label>
+      <h2>{{ stopwatch?.title }}</h2>
+      <p *ngIf="stopwatch?.selectedProjectText">{{ 'Project' | translate }}: {{ stopwatch?.selectedProjectText}}</p>
+      <p *ngIf="stopwatch?.selectedPackageText">{{ 'Package' | translate }}: {{ stopwatch?.selectedPackageText}}</p>
+      <p *ngIf="stopwatch?.selectedClientServiceText">{{ 'Service' | translate }}: {{ stopwatch?.selectedClientServiceText}}</p>
+      <p *ngIf="stopwatch?.selectedStatusText">{{ 'Status' | translate }}: {{ stopwatch?.selectedStatusText}}</p>
+      <p>{{ 'Description' | translate }}: {{ stopwatch?.text}}</p>
+    </ion-label>
+    <div class="controls" slot="end">
+      <ion-button *ngIf="difference == 0 && (running == 0 || paused == 1)"  slot="end" (click)="startTimer()"><ion-icon name="play-outline"></ion-icon>&nbsp;{{ 'Start' | translate}}</ion-button>
+      <ion-button *ngIf="difference > 0 && (running == 0 || paused == 1)" slot="end" (click)="startTimer()"><ion-icon name="play-outline"></ion-icon>&nbsp;{{ 'Continue' | translate}}</ion-button>
+      <ion-button slot="end" color="warning" *ngIf="running == 1 && paused != 1" (click)="pauseTimer()"><ion-icon name="pause-outline"></ion-icon>&nbsp;{{ 'Pause' | translate}}</ion-button>
+      <br />
+      <ion-button fill="clear" slot="end">{{ timerDisplay }}</ion-button><br />
+      <ion-button color="secondary" slot="end" slot="end" (click)="stopTimer()"><ion-icon name="create-outline"></ion-icon>&nbsp;{{ 'Create' | translate}}</ion-button>
+    </div>
+  </ion-item>
+  <ion-item-options side="end">
+    <ion-item-option color="warning" (click)="edit()">{{ 'Edit' | translate }}</ion-item-option>
+    <ion-item-option color="danger" (click)="delete()">{{ 'Delete' | translate }}</ion-item-option>
+  </ion-item-options>
+</ion-item-sliding>
