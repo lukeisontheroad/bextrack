@@ -41,3 +41,7 @@ ion-calendar{
     height: 100%;
   }
 }
+
+::ng-deep .alert-wrapper {
+  --min-width: 80%;
+}

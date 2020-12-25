@@ -84,7 +84,7 @@
                   <p>{{ time?.package?.name }}</p>
                   <p>{{ time?.text }}</p>
                 </ion-label>
-                <p slot="end">{{ time?.duration }}</p>
+                <p slot="end">{{ time?.duration | formatDuration }}</p>
               </ion-item>
               <ion-item-options side="end">
                 <ion-item-option color="primary" (click)="copy(time)">{{ 'Copy' | translate }}</ion-item-option>

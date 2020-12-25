@@ -37,6 +37,7 @@
           <p *ngIf="contact.mail">{{ contact.mail }}</p>
           <p *ngIf="contact.address">{{ contact.address }}</p>
           <p *ngIf="contact.postcode || contact.city">{{ contact.postcode }} {{ contact.city }}</p>
+          <!-- <p>Exists: {{ (getContact(contact) | async).isUpdate }}</p> -->
         </ion-label>
       </ion-item>
       <ion-item-options side="end">

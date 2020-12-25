@@ -10,11 +10,19 @@ const routes: Routes = [
     loadChildren: () => import('./pages/tabs/tabs.module').then(m => m.TabsPageModule)
   },
   {
+    path: 'stopwatch',
+    loadChildren: () => import('./pages/stopwatch/stopwatch.module').then(m => m.CreateStopwatchPageModule)
+  },
+  {
+    path: 'stopwatch/:stopwatch_id',
+    loadChildren: () => import('./pages/stopwatch/stopwatch.module').then(m => m.CreateStopwatchPageModule)
+  },
+  {
     path: 'create-time',
     loadChildren: () => import('./pages/time/time.module').then(m => m.CreateTimePageModule)
   },
   {
-    path: 'create-time-stopwatch/:seconds',
+    path: 'create-time/stopwatch/:stopwatch_id',
     loadChildren: () => import('./pages/time/time.module').then(m => m.CreateTimePageModule)
   },
   {

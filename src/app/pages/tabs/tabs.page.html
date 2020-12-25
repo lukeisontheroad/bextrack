@@ -7,14 +7,14 @@
       <ion-label>{{ 'Dashboard' | translate }}</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="contacts">
+    <!-- <ion-tab-button tab="contacts" *ngIf="modules?.contacts">
       <ion-icon name="people-outline"></ion-icon>
       <ion-label>{{ 'Contacts' | translate }}</ion-label>
-    </ion-tab-button>
+    </ion-tab-button> -->
 
-    <ion-tab-button tab="stopwatch">
+    <ion-tab-button tab="stopwatches" *ngIf="modules?.stopwatches">
       <ion-icon name="stopwatch-outline"></ion-icon>
-      <ion-label>{{ 'Stopwatch' | translate }}</ion-label>
+      <ion-label>{{ 'Stopwatches' | translate }}</ion-label>
     </ion-tab-button>
 
     <ion-tab-button tab="times" *ngIf="modules?.times">

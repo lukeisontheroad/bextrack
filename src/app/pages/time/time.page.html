@@ -4,14 +4,15 @@
       <ion-back-button defaultHref="/tabs/projects"></ion-back-button>
     </ion-buttons>
 
-    <ion-buttons slot="end">
-      <ion-button (click)="delete()">
+    <ion-buttons *ngIf="!isSaving" slot="end">
+      <ion-button (click)="delete()" *ngIf="isUpdate">
         <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
       </ion-button>
-      <ion-button (click)="save()">
+      <ion-button  (click)="save()">
         <ion-icon slot="icon-only" name="save"></ion-icon>
       </ion-button>
     </ion-buttons>
+    <ion-spinner *ngIf="isSaving" slot="end" color="light"></ion-spinner>
     <ion-title *ngIf="!isUpdate">{{ 'Create effort' | translate }}</ion-title>
     <ion-title *ngIf="isUpdate">{{ 'Update effort' | translate }}</ion-title>
   </ion-toolbar>
@@ -32,7 +33,7 @@
       <span style="width: 100%; text-align: center;">{{ selectedDuration | toDuration }} {{ 'hour(s)' | translate }}</span>
     </ion-item>
 
-    <ion-item>
+    <!-- <ion-item>
       <ion-label position="stacked">{{ 'Contact' | translate}}</ion-label>
       <ionic-selectable
       [(ngModel)]="contact"
@@ -49,7 +50,7 @@
       <ng-template ionicSelectablePlaceholderTemplate>{{ 'Select contact' | translate}}</ng-template>  
       <ng-template ionicSelectableValueTemplate let-port="value">{{port.name_2}} {{port.name_1}}</ng-template>
     </ionic-selectable>
-    </ion-item>
+    </ion-item> -->
 
     <ion-item>
       <ion-label>{{ 'Chargeable' | translate }}</ion-label>
@@ -57,8 +58,8 @@
     </ion-item>
 
     <ion-item>
-      <ion-label position="stacked">{{ 'Service' | translate }}</ion-label>
-      <ion-select placeholder="Select" [(ngModel)]="timesheet.client_service_id">
+      <ion-label position="stacked">{{ 'Service' | translate }}*</ion-label>
+      <ion-select placeholder="Select" [(ngModel)]="timesheet.client_service_id" interface="popover">
         <ion-select-option *ngFor="let clientService of clientServices" [value]="clientService.id">
           {{ clientService.name }}
         </ion-select-option>
@@ -83,14 +84,14 @@
     </ion-item>
 
     <ion-item>
-      <ion-label position="stacked">{{ 'Status' | translate }}</ion-label>
-      <ion-select placeholder="Select" [(ngModel)]="timesheet.status_id">
+      <ion-label position="stacked">{{ 'Status' | translate }}*</ion-label>
+      <ion-select placeholder="Select" [(ngModel)]="timesheet.status_id" interface="popover">
         <ion-select-option *ngFor="let status of timesheetStatus" [value]="status.id">{{status.name}}</ion-select-option>
       </ion-select>
     </ion-item>
 
     <ion-item>
-      <ion-label position="stacked">{{ 'Description' | translate }}</ion-label>
+      <ion-label position="stacked">{{ 'Description' | translate }}*</ion-label>
       <ion-textarea autoGrow="true" placeholder="Text" [(ngModel)]="timesheet.text"></ion-textarea>
     </ion-item>
 

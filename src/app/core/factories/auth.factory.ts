@@ -20,6 +20,9 @@ export let authFactory = (platform: Platform, ngZone: NgZone,
     }
 
     if (platform.is('capacitor')) {
+        authService.authConfig.redirect_url = environment.auth_config.redirect_url_native
+        authService.authConfig.end_session_redirect_url = environment.auth_config.end_session_redirect_url_native
+
         App.addListener('appUrlOpen', (data: any) => {
             if (data.url !== undefined) {
                 ngZone.run(() => {

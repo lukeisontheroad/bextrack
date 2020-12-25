@@ -58,7 +58,7 @@ export class ApiService {
           await Promise.all([
             this.getTimesheetStatus(true),
             this.getClientService(true),
-            // this.getProjects(true),
+            this.getProjects(true),
             // this.getContacts(true)
           ]);
 

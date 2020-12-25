@@ -4,6 +4,7 @@ export interface Contact {
     nr: string;
     contact_id?: number;
     contact_type_id: number;
+    calculated_name?: string;
     name_1: string;
     name_2?: string;
     salutation_id: number;

@@ -4,6 +4,7 @@ export const TYPES = {
 }
 
 export const DEFAULTS = {
+    STOPWATCHES: '[]',
     SERVICE_ID: TYPES.LAST_USED,
     STATUS_ID: TYPES.LAST_USED,
     PROJECT_ID: TYPES.NONE,
@@ -20,7 +21,9 @@ export const DEFAULTS = {
     MODULES: {
         dashboard: true,
         times: true,
-        projects: true
+        projects: true,
+        stopwatches: true,
+        contacts: true
     },
     STEPS: 15,
     DURATION: 1,
@@ -31,8 +34,8 @@ export const DEFAULTS = {
 }
 
 export const STORAGE = {
-    STOPWATCH_START: 'stopwatch_start',
-    STOPWATCH_RUNNING: 'stopwatch_running',
+    STOPWATCHES: 'stopwatches',
+    STOPWATCHES_FIELDS: ['startTime', 'savedTime', 'difference', 'paused', 'running', 'timerDisplay'],
 
     PROJECTS_SHOW_FAVORITES: 'projects_show_favorites',
     PROJECTS_FAVORITES: 'projects_favorites',

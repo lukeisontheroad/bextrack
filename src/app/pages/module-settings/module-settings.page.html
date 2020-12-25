@@ -11,10 +11,18 @@
 
 <ion-content>
   <ion-list>
-    <ion-list-header>{{ 'Time tracking reminder' | translate }}</ion-list-header>
+    <ion-list-header>{{ 'Activate or deactivate modules' | translate }}</ion-list-header>
     <ion-item>
       <ion-label>{{ 'Dashboard' | translate }}</ion-label>
       <ion-checkbox slot="end" [(ngModel)]="modules.dashboard" (ionChange)="notificationsChanged()"></ion-checkbox>
+    </ion-item>
+    <!-- <ion-item>
+      <ion-label>{{ 'Contacts' | translate }}</ion-label>
+      <ion-checkbox slot="end" [(ngModel)]="modules.contacts" (ionChange)="notificationsChanged()"></ion-checkbox>
+    </ion-item> -->
+    <ion-item>
+      <ion-label>{{ 'Stopwatches' | translate }}</ion-label>
+      <ion-checkbox slot="end" [(ngModel)]="modules.stopwatches" (ionChange)="notificationsChanged()"></ion-checkbox>
     </ion-item>
     <ion-item>
       <ion-label>{{ 'Times' | translate }}</ion-label>

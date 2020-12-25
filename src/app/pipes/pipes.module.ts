@@ -1,10 +1,11 @@
 import { NgModule } from '@angular/core';
+import { FormatDurationPipe } from './format-duration.pipe';
 import { ToDurationPipe } from './to-duration.pipe';
 
 @NgModule({
-declarations: [ToDurationPipe,],
+declarations: [ToDurationPipe, FormatDurationPipe],
 imports: [],
-exports: [ToDurationPipe,],
+exports: [ToDurationPipe, FormatDurationPipe],
 })
 
 export class PipesModule {}

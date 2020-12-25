@@ -10,6 +10,7 @@ import * as _ from 'lodash';
 import { UtilsService } from 'src/app/services/utils/utils.service';
 import { StorageService } from 'src/app/services/storage/storage.service';
 import { StorageBackend } from '@openid/appauth';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-settings',
@@ -38,7 +39,8 @@ export class SettingsPage {
     private authService: AuthService,
     private storage: StorageService,
     private utils: UtilsService,
-    private storageBackend: StorageBackend
+    private storageBackend: StorageBackend,
+    private navCtrl: NavController
   ) {
 
     this.init()

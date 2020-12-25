@@ -1,22 +1,24 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
 import { IonicModule } from '@ionic/angular';
-
-import { StopwatchPageRoutingModule } from './stopwatch-routing.module';
-
 import { StopwatchPage } from './stopwatch.page';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { PipesModule } from 'src/app/pipes/pipes.module';
+import { RouterModule } from '@angular/router';
+import { IonicSelectableModule } from 'ionic-selectable';
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
     TranslateModule,
-    StopwatchPageRoutingModule
+    PipesModule,
+    IonicSelectableModule,
+    RouterModule.forChild([{ path: '', component: StopwatchPage }])
   ],
-  declarations: [StopwatchPage]
+  declarations: [
+    StopwatchPage,
+  ]
 })
-export class StopwatchPageModule {}
+export class CreateStopwatchPageModule {}

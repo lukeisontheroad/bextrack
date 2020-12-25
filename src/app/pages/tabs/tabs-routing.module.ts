@@ -28,12 +28,12 @@ const routes: Routes = [
         ]
       },
       {
-        path: 'stopwatch',
+        path: 'stopwatches',
         children: [
           {
             path: '',
             loadChildren: () =>
-              import('../stopwatch/stopwatch.module').then(m => m.StopwatchPageModule)
+              import('../stopwatches/stopwatches.module').then(m => m.StopwatchesPageModule)
           }]
       },
       {

@@ -17,6 +17,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { IonicSelectableComponent } from 'ionic-selectable';
 import { Observable } from 'rxjs';
 import { Contact } from 'src/app/models/contact';
+import { StopwatchesService } from 'src/app/services/stopwatches/stopwatches.service';
+import { Stopwatch } from 'src/app/models/stopwatch';
+import { StopwatchTemplateComponent } from 'src/app/components/stopwatch-template/stopwatch-template.component';
 
 @Component({
   selector: 'app-time',
@@ -27,6 +30,7 @@ export class TimePage {
 
   private today = new Date()
   public isUpdate = false
+  public isSaving = false
 
   public selectedDates = [new Date()]
   public selectedProjectText = null;
@@ -49,7 +53,8 @@ export class TimePage {
     private storage: StorageService,
     private utils: UtilsService,
     private translateService: TranslateService,
-    private modalContoller: ModalController
+    private modalContoller: ModalController,
+    private stopwatchesService: StopwatchesService
   ) {
     this.init()
   }
@@ -89,36 +94,40 @@ export class TimePage {
     }
 
     this.route.params.subscribe(async params => {
-      if (this.router.url.startsWith('/create-time-stopwatch')) {
-        if (params['seconds']) {
-          let seconds = parseInt(params['seconds'])
-          var hours = Math.floor(seconds / 60 / 60);
-          var minutes = Math.floor(seconds / 60) - (hours * 60);
-          this.selectedDuration = hours + (minutes / 60)
-          this.timesheet.tracking.duration = new ToDurationPipe(this.utils).transform(this.selectedDuration)
-        }
-      } else {
-        if (params['project_id']) {
-          this.timesheet.pr_project_id = parseInt(params['project_id'])
-          this.availablePackages = await this.apiService.getPackagesForProject(this.timesheet.pr_project_id)
-        }
-        if (params['package_id']) {
-          this.timesheet.pr_package_id = parseInt(params['package_id'])
-        }
+      if (params['stopwatch_id']) {
+        let stopwatch = await this.stopwatchesService.get(params['stopwatch_id'])
+        stopwatch = Object.assign(new Stopwatch(), stopwatch)
 
-        if (params['time_id']) {
-          this.isUpdate = true
-          try {
-            this.timesheet = await this.apiService.getTimesheet(parseInt(params['time_id']))
-            this.selectedDates = [new Date(this.timesheet.date)]
-            this.selectedDuration = this.utils.parseDuration(this.timesheet.duration)
-            this.availablePackages = await this.apiService.getPackagesForProject(this.timesheet.pr_project_id)
-          } catch (e) {
-            console.error('error', e)
-          }
-        }
-        this.updateSelectTexts()
+        this.timesheet = stopwatch.toTimesheet((await this.apiService.getUser()).id)
+        console.log('updated', this.timesheet)
+        // let seconds = parseInt(params['seconds'])
+        // var hours = Math.floor(seconds / 60 / 60);
+        // var minutes = Math.floor(seconds / 60) - (hours * 60);
+        this.selectedDuration = this.utils.parseDuration(this.timesheet.tracking.duration)
+        console.log('timesheet', this.timesheet)
+        // this.timesheet.tracking.duration = new ToDurationPipe(this.utils).transform(this.selectedDuration)
       }
+      if (params['project_id']) {
+        this.timesheet.pr_project_id = parseInt(params['project_id'])
+        this.availablePackages = await this.apiService.getPackagesForProject(this.timesheet.pr_project_id)
+      }
+      if (params['package_id']) {
+        this.timesheet.pr_package_id = parseInt(params['package_id'])
+      }
+
+      if (params['time_id']) {
+        this.isUpdate = true
+        try {
+          this.timesheet = await this.apiService.getTimesheet(parseInt(params['time_id']))
+          this.selectedDates = [new Date(this.timesheet.date)]
+          this.selectedDuration = this.utils.parseDuration(this.timesheet.duration)
+          this.availablePackages = await this.apiService.getPackagesForProject(this.timesheet.pr_project_id)
+        } catch (e) {
+          console.error('error', e)
+        }
+      }
+      this.updateSelectTexts()
+
     })
 
   }
@@ -140,15 +149,17 @@ export class TimePage {
     this.updateSelectTexts()
   }
 
-  save() {
-    if(this.contact != null){
+  async save() {
+    this.isSaving = true
+    if (this.contact != null) {
       this.timesheet.contact_id = this.contact.id
     }
     if (this.isUpdate) {
-      this.update()
+      await this.update()
     } else {
-      this.create()
+      await this.create()
     }
+    this.isSaving = false
   }
 
   contactChange(event: {
@@ -169,7 +180,7 @@ export class TimePage {
   }
 
 
-  async validateTime() {
+  validateTime() {
     if (
       !this.timesheet.client_service_id ||
       !this.timesheet.status_id ||
@@ -190,13 +201,20 @@ export class TimePage {
   }
 
   async update() {
-    if (!this.validateTime()) return
-    this.apiService.putTimesheet(this.timesheet).then(async response => {
-      this.storeLastUsed(response)
-      this.utils.showToast('Updated')
-      this.router.navigateByUrl('tabs', { skipLocationChange: true });
-    }).catch(async reason => {
-      this.utils.showToast('Failed: ' + reason.message)
+    return new Promise<void>(resolve => {
+      if (this.validateTime()) {
+        this.apiService.putTimesheet(this.timesheet).then(async response => {
+          this.storeLastUsed(response)
+          this.utils.showToast('Updated')
+          this.router.navigateByUrl('tabs', { skipLocationChange: true });
+          resolve()
+        }).catch(async reason => {
+          this.utils.showToast('Failed: ' + reason.message)
+          resolve()
+        })
+      }else{
+        resolve()
+      }
     })
   }
 
@@ -236,22 +254,27 @@ export class TimePage {
 
 
   async create() {
-    if (!this.validateTime()) return
-    let timesheets = []
-    let promises = []
-    for (var i = 0; i < this.selectedDates.length; i++) {
-      let timesheet = JSON.parse(JSON.stringify(this.timesheet)) as Timesheet
-      timesheet.tracking.date = new DatePipe('en-US').transform(this.selectedDates[i], 'yyyy-MM-dd');
-      timesheets.push(timesheet)
-    }
-
-    promises.push(...timesheets.map(timesheet => this.apiService.postTimesheet(timesheet)))
-    Promise.all(promises).then(async (values) => {
-      this.storeLastUsed(this.timesheet)
-      this.utils.showToast('Created')
-      this.router.navigateByUrl('tabs', { skipLocationChange: true });
-    }).catch(async reason => {
-      this.utils.showToast('Failed: ' + reason.message)
+    return new Promise<void>(async resolve => {
+      if (this.validateTime()) {
+        // let timesheets = []
+        // let promises = []
+        for (var i = 0; i < this.selectedDates.length; i++) {
+          let timesheet = JSON.parse(JSON.stringify(this.timesheet)) as Timesheet
+          timesheet.tracking.date = new DatePipe('en-US').transform(this.selectedDates[i], 'yyyy-MM-dd');
+          // timesheets.push(timesheet)
+          await this.apiService.postTimesheet(timesheet)
+        }
+        // promises.push(...timesheets.map(timesheet => this.apiService.postTimesheet(timesheet)))
+        // Not working because of Bexio API race condition
+        // Promise.all(promises).then(async (values) => {
+        this.storeLastUsed(this.timesheet)
+        this.utils.showToast('Created')
+        this.router.navigateByUrl('tabs', { skipLocationChange: true });
+        // }).catch(async reason => {
+        //   this.utils.showToast('Failed: ' + reason.message)
+        // })
+      }
+      resolve()
     })
   }
 

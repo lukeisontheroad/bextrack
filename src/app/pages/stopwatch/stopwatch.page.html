@@ -1,22 +1,96 @@
 <ion-header>
   <ion-toolbar color="primary">
-    <ion-title>
-      {{ 'Stopwatch' | translate }}
-    </ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/stopwatches"></ion-back-button>
+    </ion-buttons>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="save()">
+        <ion-icon slot="icon-only" name="save"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title *ngIf="isUpdate">{{ 'Update stopwatch' | translate }}</ion-title>
+    <ion-title *ngIf="!isUpdate">{{ 'Create stopwatch' | translate }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <div>
-    <ion-grid>
-      <ion-row>
-        <h1>{{time}}</h1>
-      </ion-row>
-      <ion-row>
-        <ion-button *ngIf="!running && time == blankTime" (click)="start()">{{ 'Start' | translate }}</ion-button>
-        <ion-button *ngIf="running" (click)="stop()">{{ 'Stop' | translate }}</ion-button>
-      </ion-row>
-    </ion-grid>
-  </div>
+  <ion-list>
+
+    <ion-item>
+      <ion-label position="stacked">{{ 'Stopwatch title' | translate }}</ion-label>
+      <ion-textarea autoGrow="true" placeholder="Text" [(ngModel)]="stopwatch.title"></ion-textarea>
+    </ion-item>
+
+    <!-- <ion-item>
+      <ion-label position="stacked">{{ 'Contact' | translate}}</ion-label>
+      <ionic-selectable [(ngModel)]="contact" itemValueField="id" [searchDebounce]="500" [canSearch]="true"
+        [canClear]="true" (onSearch)="searchContact($event)">
+        <ng-template ionicSelectableIconTemplate></ng-template>
+        <ng-template ionicSelectableItemIconTemplate></ng-template>
+        <ng-template ionicSelectableSearchFailTemplate>
+          <div class="ion-margin">{{ 'No contacts found' | translate }}</div>
+        </ng-template>
+        <ng-template ionicSelectableItemEndTemplate let-port="item" let-isPortSelected="isItemSelected"></ng-template>
+        <ng-template ionicSelectableItemTemplate let-port="item" let-isPortSelected="isItemSelected">{{port.name_2}}
+          {{port.name_1}}</ng-template>
+        <ng-template ionicSelectablePlaceholderTemplate>{{ 'Select contact' | translate}}</ng-template>
+        <ng-template ionicSelectableValueTemplate let-port="value">{{port.name_2}} {{port.name_1}}</ng-template>
+      </ionic-selectable>
+    </ion-item> -->
+
+    <ion-item>
+      <ion-label>{{ 'Chargeable' | translate }}</ion-label>
+      <ion-toggle [(ngModel)]="stopwatch.allowable_bill"></ion-toggle>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">{{ 'Service' | translate }}*</ion-label>
+      <ion-select placeholder="{{ 'Service' | translate }}" (ionChange)="updateClientServices()" [(ngModel)]="stopwatch.client_service_id" [selectedText]="stopwatch.selectedClientServiceText">
+        <ion-select-option *ngFor="let clientService of clientServices" [value]="clientService.id">
+          {{ clientService.name }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">{{ 'Project' | translate }}</ion-label>
+      <ion-select placeholder="{{ 'Project' | translate }}" (ionChange)="onProjectSelected()" [(ngModel)]="stopwatch.pr_project_id"
+        [selectedText]="stopwatch.selectedProjectText">
+        <ion-select-option *ngFor="let project of projects" value="{{ project.id }}">{{ project.name }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">{{ 'Package' | translate }}</ion-label>
+      <ion-select placeholder="{{ 'Package' | translate }}" (ionChange)="onProjectSelected()" [(ngModel)]="stopwatch.pr_package_id" [selectedText]="stopwatch.selectedPackageText">
+        <ion-select-option *ngFor="let package of availablePackages" value="{{ package.id }}">{{ package.name }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">{{ 'Status' | translate }}*</ion-label>
+      <ion-select placeholder="Select" (ionChange)="updateStatus()" [(ngModel)]="stopwatch.status_id" [selectedText]="stopwatch.selectedStatusText">
+        <ion-select-option *ngFor="let status of timesheetStatus" [value]="status.id">{{status.name}}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">{{ 'Description' | translate }}</ion-label>
+      <ion-textarea autoGrow="true" placeholder="Text" [(ngModel)]="stopwatch.text"></ion-textarea>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">{{ 'Strategy' | translate }}</ion-label>
+      <ion-select placeholder="{{ 'Strategy' | translate }}" [(ngModel)]="stopwatch.strategy">
+        <ion-select-option [value]="0">{{ 'Always ask' | translate }}</ion-select-option>
+        <ion-select-option [value]="1">{{ 'Automatically create' | translate }}</ion-select-option>
+        <ion-select-option [value]="2">{{ 'Always edit' | translate }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+  </ion-list>
 
 </ion-content>

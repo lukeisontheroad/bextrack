@@ -22,7 +22,7 @@ export class UtilsService {
   }
 
   public requestNotificationPermission() {
-    return new Promise(async (resolve, reject) => {
+    return new Promise<void>(async (resolve, reject) => {
       if (!(await LocalNotifications.requestPermission())) {
         resolve()
       } else {
@@ -32,7 +32,8 @@ export class UtilsService {
   }
 
   public parseDuration(duration): number {
-    return parseInt(duration) + parseInt(duration.split(':')[1]) / 60
+    if(duration === null) return 0
+    return parseFloat(duration) + parseFloat(duration.split(':')[1]) / 60
   }
 
   public async showToast(message: string, duration = 3000) {
