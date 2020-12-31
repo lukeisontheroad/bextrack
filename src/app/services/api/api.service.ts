@@ -8,6 +8,8 @@ import { TimesheetStatus } from 'src/app/models/timsheet_status';
 import { User } from 'src/app/models/user';
 import { Package } from 'src/app/models/package';
 import { Contact } from 'src/app/models/contact';
+import { UtilsService } from '../utils/utils.service';
+import { DatePipe } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +26,7 @@ export class ApiService {
   contactsUpdated = new EventEmitter();
 
   private limit = 300
-  private corsProxy = 'https://cors.lukeisontheroad.xyz/'
+  private corsProxy = 'https://cors.bextrack.com/'
   private baseUrl = this.corsProxy + 'https://api.bexio.com/'
 
   private currentUser: User;
@@ -43,7 +45,8 @@ export class ApiService {
 
   constructor(
     private http: HttpClient,
-    private authService: AuthService
+    private authService: AuthService,
+    private utilsService: UtilsService
   ) { }
 
   public async init() {
@@ -122,6 +125,16 @@ export class ApiService {
     delete timesheet.user
     delete timesheet.project
     delete timesheet.package
+    if(timesheet.tracking.type === 'duration'){
+      delete timesheet.tracking.start
+      delete timesheet.tracking.end
+    }else{
+      timesheet.tracking.start = new DatePipe('en-US').transform(timesheet.tracking.start, 'yyyy-MM-dd HH:mm');
+      timesheet.tracking.end = new DatePipe('en-US').transform(timesheet.tracking.end, 'yyyy-MM-dd HH:mm');
+
+      delete timesheet.tracking.date
+      delete timesheet.tracking.duration
+    }
     return timesheet
   }
 
@@ -145,7 +158,7 @@ export class ApiService {
     })
   }
 
-  public async deleteTimesheet(id: number): Promise<Timesheet> {
+  public async deleteTimesheet(id: number): Promise<void> {
     return new Promise(async (resolve, reject) => {
       await this.http.delete<Timesheet>(this.baseUrl + '2.0/timesheet/' + id).toPromise()
       this.getMyTimesheets(true)
@@ -184,6 +197,7 @@ export class ApiService {
       timesheet.user = this.usersMap[timesheet.user_id]
       timesheet.project = this.projectMap[timesheet.pr_project_id]
       timesheet.package = this.cachedPackagesPackageId[timesheet.pr_package_id]
+      timesheet.tracking = this.utilsService.prepareTracking(timesheet.tracking)
       resolve(timesheet)
     })
   }
@@ -233,14 +247,14 @@ export class ApiService {
             }
           ]
           timesheets.push(...await await this.http.post<Timesheet[]>(this.baseUrl + '2.0/timesheet/search?order_by=date_desc&limit=50', filter).toPromise())
-          timesheets.map(timesheet => {
-            timesheet.tracking = {
-              duration: timesheet.duration,
-              date: timesheet.date,
-              type: 'duration'
-            }
-            return timesheet
-          })
+          // timesheets.map(timesheet => {
+          //   timesheet.tracking = {
+          //     duration: timesheet.duration,
+          //     date: timesheet.date,
+          //     type: 'duration'
+          //   }
+          //   return timesheet
+          // })
         } else {
           timesheets.push(...await this.http.get<Timesheet[]>(this.baseUrl + '2.0/timesheet?order_by=date_desc').toPromise())
         }
@@ -249,6 +263,9 @@ export class ApiService {
           timesheets[i].user = this.usersMap[timesheets[i].user_id]
           timesheets[i].project = this.projectMap[timesheets[i].pr_project_id]
           timesheets[i].package = this.cachedPackagesPackageId[timesheets[i].pr_package_id]
+
+          timesheets[i].tracking = this.utilsService.prepareTracking(timesheets[i].tracking)
+
         }
         this.timesheets = timesheets
       } 

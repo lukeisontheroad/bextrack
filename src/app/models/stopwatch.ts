@@ -25,7 +25,6 @@ export class Stopwatch {
     }
 
     toTimesheet(user_id: number): Timesheet{
-        console.log('this', this)
         let timesheet = new Timesheet()
         timesheet.user_id = user_id
         timesheet.status_id = this.status_id

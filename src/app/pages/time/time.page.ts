@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { TimesheetStatus } from '../../models/timsheet_status';
 import { Project } from 'src/app/models/project';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -19,7 +19,6 @@ import { Observable } from 'rxjs';
 import { Contact } from 'src/app/models/contact';
 import { StopwatchesService } from 'src/app/services/stopwatches/stopwatches.service';
 import { Stopwatch } from 'src/app/models/stopwatch';
-import { StopwatchTemplateComponent } from 'src/app/components/stopwatch-template/stopwatch-template.component';
 
 @Component({
   selector: 'app-time',
@@ -65,18 +64,19 @@ export class TimePage {
     let user = await this.apiService.getUser()
     this.timesheet.user_id = user.id
     this.timesheet.allowable_bill = false
-    this.timesheet.tracking = {
-      "type": "duration",
-      "date": this.today.getFullYear() + '-' + this.utils.pad((this.today.getMonth() + 1)) + '-' + this.utils.pad(this.today.getDate()),
-      "duration": new ToDurationPipe(this.utils).transform(this.storage.getNumber(STORAGE.SETTINGS_DURATION, DEFAULTS.DURATION))
-    }
-
     this.projects = await this.apiService.getProjects()
     this.clientServices = await this.apiService.getClientService()
     this.timesheetStatus = await this.apiService.getTimesheetStatus()
-    // Load default duration
-    this.selectedDuration = await this.storage.getNumber(STORAGE.SETTINGS_DURATION, DEFAULTS.DURATION)
+    this.timesheet.tracking = this.utils.prepareTracking(this.timesheet.tracking)
 
+    // Load default duration
+    let defaultDuration = await this.storage.getNumber(STORAGE.SETTINGS_DURATION, DEFAULTS.DURATION)
+    this.selectedDuration = defaultDuration
+    let endDate = new Date(this.timesheet.tracking.start)
+    endDate.setMinutes(endDate.getMinutes() + defaultDuration * 60);
+    this.timesheet.tracking.end = endDate.toISOString()
+    this.timesheet.tracking.duration = new ToDurationPipe().transform(defaultDuration)
+    
     // Load steps
     this.steps = await this.storage.getNumber(STORAGE.SETTINGS_STEPS, DEFAULTS.STEPS) / 60
 
@@ -103,8 +103,7 @@ export class TimePage {
         // let seconds = parseInt(params['seconds'])
         // var hours = Math.floor(seconds / 60 / 60);
         // var minutes = Math.floor(seconds / 60) - (hours * 60);
-        this.selectedDuration = this.utils.parseDuration(this.timesheet.tracking.duration)
-        console.log('timesheet', this.timesheet)
+        this.selectedDuration = this.utils.parseDuration(this.timesheet.duration)
         // this.timesheet.tracking.duration = new ToDurationPipe(this.utils).transform(this.selectedDuration)
       }
       if (params['project_id']) {
@@ -118,7 +117,7 @@ export class TimePage {
       if (params['time_id']) {
         this.isUpdate = true
         try {
-          this.timesheet = await this.apiService.getTimesheet(parseInt(params['time_id']))
+          this.timesheet = await this.apiService.getTimesheet(parseInt(params['time_id']), true)
           this.selectedDates = [new Date(this.timesheet.date)]
           this.selectedDuration = this.utils.parseDuration(this.timesheet.duration)
           this.availablePackages = await this.apiService.getPackagesForProject(this.timesheet.pr_project_id)
@@ -150,6 +149,7 @@ export class TimePage {
   }
 
   async save() {
+    console.log('timesheet', this.timesheet)
     this.isSaving = true
     if (this.contact != null) {
       this.timesheet.contact_id = this.contact.id
@@ -189,9 +189,23 @@ export class TimePage {
       this.utils.showToast('Missing information')
       return false;
     }
-    this.timesheet.tracking.duration = new ToDurationPipe(this.utils).transform(this.selectedDuration)
-    this.timesheet.tracking.date = new DatePipe('en-US').transform(this.selectedDates[0], 'yyyy-MM-dd');
+    this.timesheet.tracking.duration = new ToDurationPipe().transform(this.selectedDuration)
     return true
+  }
+
+  onTimeChanged(){
+    if(this.timesheet.tracking.type === 'range'){
+      let diff = (Date.parse(this.timesheet.tracking.end) - Date.parse(this.timesheet.tracking.start)) / 36e5
+      this.timesheet.tracking.duration = new ToDurationPipe().transform(diff)
+      this.selectedDuration = new ToDurationPipe().transform(diff)
+    }
+  }
+
+  async segmentChanged($event){
+    this.timesheet.tracking.type = $event.detail.value === 'duration' ? 'duration' : 'range'
+    console.log('changed type to ' + $event.detail.value)
+    console.log('timesheet', this.timesheet)
+
   }
 
   async storeLastUsed(timesheet: Timesheet) {
@@ -241,11 +255,11 @@ export class TimePage {
     calendar.present();
     const event: any = await calendar.onDidDismiss();
     if (this.isUpdate) {
-      this.selectedDates = [event.data.dateObj]
+      this.selectedDates = [event.data?.dateObj]
     } else {
       let dates = []
       for (var i = 0; i < event.data.length; i++) {
-        dates.push(event.data[i].dateObj)
+        if(event.data[i]) dates.push(event.data[i].dateObj)
       }
       this.selectedDates = dates
     }
@@ -258,9 +272,12 @@ export class TimePage {
       if (this.validateTime()) {
         // let timesheets = []
         // let promises = []
+        let datePipe = new DatePipe('en-US')
         for (var i = 0; i < this.selectedDates.length; i++) {
           let timesheet = JSON.parse(JSON.stringify(this.timesheet)) as Timesheet
-          timesheet.tracking.date = new DatePipe('en-US').transform(this.selectedDates[i], 'yyyy-MM-dd');
+          // if(timesheet.tracking.type === 'duration'){
+            timesheet.tracking.date = datePipe.transform(this.selectedDates[i], 'yyyy-MM-dd');
+          // }
           // timesheets.push(timesheet)
           await this.apiService.postTimesheet(timesheet)
         }

@@ -1,14 +1,27 @@
 import { Injectable } from '@angular/core';
+import { ApiService } from '../api/api.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StorageService {
 
-  private prefix = 'storage_'
+  private isInit = false
+  private prefix = '_storage_'
 
-  public removeItem(key: string) {
+  constructor(private apiService: ApiService){
+  }
+
+  async init(){
+    if(!this.isInit){
+      this.prefix =  (await this.apiService.getUser()).id + this.prefix
+      this.isInit = true
+    }
+  }
+
+  public removeItem(key: string): Promise<void> {
     return new Promise(async (resolve, reject): Promise<void> => {
+      await this.init()
       localStorage.removeItem(this.prefix + key)
       resolve()
     })
@@ -16,6 +29,7 @@ export class StorageService {
 
   public setItem(key: string, value: any): Promise<void> {
     return new Promise(async (resolve, reject) => {
+      await this.init()
       localStorage.setItem(this.prefix + key, value)
       resolve()
     })
@@ -23,6 +37,7 @@ export class StorageService {
 
   public getString(key: string, def: string = null): Promise<string> {
     return new Promise(async (resolve, reject) => {
+      await this.init()
       let loaded = await localStorage.getItem(this.prefix + key)
       if (def != null && loaded == null) {
         resolve(def)
@@ -34,6 +49,7 @@ export class StorageService {
 
   public getDate(key: string, def: Date = null): Promise<Date> {
     return new Promise(async (resolve, reject) => {
+      await this.init()
       let loaded = await this.getString(key)
       if (loaded == null) {
         resolve(def)
@@ -45,6 +61,7 @@ export class StorageService {
 
   public getNumber(key: string, def: number = null): Promise<number> {
     return new Promise(async (resolve, reject) => {
+      await this.init()
       let loaded = await this.getString(key)
       if (def != null && loaded == null) {
         resolve(def)
@@ -56,6 +73,7 @@ export class StorageService {
 
   public getBoolean(key: string, def: boolean = null): Promise<boolean> {
     return new Promise(async (resolve, reject) => {
+      await this.init()
       let loaded = await this.getString(key)
       if (def != null && loaded == null) {
         resolve(def)

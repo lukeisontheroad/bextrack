@@ -7,7 +7,7 @@ export const environment = {
     redirect_url: 'xyz.lukeisontheroad.bexio://callback',
     response_type: 'token',
     end_session_redirect_url: 'xyz.lukeisontheroad.bexio://endsession',
-    scopes: 'openid profile email contact_show monitoring_edit project_show offline_access',
+    scopes: 'openid profile email monitoring_edit project_show offline_access', // contact_show
     pkce: false
   }
 };

@@ -6,8 +6,6 @@ import { Plugins } from '@capacitor/core';
 import { Stopwatch } from 'src/app/models/stopwatch';
 import { StopwatchesService } from 'src/app/services/stopwatches/stopwatches.service';
 import { STORAGE } from 'src/app/models/constants';
-import { Timesheet } from 'src/app/models/timesheet';
-import { DatePipe } from '@angular/common';
 import { ApiService } from 'src/app/services/api/api.service';
 import { AlertController, NavController } from '@ionic/angular';
 
@@ -256,7 +254,7 @@ export class StopwatchTemplateComponent implements OnInit {
     try {
       cordova.plugins.notification.local.schedule(
         {
-          id: this.stopwatch.id,
+          id: parseInt(this.stopwatch.id.substring(0, 8)),
           title: await this.translateService.get('BexTrack').toPromise(),
           text: await this.translateService.get('Timewatch is running...').toPromise(),
           sticky: true,
@@ -264,15 +262,17 @@ export class StopwatchTemplateComponent implements OnInit {
           autoClear: false
         }
       );
-    } catch (ReferenceError) {
+    } catch (e) {
+      console.error('Notificaiton error', e)
     }
   }
 
   async stopNotification() {
     console.log('Stop notification')
     try {
-      cordova.plugins.notification.local.cancel(this.stopwatch.id)
-    } catch (ReferenceError) {
+      cordova.plugins.notification.local.cancel(parseInt(this.stopwatch.id.substring(0, 8)))
+    } catch (e) {
+      console.error('Notificaiton error', e)
     }
   }
 

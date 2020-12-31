@@ -23,12 +23,10 @@
 
   </ion-toolbar>
   <ion-toolbar>
-    <ion-searchbar [placeholder]="'Projectname' | translate" [(ngModel)]="searchString" (ionChange)="setActiveList()" debounce="500"></ion-searchbar>
+    <ion-searchbar mode="ios" [placeholder]="'Projectname' | translate" [(ngModel)]="searchString" (ionChange)="setActiveList()" debounce="500"></ion-searchbar>
   </ion-toolbar>
 
 </ion-header>
-
-
 <ion-content>
 
 

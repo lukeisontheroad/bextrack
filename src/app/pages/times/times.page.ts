@@ -48,6 +48,7 @@ export class TimesPage {
 
     var groupedTimesMap = {}
     for (let time of this.times) {
+
       if (!groupedTimesMap[time.date]) {
         groupedTimesMap[time.date] = []
       }
@@ -57,7 +58,7 @@ export class TimesPage {
     for (let key of Object.keys(groupedTimesMap)) {
       const total = groupedTimesMap[key].map(i => this.utils.parseDuration(i.duration)).reduce((i, j) => i + j)
       groupedTimes.push({ date: groupedTimesMap[key][0].date, times: groupedTimesMap[key], total: total })
-      daysConfig.push({ date: new Date(groupedTimesMap[key][0].date), subTitle: new ToDurationPipe(this.utils).transform(total), disable: false, cssClass: 'green' } as DayConfig)
+      daysConfig.push({ date: new Date(groupedTimesMap[key][0].date), subTitle: new ToDurationPipe().transform(total), disable: false, cssClass: 'green' } as DayConfig)
     }
     this.groupedTimes = groupedTimes;
     this.optionsMulti = {
@@ -99,7 +100,7 @@ export class TimesPage {
 
   passedDate(selectedDate) {
     const date = new Date(selectedDate.time);
-    const dateString = date.getFullYear() + '-' + this.utils.pad(date.getMonth() + 1) + '-' + this.utils.pad(date.getDate())
+    const dateString = date.getFullYear() + '-' + UtilsService.pad(date.getMonth() + 1) + '-' + UtilsService.pad(date.getDate())
     this.scrollTo(dateString)
   }
 

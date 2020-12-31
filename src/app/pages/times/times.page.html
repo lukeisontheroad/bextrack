@@ -30,7 +30,7 @@
                 <ion-skeleton-text animated></ion-skeleton-text>
               </p>
             </ion-list-header>
-            <ion-item>
+            <ion-item lines="none">
               <ion-thumbnail slot="start">
                 <ion-skeleton-text animated></ion-skeleton-text>
               </ion-thumbnail>
@@ -72,7 +72,7 @@
             </ion-list-header>
 
             <ion-item-sliding *ngFor="let time of group.times">
-              <ion-item routerLink="/display-time/{{ time.id }}">
+              <ion-item routerLink="/display-time/{{ time.id }}" lines="none">
                 <ion-avatar *ngIf="time.allowable_bill" slot="start">
                   <img src="/assets/paid.png">
                 </ion-avatar>

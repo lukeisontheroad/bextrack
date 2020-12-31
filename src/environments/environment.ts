@@ -13,7 +13,7 @@ export const environment = {
     response_type: 'token',
     end_session_redirect_url: 'http://localhost:8100/auth/end-session',
     end_session_redirect_url_native: 'xyz.lukeisontheroad.bexio://endsession',
-    scopes: 'openid profile email contact_show monitoring_edit project_show offline_access',
+    scopes: 'openid profile email monitoring_edit project_show offline_access', // contact_show
     pkce: false
   }
 };

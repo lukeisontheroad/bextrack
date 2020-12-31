@@ -6,14 +6,10 @@ import { UtilsService } from '../services/utils/utils.service';
 })
 export class FormatDurationPipe implements PipeTransform {
 
-  constructor(
-    private utils: UtilsService
-  ) { }
-
   transform(value: any, ...args: any[]): any {
-    if(value === null) return '00:00'
+    if(value === null || value === '') return '00:00'
     const splitted = value.split(':')
-    return this.utils.pad(splitted[0]) + ':' + this.utils.pad(splitted[1]);
+    return UtilsService.pad(splitted[0]) + ':' + UtilsService.pad(splitted[1]);
   }
 
 }

@@ -1,6 +1,6 @@
-import { Tracking } from './tracking';
 import { User } from './user';
 import { Project } from './project';
+import { TimesheetTracking } from './timesheet_tracking';
 
 export class Timesheet {
     id: number;
@@ -25,5 +25,9 @@ export class Timesheet {
     date: string;
     duration: string;
     running: boolean;
-    tracking: Tracking;
+    tracking: TimesheetTracking;
+
+    constructor(){
+        this.tracking = new TimesheetTracking()
+    }
 }

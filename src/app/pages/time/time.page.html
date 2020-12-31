@@ -1,14 +1,14 @@
 <ion-header>
   <ion-toolbar color="primary">
     <ion-buttons slot="start">
-      <ion-back-button [text]="'Back' | translate" defaultHref="/tabs/projects"></ion-back-button>
+      <ion-back-button mode="md" defaultHref="/tabs/projects"></ion-back-button>
     </ion-buttons>
 
     <ion-buttons *ngIf="!isSaving" slot="end">
       <ion-button (click)="delete()" *ngIf="isUpdate">
         <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
       </ion-button>
-      <ion-button  (click)="save()">
+      <ion-button (click)="save()">
         <ion-icon slot="icon-only" name="save"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -21,17 +21,69 @@
 <ion-content>
   <ion-list>
 
-    <ion-item (click)="openCalendar()">
-      <ion-label *ngIf="!isUpdate" position="stacked">{{ 'Date(s)' | translate }}</ion-label>
-      <ion-label *ngIf="isUpdate" position="stacked">{{ 'Date' | translate }}</ion-label>
-      <p *ngFor="let selectedDate of selectedDates">{{ selectedDate | date :'EEEE dd.MM.yyyy' }}</p>    
-    </ion-item>
+    <div class="type">
+      <!-- Default Segment -->
+      <ion-segment *ngIf="!isUpdate" mode="ios" (ionChange)="segmentChanged($event)" [value]="timesheet?.tracking?.type">
+        <ion-segment-button value="duration">
+          <ion-label>{{ 'Duration' | translate }}</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="range">
+          <ion-label>{{ 'Range' | translate }}</ion-label>
+        </ion-segment-button>
+      </ion-segment>
 
-    <ion-item>
-      <ion-label position="stacked">{{ 'Duration' | translate }}</ion-label>
-      <ion-range [min]="steps" max="12" [step]="steps" snaps="true" ticks="false" [(ngModel)]="selectedDuration"></ion-range>
-      <span style="width: 100%; text-align: center;">{{ selectedDuration | toDuration }} {{ 'hour(s)' | translate }}</span>
-    </ion-item>
+      <ion-item *ngIf="timesheet?.tracking?.type == 'duration'" (click)="openCalendar()">
+        <ion-label *ngIf="!isUpdate" position="stacked">{{ 'Date(s)' | translate }}</ion-label>
+        <ion-label *ngIf="isUpdate" position="stacked">{{ 'Date' | translate }}</ion-label>
+        <p *ngFor="let selectedDate of selectedDates">{{ selectedDate | date :'EEEE dd.MM.yyyy' }}</p>
+      </ion-item>
+
+      <ion-row *ngIf="timesheet?.tracking?.type == 'range'">
+        <ion-col>
+          <ion-item>
+            <ion-label position="stacked">{{ 'Start' | translate }}</ion-label>
+            <ion-datetime [(ngModel)]="timesheet.tracking.start" displayFormat="DDDD MMM D, YYYY" (ionChange)="onTimeChanged()"></ion-datetime>
+          </ion-item>
+        </ion-col>
+        <ion-col>
+          <ion-item>
+            <ion-label position="stacked">{{ 'Time' | translate }}</ion-label>
+            <ion-datetime [(ngModel)]="timesheet.tracking.start" displayFormat="HH:mm" (ionChange)="onTimeChanged()">
+            </ion-datetime>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+
+      <ion-row *ngIf="timesheet?.tracking?.type == 'range'">
+        <ion-col>
+          <ion-item lines="none">
+            <ion-label position="stacked">{{ 'End' | translate }}</ion-label>
+            <ion-datetime [(ngModel)]="timesheet.tracking.end" displayFormat="DDDD MMM D, YYYY" (ionChange)="onTimeChanged()"></ion-datetime>
+          </ion-item>
+        </ion-col>
+        <ion-col>
+          <ion-item lines="none">
+            <ion-label position="stacked">{{ 'Time' | translate }}</ion-label>
+            <ion-datetime [(ngModel)]="timesheet.tracking.end" (ionChange)="onTimeChanged()" displayFormat="HH:mm">
+            </ion-datetime>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+
+      <ion-item lines="none" *ngIf="timesheet?.tracking?.type == 'duration'">
+        <ion-label position="stacked">{{ 'Duration' | translate }}</ion-label>
+        <ion-range [min]="steps" max="12" [step]="steps" snaps="true" ticks="false" [(ngModel)]="selectedDuration">
+        </ion-range>
+        <span style="width: 100%; text-align: center;">{{ selectedDuration | toDuration }} {{ 'hour(s)' | translate }}</span>
+      </ion-item>
+
+      <ion-item lines="none" *ngIf="timesheet?.tracking?.type == 'range'">
+        <ion-label position="stacked">{{ 'Duration' | translate }}</ion-label>
+        <span style="width: 100%; text-align: center;">{{ timesheet?.tracking?.duration }} {{ 'hour(s)' | translate }}</span>
+      </ion-item>
+
+    </div>
+
 
     <!-- <ion-item>
       <ion-label position="stacked">{{ 'Contact' | translate}}</ion-label>
@@ -86,7 +138,8 @@
     <ion-item>
       <ion-label position="stacked">{{ 'Status' | translate }}*</ion-label>
       <ion-select placeholder="Select" [(ngModel)]="timesheet.status_id" interface="popover">
-        <ion-select-option *ngFor="let status of timesheetStatus" [value]="status.id">{{status.name}}</ion-select-option>
+        <ion-select-option *ngFor="let status of timesheetStatus" [value]="status.id">{{status.name}}
+        </ion-select-option>
       </ion-select>
     </ion-item>
 

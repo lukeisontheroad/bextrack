@@ -73,7 +73,8 @@ export class NotificationSettingsPage {
     if (notifications.length > 0) {
       try {
         cordova.plugins.notification.local.schedule(notifications);
-      } catch (ReferenceError) {
+      } catch (e) {
+        console.error('Schedule Notifications', e)
       }
     }
   }
