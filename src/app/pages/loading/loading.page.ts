@@ -38,7 +38,8 @@ export class LoadingPage implements OnInit, OnDestroy {
   }
 
   actionHandler(action: IAuthAction) {
-    if (action.error && action.action != AuthActions.LoadUserInfoFailed) {
+    console.log('actionhandler', action)
+    if (action.error && action.action === AuthActions.LoadUserInfoFailed) {
       this.navCtrl.navigateRoot('login');
     }
   }
