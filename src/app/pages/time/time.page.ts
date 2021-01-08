@@ -97,14 +97,8 @@ export class TimePage {
       if (params['stopwatch_id']) {
         let stopwatch = await this.stopwatchesService.get(params['stopwatch_id'])
         stopwatch = Object.assign(new Stopwatch(), stopwatch)
-
         this.timesheet = stopwatch.toTimesheet((await this.apiService.getUser()).id)
-        console.log('updated', this.timesheet)
-        // let seconds = parseInt(params['seconds'])
-        // var hours = Math.floor(seconds / 60 / 60);
-        // var minutes = Math.floor(seconds / 60) - (hours * 60);
-        this.selectedDuration = this.utils.parseDuration(this.timesheet.duration)
-        // this.timesheet.tracking.duration = new ToDurationPipe(this.utils).transform(this.selectedDuration)
+        this.selectedDuration = this.utils.parseDuration(this.timesheet.tracking.duration)
       }
       if (params['project_id']) {
         this.timesheet.pr_project_id = parseInt(params['project_id'])
