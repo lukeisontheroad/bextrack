@@ -58,7 +58,7 @@ export class ProjectsPage {
     this.setActiveList()
   }
 
-  private setActiveList(){
+  public setActiveList(){
     if(this.showOnlyFavorites){
       this.projects = this.allProjects.filter(i => this.favorites.indexOf(i.id) > -1)
     }else{
