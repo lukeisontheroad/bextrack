@@ -45,6 +45,7 @@
   "Module settings": "Module settings",
   "Modules": "Modules",
   "Monday": "Monday",
+  "Never forget to track your time by setting a reminder.": "Never forget to track your time by setting a reminder.",
   "No contacts found": "No contacts found",
   "No data available": "No data available",
   "No favorite project found": "No favorite project found",
@@ -54,6 +55,7 @@
   "None": "None",
   "Notification settings": "Notification settings",
   "Notifications": "Notifications",
+  "Only allow to run one stopwatch at the time": "Only allow to run one stopwatch at the time",
   "Package": "Package",
   "Pause": "Pause",
   "Project": "Project",
@@ -94,8 +96,7 @@
   "hour(s)": "hour(s)",
   "hours": "hours",
   "minute(s)": "minute(s)",
-  "missing-a-repo": "Missing a repo",
+  "missing-a-repo": "",
   "missing-a-report": "missing-a-report?",
-  "never-forget-to-track-your-time-by-setting-a-reminder": "Never forget to track your time by setting a reminder.",
   "timewatch-is-running": "Timewatch is running..."
 }

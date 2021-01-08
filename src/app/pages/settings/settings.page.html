@@ -67,10 +67,14 @@
         <ion-select-option *ngFor="let project of projects" value="{{ project.id }}">{{ project.name }}</ion-select-option>
       </ion-select>
     </ion-item>
+    <ion-item>
+      <ion-label>{{ 'Only allow to run one stopwatch at the time' | translate }}</ion-label>
+      <ion-checkbox [(ngModel)]="stopwatchSingular" (ionChange)="notificationsChanged()"></ion-checkbox>
+    </ion-item>
     <ion-item routerLink="/notification-settings">
       <ion-label>
         <h2>{{ 'Notifications' | translate }}</h2>
-        <p>{{ 'never-forget-to-track-your-time-by-setting-a-reminder' | translate }}</p>
+        <p>{{ 'Never forget to track your time by setting a reminder.' | translate }}</p>
       </ion-label>
     </ion-item>
     <ion-item routerLink="/module-settings" lines="none">

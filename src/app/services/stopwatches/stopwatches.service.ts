@@ -1,5 +1,5 @@
 import { EventEmitter, Injectable, Output } from '@angular/core';
-import { ReplaySubject } from 'rxjs';
+import { Observable, ReplaySubject, Subject } from 'rxjs';
 import { DEFAULTS, STORAGE } from 'src/app/models/constants';
 import { Stopwatch } from 'src/app/models/stopwatch';
 import { StorageService } from '../storage/storage.service';
@@ -12,6 +12,7 @@ export class StopwatchesService {
 
   private internalStopwatches = []
   public stopwatches = new ReplaySubject<Stopwatch[]>()
+  private currentStopwatch = new Subject<Stopwatch>();
 
   constructor(
     private storage: StorageService
@@ -22,6 +23,14 @@ export class StopwatchesService {
   public async init() {
     this.internalStopwatches = JSON.parse(await this.storage.getString(STORAGE.STOPWATCHES, DEFAULTS.STOPWATCHES))
     this.sendUpdate()
+  }
+
+  public setCurrentStopwatch(stopwatch: Stopwatch){
+    this.currentStopwatch.next(stopwatch);
+  }
+
+  getCurrentStopwatch(): Observable<Stopwatch>{
+      return this.currentStopwatch
   }
   
   private sendUpdate() {

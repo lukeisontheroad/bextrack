@@ -29,6 +29,7 @@ export class SettingsPage {
   public lastUsedService = DEFAULTS.SERVICE_ID
   public lastUsedStatus = DEFAULTS.STATUS_ID
   public lastUsedProject = DEFAULTS.PROJECT_ID
+  public stopwatchSingular = DEFAULTS.STOPWATCH_SINGULAR
 
   public duration = DEFAULTS.DURATION
   public steps = DEFAULTS.STEPS
@@ -75,6 +76,7 @@ export class SettingsPage {
       this.storage.setItem(STORAGE.SETTINGS_LAST_SERVICE, this.lastUsedService)
       this.storage.setItem(STORAGE.SETTINGS_LAST_STATUS, this.lastUsedStatus)
       this.storage.setItem(STORAGE.SETTINGS_LAST_PROJECT, this.lastUsedProject)
+      this.storage.setItem(STORAGE.SETTINGS_STOPWATCH_SINGULAR, this.stopwatchSingular)
       if (parseInt(this.lastUsedService) >= 0) this.storage.setItem(STORAGE.SETTINGS_LAST_SERVICE_ID, this.lastUsedService)
       if (parseInt(this.lastUsedStatus) >= 0) this.storage.setItem(STORAGE.SETTINGS_LAST_STATUS_ID, this.lastUsedStatus)
       if (parseInt(this.lastUsedProject) >= 0) this.storage.setItem(STORAGE.SETTINGS_LAST_PROJECT_ID, this.lastUsedProject)

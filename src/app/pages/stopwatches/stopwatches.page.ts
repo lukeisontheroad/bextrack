@@ -1,9 +1,10 @@
-import { Component, ViewChild } from '@angular/core';
-import { IonContent, IonList, NavController } from '@ionic/angular';
+import { Component, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { IonList, NavController } from '@ionic/angular';
+import { StopwatchTemplateComponent } from 'src/app/components/stopwatch-template/stopwatch-template.component';
+import { DEFAULTS, STORAGE } from 'src/app/models/constants';
 import { Stopwatch } from 'src/app/models/stopwatch';
 import { StopwatchesService } from 'src/app/services/stopwatches/stopwatches.service';
 import { StorageService } from 'src/app/services/storage/storage.service';
-import { UtilsService } from 'src/app/services/utils/utils.service';
 
 @Component({
   selector: 'app-stopwatches',
@@ -12,18 +13,24 @@ import { UtilsService } from 'src/app/services/utils/utils.service';
 })
 export class StopwatchesPage {
   
-  public stopwatches = []
+  public stopwatches:Stopwatch[] = []
   public loading = false
 
   @ViewChild(IonList, { static: true }) list: IonList;
+  @ViewChildren(StopwatchTemplateComponent) stopwatchComponents: QueryList<StopwatchTemplateComponent>;
+
 
   constructor(
-    private storage: StorageService,
-    private utils: UtilsService,
     private navController: NavController,
-    private stopwatchesService: StopwatchesService
+    private stopwatchesService: StopwatchesService,
+    private storage: StorageService
   ) {
     this.stopwatchesService.stopwatches.subscribe(stopwatches => this.stopwatches = stopwatches)
+    this.stopwatchesService.getCurrentStopwatch().subscribe(async stopwatch => {
+      if(await this.storage.getBoolean(STORAGE.SETTINGS_STOPWATCH_SINGULAR, DEFAULTS.STOPWATCH_SINGULAR)){
+        this.stopwatchComponents.filter(s => s.stopwatch.id != stopwatch.id).map(s => s.pauseTimer())
+      }
+    })
   }
 
   public async doRefresh(event?: any, force = false) {

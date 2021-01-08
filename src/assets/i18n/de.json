@@ -45,6 +45,7 @@
   "Module settings": "Einstellungen Module",
   "Modules": "Module",
   "Monday": "Montag",
+  "Never forget to track your time by setting a reminder.": "Erhalte eine Benachrichtigung um täglich deine Zeit zu raportieren",
   "No contacts found": "Keine Kontakte gefunden",
   "No data available": "Keine Daten vorhanden",
   "No favorite project found": "Kein Favoritisiertes Projekt gefunden",
@@ -54,6 +55,7 @@
   "None": "Keine Vorauswahl",
   "Notification settings": "Benachrichtigungseinstellungen",
   "Notifications": "Benachrichtigungen",
+  "Only allow to run one stopwatch at the time": "Erlaube nur eine Stoppuhr zur gleichen Zeit",
   "Package": "Arbeitspaket",
   "Pause": "Pause",
   "Project": "Projekt",
@@ -96,6 +98,5 @@
   "minute(s)": "Minuten",
   "missing-a-repo": "",
   "missing-a-report": "Du vermisst ein Report?",
-  "never-forget-to-track-your-time-by-setting-a-reminder": "Erhalte eine Benachrichtigung um täglich deine Zeit zu raportieren",
   "timewatch-is-running": "Stoppuhr läuft..."
 }

@@ -79,6 +79,7 @@ export class StopwatchTemplateComponent implements OnInit {
     this.running = 1;
     this.saveCurrentState()
     this.startNotification()
+    this.stopwatchesService.setCurrentStopwatch(this.stopwatch)
   }
 
   private loadItem(field: keyof StopwatchTemplateComponent) {
@@ -121,7 +122,7 @@ export class StopwatchTemplateComponent implements OnInit {
   }
 
 
-  pauseTimer() {
+  public pauseTimer() {
     if (!this.difference) {
       // if timer never started, don't allow pause button to do anything
     } else if (!this.paused) {

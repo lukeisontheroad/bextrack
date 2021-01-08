@@ -5,6 +5,7 @@ export const TYPES = {
 
 export const DEFAULTS = {
     STOPWATCHES: '[]',
+    STOPWATCH_SINGULAR: false,
     SERVICE_ID: TYPES.LAST_USED,
     STATUS_ID: TYPES.LAST_USED,
     PROJECT_ID: TYPES.NONE,
@@ -48,6 +49,8 @@ export const STORAGE = {
     SETTINGS_LAST_STATUS_ID: 'settings_last_status_id',
     SETTINGS_LAST_PROJECT: 'settings_last_project',
     SETTINGS_LAST_PROJECT_ID: 'settings_last_project_id',
+    SETTINGS_STOPWATCH_SINGULAR: 'settings_stopwatch_singular',
+
 
     SETTINGS_STEPS: 'settings_steps',
     SETTINGS_HOURS_PER_DAY: 'settings_hours_per_day',
