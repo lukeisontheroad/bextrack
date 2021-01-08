@@ -90,8 +90,12 @@
   "Wednesday": "Wednesday",
   "With Packages": "With Packages",
   "With time spend": "With time spend",
+  "help-me-to-improve-the-app": "Help me to improve the app.",
   "hour(s)": "hour(s)",
   "hours": "hours",
   "minute(s)": "minute(s)",
+  "missing-a-repo": "Missing a repo",
+  "missing-a-report": "missing-a-report?",
+  "never-forget-to-track-your-time-by-setting-a-reminder": "Never forget to track your time by setting a reminder.",
   "timewatch-is-running": "Timewatch is running..."
 }

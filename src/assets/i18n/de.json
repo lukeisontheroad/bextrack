@@ -90,8 +90,12 @@
   "Wednesday": "Mittwoch",
   "With Packages": "Mit Arbeitspacketen",
   "With time spend": "Mit gebuchter Zeit",
+  "help-me-to-improve-the-app": "Hilf mir die App zu verbessern",
   "hour(s)": "Stunden",
   "hours": "Stunden",
   "minute(s)": "Minuten",
+  "missing-a-repo": "",
+  "missing-a-report": "Du vermisst ein Report?",
+  "never-forget-to-track-your-time-by-setting-a-reminder": "Erhalte eine Benachrichtigung um täglich deine Zeit zu raportieren",
   "timewatch-is-running": "Stoppuhr läuft..."
 }
