@@ -249,14 +249,15 @@ export class StopwatchTemplateComponent implements OnInit {
   async startNotification() {
     console.log('Start notification')
     if (!(await LocalNotifications.requestPermission())) {
+      console.warn('No notification permission')
       return
     }
     try {
       cordova.plugins.notification.local.schedule(
         {
-          id: parseInt(this.stopwatch.id.substring(0, 8)),
+          id: parseInt('0x' + this.stopwatch.id.substring(0, 8)),
           title: await this.translateService.get('BexTrack').toPromise(),
-          text: await this.translateService.get('Timewatch is running...').toPromise(),
+          text: await this.translateService.get('timewatch-is-running').toPromise(),
           sticky: true,
           ongoing: true,
           autoClear: false
@@ -270,7 +271,7 @@ export class StopwatchTemplateComponent implements OnInit {
   async stopNotification() {
     console.log('Stop notification')
     try {
-      cordova.plugins.notification.local.cancel(parseInt(this.stopwatch.id.substring(0, 8)))
+      cordova.plugins.notification.local.cancel(parseInt('0x' + this.stopwatch.id.substring(0, 8)))
     } catch (e) {
       console.error('Notificaiton error', e)
     }
