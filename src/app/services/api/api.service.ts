@@ -198,6 +198,7 @@ export class ApiService {
       timesheet.project = this.projectMap[timesheet.pr_project_id]
       timesheet.package = this.cachedPackagesPackageId[timesheet.pr_package_id]
       timesheet.tracking = this.utilsService.prepareTracking(timesheet.tracking)
+      timesheet.text = new DOMParser().parseFromString(timesheet.text, 'text/html').documentElement.textContent
       resolve(timesheet)
     })
   }
@@ -263,8 +264,8 @@ export class ApiService {
           timesheets[i].user = this.usersMap[timesheets[i].user_id]
           timesheets[i].project = this.projectMap[timesheets[i].pr_project_id]
           timesheets[i].package = this.cachedPackagesPackageId[timesheets[i].pr_package_id]
-
           timesheets[i].tracking = this.utilsService.prepareTracking(timesheets[i].tracking)
+          timesheets[i].text = new DOMParser().parseFromString(timesheets[i].text, 'text/html').documentElement.textContent
 
         }
         this.timesheets = timesheets
