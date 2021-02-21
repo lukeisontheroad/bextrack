@@ -28,6 +28,7 @@ import { Stopwatch } from 'src/app/models/stopwatch';
 export class TimePage {
 
   private today = new Date()
+  private datePipe = new DatePipe('en-US')
   public isUpdate = false
   public isSaving = false
 
@@ -211,6 +212,7 @@ export class TimePage {
   async update() {
     return new Promise<void>(resolve => {
       if (this.validateTime()) {
+        this.timesheet.tracking.date = this.datePipe.transform(this.selectedDates[0], 'yyyy-MM-dd');
         this.apiService.putTimesheet(this.timesheet).then(async response => {
           this.storeLastUsed(response)
           this.utils.showToast('Updated')
@@ -266,11 +268,10 @@ export class TimePage {
       if (this.validateTime()) {
         // let timesheets = []
         // let promises = []
-        let datePipe = new DatePipe('en-US')
         for (var i = 0; i < this.selectedDates.length; i++) {
           let timesheet = JSON.parse(JSON.stringify(this.timesheet)) as Timesheet
           // if(timesheet.tracking.type === 'duration'){
-            timesheet.tracking.date = datePipe.transform(this.selectedDates[i], 'yyyy-MM-dd');
+            timesheet.tracking.date = this.datePipe.transform(this.selectedDates[i], 'yyyy-MM-dd');
           // }
           // timesheets.push(timesheet)
           await this.apiService.postTimesheet(timesheet)
