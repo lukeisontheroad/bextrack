@@ -18,9 +18,6 @@ import { NavController } from '@ionic/angular';
   styleUrls: ['settings.page.scss']
 })
 export class SettingsPage {
-
-  private isInit = false
-
   public user: User
   public services: ClientService[] = []
   public status: TimesheetStatus[] = []
@@ -43,7 +40,6 @@ export class SettingsPage {
     private storageBackend: StorageBackend,
     private navCtrl: NavController
   ) {
-
     this.init()
   }
 
@@ -54,11 +50,11 @@ export class SettingsPage {
     this.lastUsedService = await this.storage.getString(STORAGE.SETTINGS_LAST_SERVICE, DEFAULTS.SERVICE_ID)
     this.lastUsedStatus = await this.storage.getString(STORAGE.SETTINGS_LAST_STATUS, DEFAULTS.STATUS_ID)
     this.lastUsedProject = await this.storage.getString(STORAGE.SETTINGS_LAST_PROJECT, DEFAULTS.PROJECT_ID)
+    this.stopwatchSingular = await this.storage.getBoolean(STORAGE.SETTINGS_STOPWATCH_SINGULAR, DEFAULTS.STOPWATCH_SINGULAR)
     this.user = await this.apiService.getUser()
     this.services = await this.apiService.getClientService()
     this.status = await this.apiService.getTimesheetStatus()
     this.projects = await this.apiService.getProjects()
-    this.isInit = true
   }
 
   async logout() {
@@ -68,19 +64,17 @@ export class SettingsPage {
     window.location.href = '/'
   }
 
-  notificationsChanged = _.debounce(async () => {
-    if (this.isInit) {
-      this.storage.setItem(STORAGE.SETTINGS_DURATION, this.duration)
-      this.storage.setItem(STORAGE.SETTINGS_STEPS, this.steps)
-      this.storage.setItem(STORAGE.SETTINGS_HOURS_PER_DAY, this.hoursPerDay)
-      this.storage.setItem(STORAGE.SETTINGS_LAST_SERVICE, this.lastUsedService)
-      this.storage.setItem(STORAGE.SETTINGS_LAST_STATUS, this.lastUsedStatus)
-      this.storage.setItem(STORAGE.SETTINGS_LAST_PROJECT, this.lastUsedProject)
-      this.storage.setItem(STORAGE.SETTINGS_STOPWATCH_SINGULAR, this.stopwatchSingular)
-      if (parseInt(this.lastUsedService) >= 0) this.storage.setItem(STORAGE.SETTINGS_LAST_SERVICE_ID, this.lastUsedService)
-      if (parseInt(this.lastUsedStatus) >= 0) this.storage.setItem(STORAGE.SETTINGS_LAST_STATUS_ID, this.lastUsedStatus)
-      if (parseInt(this.lastUsedProject) >= 0) this.storage.setItem(STORAGE.SETTINGS_LAST_PROJECT_ID, this.lastUsedProject)
-      this.utils.showToast('Updated')
-    }
+  public notificationsChanged = _.debounce(async () => {
+    this.storage.setItem(STORAGE.SETTINGS_DURATION, this.duration)
+    this.storage.setItem(STORAGE.SETTINGS_STEPS, this.steps)
+    this.storage.setItem(STORAGE.SETTINGS_HOURS_PER_DAY, this.hoursPerDay)
+    this.storage.setItem(STORAGE.SETTINGS_LAST_SERVICE, this.lastUsedService)
+    this.storage.setItem(STORAGE.SETTINGS_LAST_STATUS, this.lastUsedStatus)
+    this.storage.setItem(STORAGE.SETTINGS_LAST_PROJECT, this.lastUsedProject)
+    this.storage.setItem(STORAGE.SETTINGS_STOPWATCH_SINGULAR, this.stopwatchSingular)
+    if (parseInt(this.lastUsedService) >= 0) this.storage.setItem(STORAGE.SETTINGS_LAST_SERVICE_ID, this.lastUsedService)
+    if (parseInt(this.lastUsedStatus) >= 0) this.storage.setItem(STORAGE.SETTINGS_LAST_STATUS_ID, this.lastUsedStatus)
+    if (parseInt(this.lastUsedProject) >= 0) this.storage.setItem(STORAGE.SETTINGS_LAST_PROJECT_ID, this.lastUsedProject)
+    this.utils.showToast('Updated')
   }, 2000);
 }
