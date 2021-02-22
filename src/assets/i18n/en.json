@@ -70,6 +70,7 @@
   "Service": "Service",
   "Settings": "Settings",
   "Sign in": "Sign in",
+  "Sign out": "Sign out",
   "Start": "Start",
   "Status": "Status",
   "Stopwatch": "Stopwatch",
@@ -98,5 +99,7 @@
   "minute(s)": "minute(s)",
   "missing-a-repo": "",
   "missing-a-report": "missing-a-report?",
-  "timewatch-is-running": "Timewatch is running..."
+  "timewatch-is-running": "Timewatch is running...",
+  "no-time-permissions": "No access to time reporting module - do you have a Bexio Pro or Pro+ subscription?",
+  "sign-in-failed": "Login failed - please try again"
 }

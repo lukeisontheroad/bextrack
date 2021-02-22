@@ -50,7 +50,7 @@ export class ApiService {
   ) { }
 
   public async init() {
-    return new Promise(resolve => {
+    return new Promise<void>((resolve, reject) => {
       let observer = this.authService.addActionListener(async (action) => {
         if (action.action === AuthActions.LoadUserInfoSuccess) {
           this.users = await this.http.get<any>(this.baseUrl + '3.0/users').toPromise()
@@ -58,21 +58,25 @@ export class ApiService {
             this.usersMap[this.users[i].id] = this.users[i]
           }
 
-          await Promise.all([
-            this.getTimesheetStatus(true),
-            this.getClientService(true),
-            this.getProjects(true),
-            // this.getContacts(true)
-          ]);
+          try {
+            await Promise.all([
+              this.getTimesheetStatus(true),
+              this.getClientService(true),
+              this.getProjects(true),
+              // this.getContacts(true)
+            ]);
 
-          // this.getPackages()
+            // this.getPackages()
 
-          for (var i = 0; i < this.users.length; i++) {
-            if (this.users[i].email === action.user.email) {
-              this.currentUser = this.users[i]
-              this.authService.removeActionObserver(observer)
-              resolve()
+            for (var i = 0; i < this.users.length; i++) {
+              if (this.users[i].email === action.user.email) {
+                this.currentUser = this.users[i]
+                this.authService.removeActionObserver(observer)
+                resolve()
+              }
             }
+          } catch (error) {
+            reject(error)
           }
         }
       })
@@ -93,29 +97,33 @@ export class ApiService {
 
   public async getProjects(force = false): Promise<Project[]> {
     return new Promise(async (resolve, reject) => {
-      if (force || this.projects.length === 0) {
-        const projects = await this.http.post<Project[]>(this.baseUrl + '2.0/pr_project/search?order_by=name&limit=' + this.limit, [{ "field": "pr_state_id", "value": "2", "criteria": "=" }]).toPromise();
-        this.projects = projects
-        for (var i = 0; i < this.projects.length; i++) {
-          this.projects[i].packages = this.cachedPackagesProjectId[this.projects[i].id]
-          if(this.projects[i].packages){
-            this.projects[i].spent_time_in_hours = 0
-            this.projects[i].estimated_time_in_hours = 0
-            
-            for(var j = 0; j < this.projects[i].packages.length; j++){
-              if(this.projects[i].packages[j].estimated_time_in_hours) this.projects[i].estimated_time_in_hours += this.projects[i].packages[j].estimated_time_in_hours
-              if(this.projects[i].packages[j]) this.projects[i].spent_time_in_hours += this.projects[i].packages[j].spent_time_in_hours
+      try {
+        if (force || this.projects.length === 0) {
+          const projects = await this.http.post<Project[]>(this.baseUrl + '2.0/pr_project/search?order_by=name&limit=' + this.limit, [{ "field": "pr_state_id", "value": "2", "criteria": "=" }]).toPromise();
+          this.projects = projects
+          for (var i = 0; i < this.projects.length; i++) {
+            this.projects[i].packages = this.cachedPackagesProjectId[this.projects[i].id]
+            if (this.projects[i].packages) {
+              this.projects[i].spent_time_in_hours = 0
+              this.projects[i].estimated_time_in_hours = 0
+
+              for (var j = 0; j < this.projects[i].packages.length; j++) {
+                if (this.projects[i].packages[j].estimated_time_in_hours) this.projects[i].estimated_time_in_hours += this.projects[i].packages[j].estimated_time_in_hours
+                if (this.projects[i].packages[j]) this.projects[i].spent_time_in_hours += this.projects[i].packages[j].spent_time_in_hours
+              }
             }
+            this.projectMap[this.projects[i].id] = this.projects[i]
           }
-          this.projectMap[this.projects[i].id] = this.projects[i]
+          this.projectsUpdated.next()
         }
-        this.projectsUpdated.next()
+        resolve(this.projects)
+      } catch (error) {
+        reject(error)
       }
-      resolve(this.projects)
     });
   }
 
-  private prepareTimesheetForApi(timesheet:Timesheet){
+  private prepareTimesheetForApi(timesheet: Timesheet) {
     delete timesheet.travel_time
     delete timesheet.travel_charge
     delete timesheet.travel_distance
@@ -125,10 +133,10 @@ export class ApiService {
     delete timesheet.user
     delete timesheet.project
     delete timesheet.package
-    if(timesheet.tracking.type === 'duration'){
+    if (timesheet.tracking.type === 'duration') {
       delete timesheet.tracking.start
       delete timesheet.tracking.end
-    }else{
+    } else {
       timesheet.tracking.start = new DatePipe('en-US').transform(timesheet.tracking.start, 'yyyy-MM-dd HH:mm');
       timesheet.tracking.end = new DatePipe('en-US').transform(timesheet.tracking.end, 'yyyy-MM-dd HH:mm');
 
@@ -169,18 +177,26 @@ export class ApiService {
   public async getTimesheetStatus(force = false): Promise<TimesheetStatus[]> {
     return new Promise(async (resolve, reject) => {
       if (force || this.timesheetStatus.length === 0) {
-        this.timesheetStatus = await this.http.get<TimesheetStatus[]>(this.baseUrl + '2.0/timesheet_status').toPromise();
+        try {
+          this.timesheetStatus = await this.http.get<TimesheetStatus[]>(this.baseUrl + '2.0/timesheet_status').toPromise();
+          resolve(this.timesheetStatus)
+        } catch (error) {
+          reject(error)
+        }
       }
-      resolve(this.timesheetStatus)
     })
   }
 
   public async getClientService(force = false): Promise<ClientService[]> {
     return new Promise(async (resolve, reject) => {
-      if (force || this.clientServicees.length === 0) {
-        this.clientServicees = await this.http.get<ClientService[]>(this.baseUrl + '2.0/client_service').toPromise();
+      try {
+        if (force || this.clientServicees.length === 0) {
+          this.clientServicees = await this.http.get<ClientService[]>(this.baseUrl + '2.0/client_service').toPromise();
+        }
+        resolve(this.clientServicees)
+      } catch (error) {
+        reject(error)
       }
-      resolve(this.clientServicees)
     })
   }
 
@@ -203,11 +219,11 @@ export class ApiService {
     })
   }
 
-  public getMyTimesheets(force=false): Promise<Timesheet[]>{
+  public getMyTimesheets(force = false): Promise<Timesheet[]> {
     return new Promise(async (resolve, reject) => {
       let user = await this.getUser()
       let timesheets = await this.getTimesheets(user.id, force)
-      if(force){
+      if (force) {
         this.timesUpdated.next()
       }
       resolve(timesheets)
@@ -216,22 +232,26 @@ export class ApiService {
 
   public searchContact(value): Promise<Contact[]> {
     return new Promise(async (resolve, reject) => {
-      let firstname = this.http.post<Contact[]>(this.baseUrl + '2.0/contact/search?limit=20', [
-        {
-          "field": "name_1",
-          "value": value,
-          "criteria": "like"
-        }
-      ]).toPromise()
-      let lastname = this.http.post<Contact[]>(this.baseUrl + '2.0/contact/search?limit=20', [
-        {
-          "field" : "name_2",
-          "value" : value,
-          "criteria" : "like"
-        }
-      ]).toPromise()      
+      try {
+        let firstname = this.http.post<Contact[]>(this.baseUrl + '2.0/contact/search?limit=20', [
+          {
+            "field": "name_1",
+            "value": value,
+            "criteria": "like"
+          }
+        ]).toPromise()
+        let lastname = this.http.post<Contact[]>(this.baseUrl + '2.0/contact/search?limit=20', [
+          {
+            "field": "name_2",
+            "value": value,
+            "criteria": "like"
+          }
+        ]).toPromise()
 
-      resolve([...await firstname, ...await lastname])
+        resolve([...await firstname, ...await lastname])
+      } catch (error) {
+        reject(error)
+      }
     })
   }
 
@@ -269,7 +289,7 @@ export class ApiService {
 
         }
         this.timesheets = timesheets
-      } 
+      }
       resolve(this.timesheets)
     })
   }

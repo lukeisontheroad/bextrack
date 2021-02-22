@@ -70,6 +70,7 @@
   "Service": "Service",
   "Settings": "Einstellungen",
   "Sign in": "Einloggen",
+  "Sign out": "Ausloggen",
   "Start": "Start",
   "Status": "Status",
   "Stopwatch": "Stoppuhr",
@@ -98,5 +99,7 @@
   "minute(s)": "Minuten",
   "missing-a-repo": "",
   "missing-a-report": "Du vermisst ein Report?",
-  "timewatch-is-running": "Stoppuhr läuft..."
+  "timewatch-is-running": "Stoppuhr läuft...",
+  "no-time-permissions": "Kein Zugriff auf das Zeiterfassungsmodul - haben Sie ein gültige Bexio Pro oder Pro+ Abonnement?",
+  "sign-in-failed": "Login fehlgeschlagen - bitte versuchen Sie es erneut"
 }

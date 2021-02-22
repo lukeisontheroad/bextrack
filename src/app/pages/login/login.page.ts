@@ -14,7 +14,8 @@ export class LoginPage implements OnInit, OnDestroy {
 
   constructor(
     private auth: AuthService,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    public authService: AuthService
   ) { }
 
   ngOnInit() {
@@ -35,5 +36,9 @@ export class LoginPage implements OnInit, OnDestroy {
 
   signIn() {
     this.auth.signIn();
+  }
+
+  async signOut(){
+    await this.authService.signOut()
   }
 }
