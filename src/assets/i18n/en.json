@@ -97,8 +97,7 @@
   "hour(s)": "hour(s)",
   "hours": "hours",
   "minute(s)": "minute(s)",
-  "missing-a-repo": "",
-  "missing-a-report": "missing-a-report?",
+  "missing-a-report": "Missing a report?",
   "timewatch-is-running": "Timewatch is running...",
   "no-time-permissions": "No access to time reporting module - do you have a Bexio Pro or Pro+ subscription?",
   "sign-in-failed": "Login failed - please try again"
