@@ -72,9 +72,9 @@
 
       <ion-item lines="none" *ngIf="timesheet?.tracking?.type == 'duration'">
         <ion-label position="stacked">{{ 'Duration' | translate }}</ion-label>
+        <span style="width: 100%; text-align: center; padding: 16px;">{{ selectedDuration | toDuration }} {{ 'hour(s)' | translate }}</span>
         <ion-range [min]="steps" max="12" [step]="steps" snaps="true" ticks="false" [(ngModel)]="selectedDuration">
         </ion-range>
-        <span style="width: 100%; text-align: center;">{{ selectedDuration | toDuration }} {{ 'hour(s)' | translate }}</span>
       </ion-item>
 
       <ion-item lines="none" *ngIf="timesheet?.tracking?.type == 'range'">

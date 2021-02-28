@@ -30,18 +30,18 @@
     <ion-list-header>{{ 'Settings' | translate }}</ion-list-header>
     <ion-item>
       <ion-label position="stacked">{{ 'Duration steps' | translate }}</ion-label>
+      <span style="width: 100%; text-align: center; padding: 16px;">{{ steps }} {{ 'minute(s)' | translate }}</span>
       <ion-range min="1" max="60" step="1" snaps="true" ticks="false" [(ngModel)]="steps" (ionChange)="notificationsChanged()"></ion-range>
-      <span style="width: 100%; text-align: center;">{{ steps }} {{ 'minute(s)' | translate }}</span>
     </ion-item>
     <ion-item>
       <ion-label position="stacked">{{ 'Hours per day' | translate }}</ion-label>
+      <span style="width: 100%; text-align: center; padding: 16px;">{{ hoursPerDay | toDuration }} {{ 'hour(s)' | translate }}</span>
       <ion-range min="0" max="12" [step]="steps/60" snaps="true" ticks="false" [(ngModel)]="hoursPerDay" (ionChange)="notificationsChanged()"></ion-range>
-      <span style="width: 100%; text-align: center;">{{ hoursPerDay | toDuration }} {{ 'hour(s)' | translate }}</span>
     </ion-item>
     <ion-item>
       <ion-label position="stacked">{{ 'Default duration' | translate }}</ion-label>
+      <span style="width: 100%; text-align: center; padding: 16px;">{{ duration | toDuration }} {{ 'hour(s)' | translate }}</span>
       <ion-range min="0" max="12" [step]="steps/60" snaps="true" ticks="false" [(ngModel)]="duration" (ionChange)="notificationsChanged()"></ion-range>
-      <span style="width: 100%; text-align: center;">{{ duration | toDuration }} {{ 'hour(s)' | translate }}</span>
     </ion-item>
     <ion-item>
       <ion-label position="stacked">{{ 'Default status' | translate }}</ion-label>

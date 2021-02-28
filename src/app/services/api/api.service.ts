@@ -183,6 +183,8 @@ export class ApiService {
         } catch (error) {
           reject(error)
         }
+      }else{
+        resolve(this.timesheetStatus)
       }
     })
   }
