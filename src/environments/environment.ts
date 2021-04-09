@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  useHash: true,
+  useHash: false,
   auth_config: {
     client_id: '2ac5b8a5-9795-4c8c-a09b-fb3c32e93cc7',
     server_host: 'https://idp.bexio.com',
