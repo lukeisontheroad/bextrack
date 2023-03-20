@@ -30,3 +30,5 @@ npm-debug.log*
 /plugins
 android/.idea
 .angular
+android_bak
+ios/DerivedData
