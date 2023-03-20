@@ -1,94 +1,94 @@
 <ion-header>
-  <ion-toolbar  color="primary">
+    <ion-toolbar color="primary">
 
-    <ion-buttons slot="end">
+        <ion-buttons slot="end">
 
-      <ion-icon *ngIf="currentFilter == ''" slot="icon-only" name="funnel-outline" (click)="toggleFilters($event)"></ion-icon>
-      <ion-icon *ngIf="currentFilter != ''" slot="icon-only" name="funnel" (click)="toggleFilters($event)"></ion-icon>
-      <ion-select #sectionSelect interface="popover" style="display: none;" (ionChange)="filterSet($event)" [(ngModel)]="currentFilter">
-        <ion-select-option value="">{{ 'All' | translate }}</ion-select-option>
-        <ion-select-option value="1">{{ 'With Packages' | translate}}</ion-select-option>
-        <ion-select-option value="2">{{ 'With time spend' | translate}}</ion-select-option>
-      </ion-select>
-      <ion-button *ngIf="showOnlyFavorites" (click)="toggleFavorites()">
-        <ion-icon slot="icon-only" name="star"></ion-icon>
-      </ion-button>
-      <ion-button *ngIf="!showOnlyFavorites" (click)="toggleFavorites()">
-        <ion-icon slot="icon-only" name="star-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-title>
-      {{ 'Projects' | translate }}
-    </ion-title>
+            <ion-icon *ngIf="currentFilter == ''" slot="icon-only" name="funnel-outline" (click)="toggleFilters($event)"></ion-icon>
+            <ion-icon *ngIf="currentFilter != ''" slot="icon-only" name="funnel" (click)="toggleFilters($event)"></ion-icon>
+            <ion-select #sectionSelect interface="popover" style="display: none;" (ionChange)="filterSet($event)" [(ngModel)]="currentFilter">
+                <ion-select-option value="">{{ 'All' | translate }}</ion-select-option>
+                <ion-select-option value="1">{{ 'With Packages' | translate}}</ion-select-option>
+                <ion-select-option value="2">{{ 'With time spend' | translate}}</ion-select-option>
+            </ion-select>
+            <ion-button *ngIf="showOnlyFavorites" (click)="toggleFavorites()">
+                <ion-icon slot="icon-only" name="star"></ion-icon>
+            </ion-button>
+            <ion-button *ngIf="!showOnlyFavorites" (click)="toggleFavorites()">
+                <ion-icon slot="icon-only" name="star-outline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+        <ion-title>
+            {{ 'Projects' | translate }}
+        </ion-title>
 
-  </ion-toolbar>
-  <ion-toolbar>
-    <ion-searchbar mode="ios" [placeholder]="'Projectname' | translate" [(ngModel)]="searchString" (ionChange)="setActiveList()" debounce="500"></ion-searchbar>
-  </ion-toolbar>
+    </ion-toolbar>
+    <ion-toolbar>
+        <ion-searchbar mode="ios" [placeholder]="'Projectname' | translate" [(ngModel)]="searchString" (ionChange)="setActiveList()" debounce="500"></ion-searchbar>
+    </ion-toolbar>
 
 </ion-header>
 <ion-content>
 
 
-  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
-    <ion-refresher-content>
-    </ion-refresher-content>
-  </ion-refresher>
+    <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content>
+        </ion-refresher-content>
+    </ion-refresher>
 
-  <!-- <ion-searchbar></ion-searchbar> -->
+    <!-- <ion-searchbar></ion-searchbar> -->
 
-  <ion-list *ngIf="loading">
-    <div *ngFor="let n of skeletons">
-      <ion-item>
-        <ion-avatar slot="start">
-          <ion-skeleton-text animated></ion-skeleton-text>
-        </ion-avatar>
-        <ion-label>
-          <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-        </ion-label>
-      </ion-item>
+    <ion-list *ngIf="loading">
+        <div *ngFor="let n of skeletons">
+            <ion-item>
+                <ion-avatar slot="start">
+                    <ion-skeleton-text animated></ion-skeleton-text>
+                </ion-avatar>
+                <ion-label>
+                    <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+                </ion-label>
+            </ion-item>
+        </div>
+    </ion-list>
+
+    <div class="no-items" *ngIf="projects.length === 0">
+        <ion-grid>
+            <ion-row>
+                <ion-icon *ngIf="!showOnlyFavorites" name="briefcase-outline"></ion-icon>
+                <ion-icon *ngIf="showOnlyFavorites" name="star-outline"></ion-icon>
+            </ion-row>
+            <ion-row>
+                <h1 *ngIf="!showOnlyFavorites">{{ 'No projects found' | translate }}</h1>
+                <h1 *ngIf="showOnlyFavorites">{{ 'No favorite project found' | translate }}</h1>
+            </ion-row>
+        </ion-grid>
     </div>
-  </ion-list>
 
-  <div class="no-items" *ngIf="projects.length === 0">
-    <ion-grid>
-      <ion-row>
-        <ion-icon *ngIf="!showOnlyFavorites" name="briefcase-outline"></ion-icon>
-        <ion-icon *ngIf="showOnlyFavorites" name="star-outline"></ion-icon>
-      </ion-row>
-      <ion-row>
-        <h1 *ngIf="!showOnlyFavorites">{{ 'No projects found' | translate }}</h1>
-        <h1 *ngIf="showOnlyFavorites">{{ 'No favorite project found' | translate }}</h1>
-      </ion-row>
-    </ion-grid>
-  </div>
-
-  <ion-list>
-    <div *ngFor="let project of projects">
-      <ion-item-sliding>
-        <ion-item routerLink="/create-time/{{ project.id }}">
-          <ion-label>
-            <h2>{{ project.name }}</h2>
-            <app-time-display [object]="project"></app-time-display>
-          </ion-label>
-        </ion-item>
-        <ion-item-options side="end">
-          <ion-item-option color="warning" (click)="favorite(project.id)" *ngIf="favorites.indexOf(project.id) == -1">
-            {{ 'Favorite' | translate }}</ion-item-option>
-          <ion-item-option color="warning" (click)="favorite(project.id)" *ngIf="favorites.indexOf(project.id) >  -1">
-            {{ 'Unfavorite' | translate }}</ion-item-option>
-        </ion-item-options>
-      </ion-item-sliding>
-      <ion-item *ngFor="let package of project.packages" routerLink="/create-time/{{ project.id }}/{{ package.id }}">
-        <ion-avatar slot="start">
-          <img src="/assets/package.png">
-        </ion-avatar>
-        <ion-label>
-          <h2>{{ package.name }}</h2>
-          <app-time-display [object]="package"></app-time-display>
-        </ion-label>
-      </ion-item>
-    </div>
-  </ion-list>
+    <ion-list>
+        <div *ngFor="let project of projects">
+            <ion-item-sliding>
+                <ion-item routerLink="/create-time/{{ project.id }}">
+                    <ion-label>
+                        <h2>{{ project.name }}</h2>
+                        <app-time-display [object]="project"></app-time-display>
+                    </ion-label>
+                </ion-item>
+                <ion-item-options side="end">
+                    <ion-item-option color="warning" (click)="favorite(project.id)" *ngIf="favorites.indexOf(project.id) == -1">
+                        {{ 'Favorite' | translate }}</ion-item-option>
+                    <ion-item-option color="warning" (click)="favorite(project.id)" *ngIf="favorites.indexOf(project.id) >  -1">
+                        {{ 'Unfavorite' | translate }}</ion-item-option>
+                </ion-item-options>
+            </ion-item-sliding>
+            <ion-item *ngFor="let package of project.packages" routerLink="/create-time/{{ project.id }}/{{ package.id }}">
+                <ion-avatar slot="start">
+                    <img src="/assets/package.png">
+                </ion-avatar>
+                <ion-label>
+                    <h2>{{ package.name }}</h2>
+                    <app-time-display [object]="package"></app-time-display>
+                </ion-label>
+            </ion-item>
+        </div>
+    </ion-list>
 
 </ion-content>
