@@ -19,6 +19,11 @@
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
+            "allowedCommonJsDependencies": [
+              "lodash",
+              "uuid",
+              "ion2-calendar"
+           ],
             "assets": [
               {
                 "glob": "**/*",
@@ -42,7 +47,7 @@
               }
             ],
             "scripts": [],
-            "aot": false,
+            "aot": true,
             "vendorChunk": true,
             "extractLicenses": false,
             "buildOptimizer": false,
