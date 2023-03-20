@@ -81,7 +81,7 @@ const routes: Routes = [
 
 @NgModule({
   imports: [
-    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules, useHash: environment.useHash })
+    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules, useHash: environment.useHash, relativeLinkResolution: 'legacy' })
   ],
   exports: [RouterModule]
 })
