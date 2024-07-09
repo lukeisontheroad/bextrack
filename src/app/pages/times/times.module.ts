@@ -7,6 +7,9 @@ import { TimesPage } from './times.page';
 import { PipesModule } from 'src/app/pipes/pipes.module';
 import { TranslateModule } from '@ngx-translate/core';
 import { CalendarModule } from 'ion2-calendar';
+import { ScrollingModule } from '@angular/cdk/scrolling';
+import { ScrollingModule as ExperimentalScrollingModule } from '@angular/cdk-experimental/scrolling';
+import { ComponentsModule } from 'src/app/components/components.module';
 
 @NgModule({
   imports: [
@@ -16,10 +19,13 @@ import { CalendarModule } from 'ion2-calendar';
     PipesModule,
     TranslateModule,
     CalendarModule,
+    ScrollingModule,
+    ExperimentalScrollingModule,
+    ComponentsModule, // Import the ComponentsModule here
     RouterModule.forChild([{ path: '', component: TimesPage }])
   ],
   declarations: [
     TimesPage, 
-  ]
+  ],
 })
 export class TimesPageModule {}

@@ -19,6 +19,7 @@ import { Observable } from 'rxjs';
 import { Contact } from 'src/app/models/contact';
 import { StopwatchesService } from 'src/app/services/stopwatches/stopwatches.service';
 import { Stopwatch } from 'src/app/models/stopwatch';
+import { SetQueue } from 'src/app/models/set_queue';
 
 @Component({
   selector: 'app-time',
@@ -154,6 +155,13 @@ export class TimePage {
     } else {
       await this.create()
     }
+
+    // Store last three project names
+    const queueIds = SetQueue.deserialize(await this.storage.getString(STORAGE.SETTINGS_LAST_THREE_PROJECTS, null))
+    queueIds.enqueue({id: this.timesheet.pr_project_id, name: this.selectedProjectText})
+    this.storage.setItem(STORAGE.SETTINGS_LAST_THREE_PROJECTS, queueIds.serialize())
+
+
     this.isSaving = false
   }
 

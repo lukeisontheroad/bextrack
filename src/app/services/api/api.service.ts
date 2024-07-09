@@ -25,7 +25,7 @@ export class ApiService {
   @Output()
   contactsUpdated = new EventEmitter();
 
-  private limit = 300
+  private limit = 1000
   private corsProxy = 'https://cors.bextrack.com/'
   private baseUrl = this.corsProxy + 'https://api.bexio.com/'
 
@@ -89,7 +89,7 @@ export class ApiService {
       if (force || this.projects.length === 0) {
         const contacts = await this.http.get<Contact[]>(this.baseUrl + '2.0/contact/?order_by=name_1_asc').toPromise();
         this.contacts = contacts
-        this.contactsUpdated.next()
+        this.contactsUpdated.next(null)
       }
       resolve(this.contacts)
     });
@@ -114,7 +114,7 @@ export class ApiService {
             }
             this.projectMap[this.projects[i].id] = this.projects[i]
           }
-          this.projectsUpdated.next()
+          this.projectsUpdated.next(null)
         }
         resolve(this.projects)
       } catch (error) {
@@ -195,6 +195,7 @@ export class ApiService {
         if (force || this.clientServicees.length === 0) {
           this.clientServicees = await this.http.get<ClientService[]>(this.baseUrl + '2.0/client_service').toPromise();
         }
+        console.log('this.clientServicees', this.clientServicees)
         resolve(this.clientServicees)
       } catch (error) {
         reject(error)
@@ -226,7 +227,7 @@ export class ApiService {
       let user = await this.getUser()
       let timesheets = await this.getTimesheets(user.id, force)
       if (force) {
-        this.timesUpdated.next()
+        this.timesUpdated.next(null)
       }
       resolve(timesheets)
     })
@@ -269,7 +270,7 @@ export class ApiService {
               "criteria": "="
             }
           ]
-          timesheets.push(...await await this.http.post<Timesheet[]>(this.baseUrl + '2.0/timesheet/search?order_by=date_desc&limit=50', filter).toPromise())
+          timesheets.push(...await await this.http.post<Timesheet[]>(this.baseUrl + '2.0/timesheet/search?order_by=date_desc,id_desc&limit=500', filter).toPromise())
           // timesheets.map(timesheet => {
           //   timesheet.tracking = {
           //     duration: timesheet.duration,
@@ -279,7 +280,7 @@ export class ApiService {
           //   return timesheet
           // })
         } else {
-          timesheets.push(...await this.http.get<Timesheet[]>(this.baseUrl + '2.0/timesheet?order_by=date_desc').toPromise())
+          timesheets.push(...await this.http.get<Timesheet[]>(this.baseUrl + '2.0/timesheet?order_by=date_desc,id_desc').toPromise())
         }
 
         for (var i = 0; i < timesheets.length; i++) {
@@ -332,7 +333,7 @@ export class ApiService {
     }
     await Promise.all(promises);
     await this.getProjects(true)
-    this.projectsUpdated.next()
+    this.projectsUpdated.next(null)
   }
 
   public getPackageForProjectWithId(project_id: number, package_id: number): Promise<Package> {

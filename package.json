@@ -18,6 +18,7 @@
   "dependencies": {
     "@angular/animations": "~15.2.3",
     "@angular/cdk": "~15.0.0",
+    "@angular/cdk-experimental": "~15.0.0",
     "@angular/common": "~15.2.3",
     "@angular/core": "~15.2.3",
     "@angular/forms": "~15.2.3",
@@ -44,15 +45,18 @@
     "cordova-plugin-contacts": "^3.0.1",
     "cordova-plugin-device": "^2.0.3",
     "cordova-plugin-local-notification": "github:katzer/cordova-plugin-local-notifications",
+    "exceljs": "^4.4.0",
     "ion2-calendar": "^3.5.0",
     "ionic-appauth": "^0.6.8",
     "ionic-selectable": "^4.7.1",
     "moment": "^2.29.1",
     "promise-all-properties": "^2.1.13",
     "raven-js": "^3.27.2",
+    "read-excel-file": "^5.7.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.0.0",
     "uuid": "^3.4.0",
+    "xlsx": "^0.18.5",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {

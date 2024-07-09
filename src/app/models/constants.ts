@@ -49,6 +49,7 @@ export const STORAGE = {
     SETTINGS_LAST_STATUS_ID: 'settings_last_status_id',
     SETTINGS_LAST_PROJECT: 'settings_last_project',
     SETTINGS_LAST_PROJECT_ID: 'settings_last_project_id',
+    SETTINGS_LAST_THREE_PROJECTS: 'settings_last_three_projects',
     SETTINGS_STOPWATCH_SINGULAR: 'settings_stopwatch_singular',
 
 

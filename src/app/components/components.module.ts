@@ -7,6 +7,7 @@ import { PipesModule } from "../pipes/pipes.module";
 import { StopwatchTemplateComponent } from "./stopwatch-template/stopwatch-template.component";
 import { TimeDisplayComponent } from "./time-display/time-display.component";
 
+
 @NgModule({
   imports: [
     CommonModule,
@@ -17,11 +18,11 @@ import { TimeDisplayComponent } from "./time-display/time-display.component";
   ],
   declarations: [
     StopwatchTemplateComponent, 
-    TimeDisplayComponent
-  ],
+    TimeDisplayComponent,
+    ],
   exports: [
     StopwatchTemplateComponent,
-    TimeDisplayComponent
+    TimeDisplayComponent,
   ]
 })
 export class ComponentsModule {}

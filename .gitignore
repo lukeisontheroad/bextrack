@@ -32,3 +32,4 @@ android/.idea
 .angular
 android_bak
 ios/DerivedData
+.yarn

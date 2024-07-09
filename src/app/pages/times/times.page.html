@@ -3,6 +3,15 @@
     <ion-title>
       {{ 'Times' | translate }}
     </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="merge()">
+        <ion-icon slot="icon-only" name="git-merge-outline"></ion-icon>
+      </ion-button>
+      <input type="file" #fileInput (change)="onImport($event)" accept=".xlsx" hidden>
+      <ion-button (click)="fileInput.click()">
+        <ion-icon slot="icon-only" name="cloud-upload-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -14,7 +23,7 @@
       </ion-calendar>
     </ion-col>
     <ion-col class="col-content" size="12" size-md="8">
-      <ion-content>
+      <ion-content scrollEvents="true" (ionScroll)="handleScroll($any($event))">
         <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
           <ion-refresher-content>
           </ion-refresher-content>
@@ -60,42 +69,44 @@
           </ion-grid>
         </div>
 
-        <ion-list>
-          <!-- <ion-virtual-scroll [items]="groupedTimes" approxItemHeight="100px"> -->
-
-          <div *ngFor="let group of groupedTimes">
-            <!-- <div *virtualItem="let group"> -->
-
-            <ion-list-header style="font-weight: 500;" [id]="group.date">
-              <ion-label>{{ group.date | date :'EEEE dd.MM.yyyy' }}</ion-label>
-              <p>{{ group.total | toDuration }}</p>
-            </ion-list-header>
-
-            <ion-item-sliding *ngFor="let time of group.times">
-              <ion-item routerLink="/display-time/{{ time.id }}" lines="none">
-                <ion-avatar *ngIf="time.allowable_bill" slot="start">
-                  <img src="/assets/paid.png">
-                </ion-avatar>
-                <ion-avatar *ngIf="!time.allowable_bill" slot="start">
-                  <img src="/assets/free.png">
-                </ion-avatar>
-                <ion-label>
-                  <h2>{{ time?.project?.name }} </h2>
-                  <p>{{ time?.package?.name }}</p>
-                  <p>{{ time?.text }}</p>
-                </ion-label>
-                <p slot="end">{{ time?.duration | formatDuration }}</p>
-              </ion-item>
-              <ion-item-options side="end">
-                <ion-item-option color="primary" (click)="copy(time)">{{ 'Copy' | translate }}</ion-item-option>
-                <ion-item-option color="danger" (click)="delete(time)">{{ 'Delete' | translate }}</ion-item-option>
-              </ion-item-options>
-            </ion-item-sliding>
-          </div>
-          <!-- </ion-virtual-scroll> -->
-
-        </ion-list>
-
+        <cdk-virtual-scroll-viewport autosize minBufferPx="5000" maxBufferPx="5000">
+        <div *cdkVirtualFor="let group of groupedTimes; let i = index">
+          <ion-list-header style="font-weight: 500;">
+            <ion-label>{{ group.date | date :'EEEE dd.MM.yyyy' }} {{ i }}</ion-label>
+            <p>{{ group.total | toDuration }}</p>
+          </ion-list-header>
+      
+          <ion-item-sliding *ngFor="let time of group.times" [id]="time.id">
+            <ion-item routerLink="/display-time/{{ time.id }}" lines="none">
+              <ion-avatar *ngIf="time.allowable_bill" slot="start">
+                <img src="/assets/paid.png">
+              </ion-avatar>
+              <ion-avatar *ngIf="!time.allowable_bill" slot="start">
+                <img src="/assets/free.png">
+              </ion-avatar>
+              <ion-label>
+                <h2>{{ time?.project?.name }} </h2>
+                <p>{{ time?.package?.name }}</p>
+                <p>{{ time?.text }}</p>
+                <div style="display: flex;">
+                  <ion-button size="small" fill="outline" style="padding: 0;" (click)="modify($event, time, 15)">+</ion-button>&nbsp;
+                  <ion-button size="small" fill="outline" style="padding: 0;" (click)="modify($event, time, -15)">-</ion-button>&nbsp;
+                  <span *ngFor="let lastUsedProject of lastUsedProjects">
+                    <ion-button *ngIf="!time.pr_project_id" size="small" fill="outline" style="padding: 0;" (click)="setProject($event, lastUsedProject, time)">{{ lastUsedProject.name }}</ion-button>&nbsp;
+                  </span>
+                </div>
+              </ion-label>
+              <ion-checkbox *ngIf="selectMode" slot="end" (click)="check($event, time)"></ion-checkbox>
+              <p *ngIf="!selectMode" slot="end">{{ time?.duration | formatDuration }}</p>
+            </ion-item>
+            <ion-item-options side="end">
+              <ion-item-option color="primary" (click)="copy(time)">{{ 'Copy' | translate }}</ion-item-option>
+              <ion-item-option color="danger" (click)="delete(time)">{{ 'Delete' | translate }}</ion-item-option>
+            </ion-item-options>
+          </ion-item-sliding>
+        </div>
+      </cdk-virtual-scroll-viewport>
+      
 
         <ion-fab vertical="bottom" horizontal="end" slot="fixed">
           <ion-fab-button routerLink="/create-time/" color="secondary">

@@ -45,3 +45,14 @@ ion-calendar{
 ::ng-deep .alert-wrapper {
   --min-width: 80%;
 }
+
+
+::ng-deep ion-item-sliding {
+  height: 84px !important;
+  overflow: hidden;
+}
+
+cdk-virtual-scroll-viewport {
+  height: 100%;
+  width: 100%;
+}
