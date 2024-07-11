@@ -14,10 +14,12 @@ export let authFactory = (platform: Platform, ngZone: NgZone,
     const authService = new CustomAuthService(browser, storage, requestor);
     authService.authConfig = environment.auth_config;
 
+    /*
     if (!platform.is('cordova')) {
         authService.authConfig.redirect_url = window.location.origin + '/auth/callback';
         authService.authConfig.end_session_redirect_url = window.location.origin + '/auth/endsession';
     }
+    */
 
     if (platform.is('capacitor')) {
         authService.authConfig.redirect_url = (environment.auth_config as any).redirect_url_native
