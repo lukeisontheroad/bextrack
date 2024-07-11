@@ -68,7 +68,6 @@
             </ion-row>
           </ion-grid>
         </div>
-
         <cdk-virtual-scroll-viewport autosize minBufferPx="5000" maxBufferPx="5000">
         <div *cdkVirtualFor="let group of groupedTimes; let i = index">
           <ion-list-header style="font-weight: 500;">
@@ -87,7 +86,7 @@
               <ion-label>
                 <h2>{{ time?.project?.name }} </h2>
                 <p>{{ time?.package?.name }}</p>
-                <p>{{ time?.text }}</p>
+                <p class="max-text">{{ time?.text }}</p>
                 <div style="display: flex;">
                   <ion-button size="small" fill="outline" style="padding: 0;" (click)="modify($event, time, 15)">+</ion-button>&nbsp;
                   <ion-button size="small" fill="outline" style="padding: 0;" (click)="modify($event, time, -15)">-</ion-button>&nbsp;
@@ -107,7 +106,6 @@
         </div>
       </cdk-virtual-scroll-viewport>
       
-
         <ion-fab vertical="bottom" horizontal="end" slot="fixed">
           <ion-fab-button routerLink="/create-time/" color="secondary">
             <ion-icon name="add"></ion-icon>

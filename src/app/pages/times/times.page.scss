@@ -54,5 +54,34 @@ ion-calendar{
 
 cdk-virtual-scroll-viewport {
   height: 100%;
-  width: 100%;
+}
+
+@media (max-width: 399px) {
+  .max-text {
+    max-width: 210px;
+  }
+}
+
+@media (min-width: 400px) {
+  .max-text {
+    max-width: 250px;
+  }
+}
+
+@media (min-width: 450px) {
+  .max-text {
+    max-width: 300px;
+  }
+}
+
+@media (min-width: 600px) {
+  .max-text {
+    max-width: 450px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .max-text {
+    max-width: 800px;
+  }
 }
