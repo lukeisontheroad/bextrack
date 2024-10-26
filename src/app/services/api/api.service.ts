@@ -89,7 +89,7 @@ export class ApiService {
       if (force || this.projects.length === 0) {
         const contacts = await this.http.get<Contact[]>(this.baseUrl + '2.0/contact/?order_by=name_1_asc').toPromise();
         this.contacts = contacts
-        this.contactsUpdated.next()
+        this.contactsUpdated.next(null)
       }
       resolve(this.contacts)
     });
@@ -114,7 +114,7 @@ export class ApiService {
             }
             this.projectMap[this.projects[i].id] = this.projects[i]
           }
-          this.projectsUpdated.next()
+          this.projectsUpdated.next(null)
         }
         resolve(this.projects)
       } catch (error) {
@@ -226,7 +226,7 @@ export class ApiService {
       let user = await this.getUser()
       let timesheets = await this.getTimesheets(user.id, force)
       if (force) {
-        this.timesUpdated.next()
+        this.timesUpdated.next(null)
       }
       resolve(timesheets)
     })
@@ -332,7 +332,7 @@ export class ApiService {
     }
     await Promise.all(promises);
     await this.getProjects(true)
-    this.projectsUpdated.next()
+    this.projectsUpdated.next(null)
   }
 
   public getPackageForProjectWithId(project_id: number, package_id: number): Promise<Package> {
